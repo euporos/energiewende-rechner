@@ -1,0 +1,62 @@
+// ::prefixer-target-dir::..//public/css/::
+// ::scss-target-dir::..//public/css/::
+
+// //  ##############
+// //  ### Common ###
+// //  ##############
+
+// @import "../_common";
+
+// // //  #################
+// // //  #### Imports ####
+// // //  #################
+
+// @import "_mixins";
+
+// @import "base/_base";
+
+
+.anwendung {
+    max-width: 100vh;
+    margin-left: auto;
+    margin-right: auto;
+}
+.anzeige {
+    position: relative;
+}
+
+// .karte {
+//     width:100%;
+//     z-index: -1;
+//     position: absolute;
+//     top: 0;
+//     opacity: 50%;
+// }
+
+
+.aufkarte {
+    z-index: 1;
+    width: 100%;
+    position: absolute;
+    top: 0;
+}
+ 
+
+.todesanzeige {
+    z-index: 2;
+}
+
+
+
+
+// //  #################
+// //  #### Rundrum ####
+// //  #################
+
+	 .mainframe {
+	     min-height: calc(100vh - 144px);
+	 }
+
+	 .footer {
+	     height: 80px !important;
+	 }

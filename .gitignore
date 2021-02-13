@@ -1,0 +1,23 @@
+# Emacs transient files
+\#*#
+*~
+
+/out/
+/resources/public/js/compiled/
+/resources/public/js/test/
+/resources/public/js/css/
+/target/
+/*-init.clj
+/*.log
+/karma.conf.js
+
+# Leiningen
+/.lein-*
+/.nrepl-port
+
+# Node.js dependencies
+/node_modules/
+
+# shadow-cljs cache, port files
+/shadow-cljs.edn
+/.shadow-cljs/
