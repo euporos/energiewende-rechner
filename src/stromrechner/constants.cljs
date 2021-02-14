@@ -24,7 +24,14 @@
              :input-attrs {:type "number"
                            :pattern "0.00"
                            :step "0.01"
-                           :min 0.01}}]])
+                           :min 0.01}}]
+   [:co2 {:name "CO2-Äquivalent kt/TWh"
+             :unit "kt/TWh"
+             :parse-fn js/parseInt
+          :input-attrs {:type "number"
+                        :pattern "0"
+                        :step "1"
+                        :min 1}}]])
 
 (def energy-needed
   [:energy-needed {:name "Strombedarf"
@@ -40,3 +47,4 @@
 ;; (def share-granularity 10000) ; 100% ≙ 10000
 
 ;; (def deaths-granularity 1000) ; 100% ≙ 1000
+ 

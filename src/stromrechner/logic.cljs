@@ -1,4 +1,6 @@
-(ns stromrechner.logic)
+(ns stromrechner.logic
+  (:require [stromrechner.helpers :as h]))
+
 
 ;; ######################
 ;; ##### Energy-mix #####
@@ -64,6 +66,70 @@
   (if (remix-blocked? changed-nrg-key newval nrg-sources)
     nrg-sources
     (remix-energy-shares-float changed-nrg-key newval nrg-sources)))
+
+
+;; #######################
+;; ##### Derivations #####
+;; #######################
+
+
+(defn- absolute-x
+  "key should be :co2 or :deaths"
+  [key energy-needed nrg]
+  (-> (:share nrg)
+      (/ 100)            ;TODO: from const
+      (* energy-needed)  ; TWh of this nrg
+      (* (key nrg))))
+
+(defn prefix-key
+  ""
+  [prefix key]
+  (->> key name (str prefix "-") keyword))
+
+(defn postfix-key
+  ""
+  [postfix key]
+  (-> key name (str "-" postfix ) keyword))
+
+(defn add-absolutes
+  ""
+  [key abs-key energy-needed nrgs]
+  (h/map-vals
+   (fn [nrg]
+     (assoc nrg abs-key
+            (absolute-x key energy-needed nrg)))
+   nrgs))
+
+(defn calc-total
+  ""
+  [abs-key abs-added]
+  (reduce #(+ %1 (abs-key (second %2)))
+          0 abs-added))
+
+(defn add-share-of-x
+  ""
+  [abs-key share-key total abs-added]
+  (h/map-vals
+          #(assoc % share-key
+                  (-> (abs-key %)
+                      (/ total)
+                      (* 100)
+                      (h/nan->0))) ;TODO: from const
+          abs-added))
+
+(defn derive-share-absolutes-and-total
+  ""
+  [[energy-needed energy-sources] [_ param-key]]
+  (let [abs-key (prefix-key "absolute" param-key)
+        share-key (postfix-key "share" param-key)
+        total-key (prefix-key "total" param-key)
+        abs-added (add-absolutes
+                   param-key abs-key energy-needed energy-sources)
+      total (calc-total abs-key abs-added)
+      shares-added (add-share-of-x abs-key share-key
+                              total abs-added)]
+  {total-key total
+   :energy-sources shares-added}))
   
 
 ;; ##############
@@ -132,3 +198,4 @@
   [f coll]
   (reduce (fn [sofar [key val]]
             (assoc sofar key (f val))) {} coll))
+ 

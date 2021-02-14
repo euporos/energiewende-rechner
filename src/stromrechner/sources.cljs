@@ -14,10 +14,10 @@
        pub))
    publications))
 
-
+ 
 
 (m/def-from-file publications
-  "config/publications.edn"
+  "config/publications.edn" 
   transpose-energy-sources)
 
 
@@ -27,7 +27,7 @@
   ""
   [nrg-key param-key]
   (filter
-   #(get-in % [:energy-sources nrg-key param-key])   
+   #(get-in % [:energy-sources nrg-key param-key])    
    publications))
 
 (defn matching-pubs
@@ -85,4 +85,5 @@
 
 
   
+ 
  

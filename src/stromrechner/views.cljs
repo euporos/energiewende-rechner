@@ -9,8 +9,6 @@
    [clojure.edn :as edn]
    [stromrechner.constants :as const]))
 
-
-
 ;; ########################
 ;; ##### Common Stuff #####
 ;; ########################
@@ -204,9 +202,6 @@
            ^{:key (str (first nrg-source))}
            [:div [energy-slider nrg-source]])))
 
-
-
-
 ;; #########
 ;; ## Map ##
 ;; #########
@@ -234,10 +229,6 @@
   ""
   []
   [:div.mapview
- ;  {:background-image "url('imgs/deutschland2.svg')"}
-   ;; [:div.karte
-   ;;  [:img {;; :width "100%"           
-   ;;         :src "imgs/deutschland2.svg"}]]
    (into [:svg.karte
           {:viewBox "0 0 640 876"
            ;:preserveAspectRatio true
@@ -256,7 +247,7 @@
   ""
   []
   (let [{:keys [total-deaths energy-sources]}
-        @(rf/subscribe [:deriv/deaths])]
+        @(rf/subscribe [:deriv/shares-absolute-and-total :deaths])]
    [:div.todesanzeige.mb-3
     [:div
      [:strong (str "Statistisch erwartbare jährliche Todesfälle: "
@@ -272,19 +263,56 @@
              :height "2em"}]
            (second
             (reduce
-             (fn [[left-marg sofar] {:keys [name death-share props]}]
+             (fn [[left-marg sofar] {:keys [name deaths-share props]}]
                [(+ left-marg
-                   death-share) (conj sofar
+                   deaths-share) (conj sofar
                                       [:rect 
                                        {:key name
                                         :x (str left-marg "%")
-                                        :width (str death-share "%") 
+                                        :width (str deaths-share "%") 
                                         :height "2em" 
                                         :style {:fill (:fill props)
                                                 :stroke-width "0"
                                                 :stroke "black"}}])])
              [0 []]
              (vals energy-sources))))]]))
+
+ 
+(defn co2-emissions
+  ""
+  []
+  (let [{:keys [total-co2 energy-sources]}
+        @(rf/subscribe [:deriv/shares-absolute-and-total :co2])]
+   [:div.todesanzeige.mb-3
+    [:div
+     [:strong (str "Jährlicher CO2-Ausstoß: "
+                   (Math/round total-co2))]
+     (into [:div ] (interpose " | "
+                              (map (fn [{:keys [name absolute-co2]}]
+                                     [:span (Math/round absolute-co2)
+                                      " " name])
+                                   (vals energy-sources))))]
+    [:div
+     (into [:svg 
+            {:width "100%" 
+             :height "2em"}]
+           (second
+            (reduce
+             (fn [[left-marg sofar] {:keys [name co2-share props]}]
+               [(+ left-marg
+                   co2-share) (conj sofar
+                                      [:rect 
+                                       {:key name
+                                        :x (str left-marg "%")
+                                        :width (str co2-share "%") 
+                                        :height "2em" 
+                                        :style {:fill (:fill props)
+                                                :stroke-width "0"
+                                                :stroke "black"}}])])
+             [0 []]
+             (vals energy-sources))))]]))
+
+
 
 
 ;; ############################
@@ -297,28 +325,15 @@
      [:div.anwendung.pt-3.pb-3.pl-3.pr-3
       [:div.columns
        [:div.anzeige.column.is-two-thirds
-        [mapview]
-        ;; [ui/death-toll]
-        ]
+        [mapview]]
        [:div.column
         [energy-mix]
-        [energy-needed]
-        ]]
+        [energy-needed]]]
       [death-toll]
-      [detailed-settings]]]
-    
-    ;; [:div
-    ;;  [energy-mix]
-    ;;  [detailed-settings]
-    ;;  [energy-needed-dropdown]
-    
-    ;;  [:div (str @(rf/subscribe [:global/energy-sources]))]]
-    ))
+      [co2-emissions]
+      [detailed-settings]]]))
 
 
-;; ######################
-;; ##### Energy-mix #####
-;; ######################
 
 
  

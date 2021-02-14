@@ -11,7 +11,8 @@
    [stromrechner.constants :as constants]
    [stromrechner.constants :as const]
    [stromrechner.helpers :as h]
-   [stromrechner.config :as cfg]))
+   [stromrechner.config :as cfg]
+   [stromrechner.logic :as l]))
 
 
 ;; ########################
@@ -28,9 +29,9 @@
             default-db))
  
 (reg-sub
- :global/name
- (fn [db]
-   (:name db)))
+ :global/db
+ (fn [db] db))
+
 
 (reg-sub
  :global/energy-needed
@@ -235,33 +236,63 @@
             :diameter (* 2 radius )))))
 
 
+
 (reg-sub
- :deriv/deaths
- (fn [[_ nrg-key]]
+ ; attr key should be :co2 or :deaths
+ :deriv/shares-absolute-and-total
+ (fn [[_ attr-key]]
    [(rf/subscribe [:global/energy-needed])
     (rf/subscribe [:global/energy-sources])])
- (fn [[energy-needed energy-sources] [_ _]]
-   (let [abs-deaths-added
-         (h/map-vals
-          #(assoc %
-                  :absolute-deaths
-                  (-> (:share %)
-                          (/ 100)            ;TODO: from const
-                          (* energy-needed)  ; TWh of this nrg
-                          (* (:deaths %))))
-          energy-sources)
-         total-deaths
-         (reduce #(+ %1 (:absolute-deaths (second %2)))
-                 0 abs-deaths-added)
-         deaths-share-added 
-         (h/map-vals
-          #(assoc % :death-share
-                  (-> (:absolute-deaths %)
-                      (/ total-deaths)
-                      (* 100)
-                      (h/nan->0))) ;TODO: from const
-          abs-deaths-added)]
+ l/derive-share-absolutes-and-total)
 
 
-     {:total-deaths total-deaths
-      :energy-sources deaths-share-added})))
+(comment
+  (add-absolutes :deaths 1300
+   @(rf/subscribe [:global/energy-sources]))
+  (absolute :co2 1300
+   @(rf/subscribe [:nrg/get :wind])))
+
+
+
+(comment
+  @(rf/subscribe [:deriv/shares-absolute-and-total :deaths]))
+
+
+
+
+
+
+
+
+
+
+;; (reg-sub
+;;  :deriv/deaths
+;;  (fn [[_ nrg-key]]
+;;    [(rf/subscribe [:global/energy-needed])
+;;     (rf/subscribe [:global/energy-sources])])
+;;  (fn [[energy-needed energy-sources] [_ _]]
+;;    (let [abs-deaths-added
+;;          (h/map-vals
+;;           #(assoc %
+;;                   :absolute-deaths
+;;                   (-> (:share %)
+;;                           (/ 100)            ;TODO: from const
+;;                           (* energy-needed)  ; TWh of this nrg
+;;                           (* (:deaths %))))
+;;           energy-sources)
+;;          total-deaths
+;;          (reduce #(+ %1 (:absolute-deaths (second %2)))
+;;                  0 abs-deaths-added)
+;;          deaths-share-added 
+;;          (h/map-vals
+;;           #(assoc % :death-share
+;;                   (-> (:absolute-deaths %)
+;;                       (/ total-deaths)
+;;                       (* 100)
+;;                       (h/nan->0))) ;TODO: from const
+;;           abs-deaths-added)]
+
+
+;;      {:total-deaths total-deaths
+;;       :energy-sources deaths-share-added})))
