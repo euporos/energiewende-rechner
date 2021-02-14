@@ -296,8 +296,8 @@
     [indicator "Statistisch erwartbare Todesfälle pro Jahr:"
      :deaths]
     [indicator "Jährlicher CO2-Ausstoß: "
-     :co2]
-    [detailed-settings]]])
+     :co2]]
+   [detailed-settings]])
  
  
   

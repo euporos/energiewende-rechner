@@ -213,6 +213,8 @@
 ;; ############################
 ;; ###### Derived-values ######
 ;; ############################
+
+
 (comment
   @(rf/subscribe [:nrg/get :wind])
   @(rf/subscribe [:global/energy-needed]))
@@ -247,24 +249,6 @@
             :diameter (* 2 radius )))))
 
 
-(reg-sub
- ; attr key should be :co2 or :deaths
- :deriv/data-for-indicator-old
- (fn [[_ param-key]]
-   [(rf/subscribe [:global/energy-needed])
-    (rf/subscribe [:global/energy-sources])])
- (fn [[energy-needed energy-sources] [_ param-key]]
-  (let [abs-key :absolute
-        share-key :param-share
-        abs-added (l/add-absolutes
-                   param-key abs-key energy-needed energy-sources)
-      total (l/calc-total abs-key abs-added)
-      shares-added (l/add-share-of-x abs-key share-key
-                              total abs-added)]
-    {:param-total total
-     :unit (get-in const/parameter-map [param-key :abs-unit])
-     :energy-sources shares-added})))
-
 
 
 (reg-sub ; param-key should be :co2 or :deaths
@@ -273,28 +257,22 @@
    [(rf/subscribe [:global/energy-needed])
     (rf/subscribe [:global/energy-sources])])
  (fn [[energy-needed energy-sources] [_ param-key]]
-   (let [abs-added
-         (h/map-vals
-          #(assoc %
-                  :absolute
-                  (-> (:share %)
-                      (/ 100)            ;TODO: from const
-                      (* energy-needed)  ; TWh of this nrg
-                      (* (param-key %))))
-          energy-sources)
-         total
-         (reduce #(+ %1 (:absolute (second %2)))
-                 0 abs-added)
-         shares-added 
-         (h/map-vals
-          #(assoc % :param-share
-                  (-> (:absolute %)
-                      (/ total)
-                      (* 100)
-                      (h/nan->0))) ;TODO: from const
-          abs-added)]
-
-
+   (let [abs-added (h/map-vals
+                    #(assoc % :absolute
+                            (-> (:share %)
+                                (/ 100)            ;TODO: from const
+                                (* energy-needed)  ; TWh of this nrg
+                                (* (param-key %))))
+                    energy-sources)
+         total (reduce #(+ %1 (:absolute (second %2)))
+                       0 abs-added)
+         shares-added (h/map-vals
+                       #(assoc % :param-share
+                               (-> (:absolute %)
+                                   (/ total)
+                                   (* 100)
+                                   (h/nan->0))) ;TODO: from const
+                       abs-added)]
      {:param-total total
       :unit (get-in const/parameter-map [param-key :abs-unit])
       :energy-sources shares-added})))
@@ -305,3 +283,62 @@
   @(rf/subscribe [:deriv/data-for-indicator :deaths]))
 
 
+;; ##############
+;; ### Legacy ###
+;; ##############
+
+
+(defn- absolute-x
+  "key should be :co2 or :deaths"
+  [key energy-needed nrg]
+  (-> (:share nrg)
+      (/ 100)            ;TODO: from const
+      (* energy-needed)  ; TWh of this nrg
+      (* (key nrg))))
+
+(defn- add-absolutes
+  ""
+  [key abs-key energy-needed nrgs]
+  (h/map-vals
+   (fn [nrg]
+     (assoc nrg abs-key
+            (absolute-x key energy-needed nrg)))
+   nrgs))
+
+(defn- calc-total
+  ""
+  [abs-key abs-added]
+  (reduce #(+ %1 (abs-key (second %2)))
+          0 abs-added))
+
+(defn- add-share-of-x
+  ""
+  [abs-key share-key total abs-added]
+  (h/map-vals
+          #(assoc % share-key
+                  (-> (abs-key %)
+                      (/ total)
+                      (* 100)
+                      (h/nan->0))) ;TODO: from const
+          abs-added))
+  
+
+
+
+(reg-sub
+ ; attr key should be :co2 or :deaths
+ :deriv/data-for-indicator-old
+ (fn [[_ param-key]]
+   [(rf/subscribe [:global/energy-needed])
+    (rf/subscribe [:global/energy-sources])])
+ (fn [[energy-needed energy-sources] [_ param-key]]
+  (let [abs-key :absolute
+        share-key :param-share
+        abs-added (add-absolutes
+                   param-key abs-key energy-needed energy-sources)
+      total (calc-total abs-key abs-added)
+      shares-added (add-share-of-x abs-key share-key
+                              total abs-added)]
+    {:param-total total
+     :unit (get-in const/parameter-map [param-key :abs-unit])
+     :energy-sources shares-added})))

@@ -68,46 +68,6 @@
     (remix-energy-shares-float changed-nrg-key newval nrg-sources)))
 
 
-;; #######################
-;; ##### Derivations #####
-;; #######################
-
-
-(defn- absolute-x
-  "key should be :co2 or :deaths"
-  [key energy-needed nrg]
-  (-> (:share nrg)
-      (/ 100)            ;TODO: from const
-      (* energy-needed)  ; TWh of this nrg
-      (* (key nrg))))
-
-(defn- add-absolutes
-  ""
-  [key abs-key energy-needed nrgs]
-  (h/map-vals
-   (fn [nrg]
-     (assoc nrg abs-key
-            (absolute-x key energy-needed nrg)))
-   nrgs))
-
-(defn- calc-total
-  ""
-  [abs-key abs-added]
-  (reduce #(+ %1 (abs-key (second %2)))
-          0 abs-added))
-
-(defn- add-share-of-x
-  ""
-  [abs-key share-key total abs-added]
-  (h/map-vals
-          #(assoc % share-key
-                  (-> (abs-key %)
-                      (/ total)
-                      (* 100)
-                      (h/nan->0))) ;TODO: from const
-          abs-added))
-  
-
 ;; ##############
 ;; ### Legacy ###
 ;; ##############
