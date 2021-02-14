@@ -249,7 +249,7 @@
 
 (reg-sub
  ; attr key should be :co2 or :deaths
- :deriv/data-for-indicator
+ :deriv/data-for-indicator-old
  (fn [[_ param-key]]
    [(rf/subscribe [:global/energy-needed])
     (rf/subscribe [:global/energy-sources])])
@@ -267,6 +267,41 @@
 
 
 
+(reg-sub ; param-key should be :co2 or :deaths
+ :deriv/data-for-indicator
+ (fn [[_ param-key]]
+   [(rf/subscribe [:global/energy-needed])
+    (rf/subscribe [:global/energy-sources])])
+ (fn [[energy-needed energy-sources] [_ param-key]]
+   (let [abs-added
+         (h/map-vals
+          #(assoc %
+                  :absolute
+                  (-> (:share %)
+                      (/ 100)            ;TODO: from const
+                      (* energy-needed)  ; TWh of this nrg
+                      (* (param-key %))))
+          energy-sources)
+         total
+         (reduce #(+ %1 (:absolute (second %2)))
+                 0 abs-added)
+         shares-added 
+         (h/map-vals
+          #(assoc % :param-share
+                  (-> (:absolute %)
+                      (/ total)
+                      (* 100)
+                      (h/nan->0))) ;TODO: from const
+          abs-added)]
+
+
+     {:param-total total
+      :unit (get-in const/parameter-map [param-key :abs-unit])
+      :energy-sources shares-added})))
+
+
+
 (comment
   @(rf/subscribe [:deriv/data-for-indicator :deaths]))
+
 
