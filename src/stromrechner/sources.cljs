@@ -17,7 +17,7 @@
 
 
 (m/def-from-file publications
-  "resources/publications.edn"
+  "config/publications.edn"
   transpose-energy-sources)
 
 
