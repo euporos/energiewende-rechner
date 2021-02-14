@@ -240,24 +240,24 @@
 
 
 
-;; ##############
-;; ### Deaths ###
-;; ##############
+;; ######################
+;; ##### Indicators #####
+;; ######################
 
 
-(defn death-toll
+(defn indicator
   ""
-  []
-  (let [{:keys [total-deaths energy-sources]}
-        @(rf/subscribe [:deriv/shares-absolute-and-total :deaths])]
+  [heading param-key]
+  (let [{:keys [param-total unit energy-sources]}
+        @(rf/subscribe [:deriv/data-for-indicator param-key])]
    [:div.todesanzeige.mb-3
     [:div
-     [:strong (str "Statistisch erwartbare jährliche Todesfälle: "
-                   (Math/round total-deaths))]
+     [:strong (str heading
+                   (Math/round param-total) unit )]
      (into [:div ] (interpose " | "
-                              (map (fn [{:keys [name absolute-deaths]}]
-                                     [:span (Math/round absolute-deaths)
-                                      " " name])
+                              (map (fn [{:keys [name absolute]}]
+                                     [:span 
+                                      name ": " (Math/round absolute) unit ])
                                    (vals energy-sources))))]
     [:div
      (into [:svg 
@@ -265,56 +265,19 @@
              :height "2em"}]
            (second
             (reduce
-             (fn [[left-marg sofar] {:keys [name deaths-share props]}]
+             (fn [[left-marg sofar] {:keys [name param-share props]}]
                [(+ left-marg
-                   deaths-share) (conj sofar
+                   param-share) (conj sofar
                                       [:rect 
                                        {:key name
                                         :x (str left-marg "%")
-                                        :width (str deaths-share "%") 
+                                        :width (str param-share "%") 
                                         :height "2em" 
                                         :style {:fill (:fill props)
                                                 :stroke-width "0"
                                                 :stroke "black"}}])])
              [0 []]
              (vals energy-sources))))]]))
-
- 
-(defn co2-emissions
-  ""
-  []
-  (let [{:keys [total-co2 energy-sources]}
-        @(rf/subscribe [:deriv/shares-absolute-and-total :co2])]
-   [:div.todesanzeige.mb-3
-    [:div
-     [:strong (str "Jährlicher CO2-Ausstoß: "
-                   (Math/round total-co2))]
-     (into [:div ] (interpose " | "
-                              (map (fn [{:keys [name absolute-co2]}]
-                                     [:span (Math/round absolute-co2)
-                                      " " name])
-                                   (vals energy-sources))))]
-    [:div
-     (into [:svg 
-            {:width "100%" 
-             :height "2em"}]
-           (second
-            (reduce
-             (fn [[left-marg sofar] {:keys [name co2-share props]}]
-               [(+ left-marg
-                   co2-share) (conj sofar
-                                      [:rect 
-                                       {:key name
-                                        :x (str left-marg "%")
-                                        :width (str co2-share "%") 
-                                        :height "2em" 
-                                        :style {:fill (:fill props)
-                                                :stroke-width "0"
-                                                :stroke "black"}}])])
-             [0 []]
-             (vals energy-sources))))]]))
-
-
 
 
 ;; ############################
@@ -330,8 +293,10 @@
      [:div.column
       [energy-mix]
       [energy-needed]]]
-    [death-toll]
-    [co2-emissions]
+    [indicator "Statistisch erwartbare Todesfälle pro Jahr:"
+     :deaths]
+    [indicator "Jährlicher CO2-Ausstoß: "
+     :co2]
     [detailed-settings]]])
  
  

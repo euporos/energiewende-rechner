@@ -10,6 +10,7 @@
                                   :pattern "0.00"
                                   :step "0.01"
                                   :min 0.01}}]
+   
    [:capacity-factor {:name "Kapazitätsfaktor"
                       :unit "1=100%"
                       :parse-fn js/parseFloat
@@ -26,8 +27,9 @@
                            :step "0.01"
                            :min 0.01}}]
    [:co2 {:name "CO2-Äquivalent kt/TWh"
-             :unit "kt/TWh"
-             :parse-fn js/parseInt
+          :unit "kt/TWh"
+          :abs-unit "kt"
+          :parse-fn js/parseInt
           :input-attrs {:type "number"
                         :pattern "0"
                         :step "1"
@@ -41,6 +43,8 @@
                                  :pattern "1"
                                  :step "1"
                                  :min 0}}])
+
+(def parameter-map (into {} parameters))
 
 
 

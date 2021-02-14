@@ -232,78 +232,41 @@
    (let [{:keys [share power-density props
                  capacity-factor deaths] :as nrg} nrg
          surface (-> energy-needed
-                (* share)
-                (/ 100) ; share in TWh ;TODO: from constant
-                (* 1000000000000) ; share in Wh
-                (/ const/hours-per-year) ; needed netto W
-                (/ capacity-factor) ; needed brute W
-                (/ power-density) ; needed m²
-                (/ 1000000)) ; needed km²
+                     (* share)
+                     (/ 100) ; share in TWh ;TODO: from constant
+                     (* 1000000000000) ; share in Wh
+                     (/ const/hours-per-year) ; needed netto W
+                     (/ capacity-factor) ; needed brute W
+                     (/ power-density) ; needed m²
+                     (/ 1000000)) ; needed km²
          radius (if (js/isNaN surface) 0
-                  (radius-from-area-circle surface))]
+                    (radius-from-area-circle surface))]
      (assoc nrg
             :surface surface
             :radius radius
             :diameter (* 2 radius )))))
 
 
-
 (reg-sub
  ; attr key should be :co2 or :deaths
- :deriv/shares-absolute-and-total
- (fn [[_ attr-key]]
+ :deriv/data-for-indicator
+ (fn [[_ param-key]]
    [(rf/subscribe [:global/energy-needed])
     (rf/subscribe [:global/energy-sources])])
- l/derive-share-absolutes-and-total)
+ (fn [[energy-needed energy-sources] [_ param-key]]
+  (let [abs-key :absolute
+        share-key :param-share
+        abs-added (l/add-absolutes
+                   param-key abs-key energy-needed energy-sources)
+      total (l/calc-total abs-key abs-added)
+      shares-added (l/add-share-of-x abs-key share-key
+                              total abs-added)]
+    {:param-total total
+     :unit (get-in const/parameter-map [param-key :abs-unit])
+     :energy-sources shares-added})))
+
 
 
 (comment
-  (add-absolutes :deaths 1300
-   @(rf/subscribe [:global/energy-sources]))
-  (absolute :co2 1300
-   @(rf/subscribe [:nrg/get :wind])))
+  @(rf/subscribe [:deriv/data-for-indicator :deaths]))
 
-
-
-(comment
-  @(rf/subscribe [:deriv/shares-absolute-and-total :deaths]))
-
-
-
-
-
-
-
-
-
-
-;; (reg-sub
-;;  :deriv/deaths
-;;  (fn [[_ nrg-key]]
-;;    [(rf/subscribe [:global/energy-needed])
-;;     (rf/subscribe [:global/energy-sources])])
-;;  (fn [[energy-needed energy-sources] [_ _]]
-;;    (let [abs-deaths-added
-;;          (h/map-vals
-;;           #(assoc %
-;;                   :absolute-deaths
-;;                   (-> (:share %)
-;;                           (/ 100)            ;TODO: from const
-;;                           (* energy-needed)  ; TWh of this nrg
-;;                           (* (:deaths %))))
-;;           energy-sources)
-;;          total-deaths
-;;          (reduce #(+ %1 (:absolute-deaths (second %2)))
-;;                  0 abs-deaths-added)
-;;          deaths-share-added 
-;;          (h/map-vals
-;;           #(assoc % :death-share
-;;                   (-> (:absolute-deaths %)
-;;                       (/ total-deaths)
-;;                       (* 100)
-;;                       (h/nan->0))) ;TODO: from const
-;;           abs-deaths-added)]
-
-
-;;      {:total-deaths total-deaths
-;;       :energy-sources deaths-share-added})))
