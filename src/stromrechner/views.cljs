@@ -67,7 +67,7 @@
   [{:keys [value-subscription publications partial-dispatch]}]
   [:div.field.is-horizontal
    [:div.field-body
-    [:div.field
+    [:div.field 
      [:p.control.is-expanded
       [:select.input
        {;:name (str/join ["pub" nrg-key param])
@@ -101,7 +101,8 @@
   []
   (panel [:span "Jährlicher Strombedarf "
           (if-let [href (:link @(rf/subscribe [:energy-needed/loaded]))]
-            [:a {:href href} "→ Quelle"])]
+            [:a {:target "_blank"
+                 :href href} "→ Quelle"])]
          [:div.block
           [:div.columns.is-mobile
            [:div.column
@@ -330,8 +331,8 @@
       [energy-mix]
       [energy-needed]]]
     [death-toll]
-    [co2-emissions]]
-   [detailed-settings]])
+    [co2-emissions]
+    [detailed-settings]]])
  
  
   
