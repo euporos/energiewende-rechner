@@ -1,0 +1,27 @@
+{:nrg-constants {:wind {:name "Wind"
+                        :props {:cx 400
+                                :cy 250
+                                :fill "rgba(135, 206, 250,0.6)" ; lightskyblue
+                                }} 
+                 :solar {:name "Sonne"
+                         :props {:cx 350
+                                 :cy 700
+                                 :fill "rgba(255, 255, 0, 0.6)"}}
+                 :nuclear {:name "Kernenergie"
+                           :props {:cx 130
+                                   :cy 450
+                                   :fill "rgba(250, 147, 38, 0.5)"}}
+                 :bio {:name "Biogas"
+                       :props {:cx 320
+                               :cy 450
+                               :fill "rgba(50, 205, 50, 0.5)"}}}
+
+ 
+ :init-mix {:wind {:share 40
+                   :locked? false} 
+            :solar {:share 40
+                    :locked? false}
+            :nuclear {:share 5
+                      :locked? false}
+            :bio {:share 15
+                  :locked? false}}}
