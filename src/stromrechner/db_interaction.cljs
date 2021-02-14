@@ -249,13 +249,8 @@
 
 
 
-
-(reg-sub ; param-key should be :co2 or :deaths
- :deriv/data-for-indicator
- (fn [[_ param-key]]
-   [(rf/subscribe [:global/energy-needed])
-    (rf/subscribe [:global/energy-sources])])
- (fn [[energy-needed energy-sources] [_ param-key]]
+(defn enrich-data-for-indicator
+  [[energy-needed energy-sources] [_ param-key]]
    (let [abs-added (h/map-vals
                     #(assoc % :absolute
                             (-> (:share %)
@@ -274,7 +269,15 @@
                        abs-added)]
      {:param-total total
       :unit (get-in const/parameter-map [param-key :abs-unit])
-      :energy-sources shares-added})))
+      :energy-sources shares-added}))
+
+
+(reg-sub ; param-key should be :co2 or :deaths
+ :deriv/data-for-indicator
+ (fn [[_ param-key]]
+   [(rf/subscribe [:global/energy-needed])
+    (rf/subscribe [:global/energy-sources])])
+ enrich-data-for-indicator)
 
 
 
@@ -284,7 +287,7 @@
 
 ;; ##############
 ;; ### Legacy ###
-;; ##############
+;; ############## 
 
 
 (defn- absolute-x
@@ -341,3 +344,4 @@
     {:param-total total
      :unit (get-in const/parameter-map [param-key :abs-unit])
      :energy-sources shares-added})))
+ 
