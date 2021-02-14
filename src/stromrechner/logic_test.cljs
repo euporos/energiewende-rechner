@@ -60,7 +60,148 @@
           :bio
           {:share 1500
            :locked? true}})))
+
+
+
+(t/deftest remix-energy-shares-float-test
+  (t/is (=
+         (logic/remix-energy-shares-float
+          :wind 50
+          {:wind
+           {:share 40
+            :locked? false}
+           :solar
+           {:share 40
+            :locked? false}
+           :nuclear
+           {:share 5
+            :locked? false}
+           :bio
+           {:share 15
+            :locked? false}})
+         {:wind
+          {:share 50 ; 40+10
+           :locked? false}
+          :solar
+          {:share (* 50 (/ 40 60))
+           :locked? false}
+          :nuclear
+          {:share (* 50 (/ 5 60))
+           :locked? false}
+          :bio
+          {:share (* 50 (/ 15 60))
+           :locked? false}}) "case #1  without lockings")
+  (t/is (=
+         (logic/remix-energy-shares-float
+          :wind 50
+          {:wind
+           {:share 40
+            :locked? false}
+           :solar
+           {:share 40
+            :locked? true}
+           :nuclear
+           {:share 5
+            :locked? false}
+           :bio
+           {:share 15
+            :locked? false}})
+         {:wind
+          {:share 50 ; 40+10
+           :locked? false}
+          :solar
+          {:share 40
+           :locked? true}
+          :nuclear
+          {:share (* 10 (/ 5 20))
+           :locked? false}
+          :bio
+          {:share (* 10 (/ 15 20))
+           :locked? false}}) "case #2 with lockings")
+  (t/is (=
+         (logic/remix-energy-shares-float
+          :wind 100
+          {:wind
+           {:share 40
+            :locked? false}
+           :solar
+           {:share 40
+            :locked? false}
+           :nuclear
+           {:share 5
+            :locked? false}
+           :bio
+           {:share 15
+            :locked? false}})
+         {:wind
+          {:share 100
+           :locked? false}
+          :solar
+          {:share 0
+           :locked? false}
+          :nuclear
+          {:share 0
+           :locked? false}
+          :bio
+          {:share 0
+           :locked? false}}) "case #3 change one energy to 100 (avoid div by 0")
+  (t/is (=
+         (logic/remix-energy-shares-float
+          :wind 88
+          {:wind
+          {:share 100
+           :locked? false}
+          :solar
+          {:share 0
+           :locked? false}
+          :nuclear
+          {:share 0
+           :locked? false}
+          :bio
+          {:share 0
+           :locked? false}})
+         {:wind
+          {:share 88
+           :locked? false}
+          :solar
+          {:share 4
+           :locked? false}
+          :nuclear
+          {:share 4
+           :locked? false}
+          :bio
+          {:share 4
+           :locked? false}}) "case #4 raise reacting energies equally from 0")
+  (t/is (=
+         (logic/remix-energy-shares-float
+          :wind 70
+          {:wind
+           {:share 40
+            :locked? false}
+           :solar
+           {:share 40
+            :locked? true}
+           :nuclear
+           {:share 5
+            :locked? false}
+           :bio
+           {:share 15
+            :locked? false}})
+         {:wind
+          {:share 60 ; 40+10
+           :locked? false}
+          :solar
+          {:share 40
+           :locked? true}
+          :nuclear
+          {:share 0
+           :locked? false}
+          :bio
+          {:share 0
+           :locked? false}}) "case #5 prevent >100% in case of lockings"))
+
  
+
 
 
 ;; (t/deftest remix-energy-shares-int-test
@@ -203,143 +344,3 @@
 ;;           {:share 1000
 ;;            :locked? true}})))
 
-
-
-(t/deftest remix-energy-shares-float-test
-  (t/is (=
-         (logic/remix-energy-shares-float
-          :wind 50
-          {:wind
-           {:share 40
-            :locked? false}
-           :solar
-           {:share 40
-            :locked? false}
-           :nuclear
-           {:share 5
-            :locked? false}
-           :bio
-           {:share 15
-            :locked? false}})
-         {:wind
-          {:share 50 ; 40+10
-           :locked? false}
-          :solar
-          {:share (* 50 (/ 40 60))
-           :locked? false}
-          :nuclear
-          {:share (* 50 (/ 5 60))
-           :locked? false}
-          :bio
-          {:share (* 50 (/ 15 60))
-           :locked? false}}) "case #1  without lockings")
-  (t/is (=
-         (logic/remix-energy-shares-float
-          :wind 50
-          {:wind
-           {:share 40
-            :locked? false}
-           :solar
-           {:share 40
-            :locked? true}
-           :nuclear
-           {:share 5
-            :locked? false}
-           :bio
-           {:share 15
-            :locked? false}})
-         {:wind
-          {:share 50 ; 40+10
-           :locked? false}
-          :solar
-          {:share 40
-           :locked? true}
-          :nuclear
-          {:share (* 10 (/ 5 20))
-           :locked? false}
-          :bio
-          {:share (* 10 (/ 15 20))
-           :locked? false}}) "case #2 with lockings")
-  (t/is (=
-         (logic/remix-energy-shares-float
-          :wind 100
-          {:wind
-           {:share 40
-            :locked? false}
-           :solar
-           {:share 40
-            :locked? false}
-           :nuclear
-           {:share 5
-            :locked? false}
-           :bio
-           {:share 15
-            :locked? false}})
-         {:wind
-          {:share 100
-           :locked? false}
-          :solar
-          {:share 0
-           :locked? false}
-          :nuclear
-          {:share 0
-           :locked? false}
-          :bio
-          {:share 0
-           :locked? false}}) "case #3 change one energy to 100 (avoid div by 0")
-  (t/is (=
-         (logic/remix-energy-shares-float
-          :wind 88
-          {:wind
-          {:share 100
-           :locked? false}
-          :solar
-          {:share 0
-           :locked? false}
-          :nuclear
-          {:share 0
-           :locked? false}
-          :bio
-          {:share 0
-           :locked? false}})
-         {:wind
-          {:share 88
-           :locked? false}
-          :solar
-          {:share 4
-           :locked? false}
-          :nuclear
-          {:share 4
-           :locked? false}
-          :bio
-          {:share 4
-           :locked? false}}) "case #4 raise reacting energies equally from 0")
-  (t/is (=
-         (logic/remix-energy-shares-float
-          :wind 70
-          {:wind
-           {:share 40
-            :locked? false}
-           :solar
-           {:share 40
-            :locked? true}
-           :nuclear
-           {:share 5
-            :locked? false}
-           :bio
-           {:share 15
-            :locked? false}})
-         {:wind
-          {:share 60 ; 40+10
-           :locked? false}
-          :solar
-          {:share 40
-           :locked? true}
-          :nuclear
-          {:share 0
-           :locked? false}
-          :bio
-          {:share 0
-           :locked? false}}) "case #5 prevent >100% in case of lockings"))
-
- 
