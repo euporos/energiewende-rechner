@@ -103,11 +103,10 @@
             [:a {:target "_blank"
                  :href href} "→ Quelle"])]
          [:div.block
-          [:div.columns.is-mobile
-           [:div.column
-            [energy-needed-dropdown]]
-           [:div.column.is-narrow    
-            [param-input [] const/energy-needed]]]]))
+          [:div.mb-1
+           [energy-needed-dropdown]]
+          [:div
+           [param-input [] const/energy-needed]]]))
 
 
 ;; ####################################################################
