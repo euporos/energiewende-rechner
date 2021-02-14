@@ -10,9 +10,15 @@
    [clojure.edn :as edn]
    [stromrechner.constants :as const]))
 
-;; ##############
-;; ### Panels ###
-;; ##############
+
+
+;; ########################
+;; ##### Common Stuff #####
+;; ########################
+
+;;
+;; Panels
+;;
 
 (defn panel
   ""
@@ -32,10 +38,9 @@
        {:class "panel-heading"} heading] 
       (into [:div.block.pt-3.pb-3.pr-3.pl-3 ] comps)]])
 
-
-;; ########################
-;; ##### Common Stuff #####
-;; ########################
+;;
+;; Inputs
+;;
 
 (defn param-input
   ""
@@ -60,7 +65,6 @@
          {:style {:margin-right "1rem"}}
          unit]]]]]))
 
-
 (defn publication-dropdown
   ""
   [{:keys [value-subscription publications partial-dispatch]}]
@@ -80,7 +84,7 @@
          ^{:key (:id pub)}           
          [:option {:value (str pub)}
           (:id pub)])]]]]])
-
+ 
 
 ;; ########################
 ;; ##### Energy Needed ####
@@ -106,9 +110,7 @@
            [:div.column
             [energy-needed-dropdown]]
            [:div.column.is-narrow    
-            [param-input [] const/energy-needed]]]
-          ]))
-
+            [param-input [] const/energy-needed]]]]))
 
 
 ;; ####################################################################
@@ -155,8 +157,6 @@
    [:span.title.is-4 (:name nrg)]
    [:div.columns
     (map (partial param-settings nrg-key) constants/parameters)]])
-
-
 
 (defn detailed-settings []
   (collapsible-panel
@@ -225,7 +225,7 @@
 
 (defn circle-energy
   ""
-  [nrg-key]
+  [nrg-key] 
   (let [{:keys [props radius]}
         @(rf/subscribe [:deriv/surface-added nrg-key]) ]
     (circle-by-surface
@@ -235,11 +235,13 @@
   ""
   []
   [:div.mapview
-   [:div.karte
-    [:img {:width "100%"
-           :src "imgs/deutschland2.svg"}]]
-   (into [:svg.aufkarte
-          {:viewBox "0 0 640 876"}]
+ ;  {:background-image "url('imgs/deutschland2.svg')"}
+   ;; [:div.karte
+   ;;  [:img {;; :width "100%"           
+   ;;         :src "imgs/deutschland2.svg"}]]
+   (into [:svg.karte
+          {:viewBox "0 0 640 876"
+           :preserveAspectRatio true}]
          (doall (map circle-energy
                      @(rf/subscribe [:global/energy-keys]))))])
 
@@ -291,7 +293,8 @@
 
 (defn main-panel []
   (let [name (rf/subscribe [:global/name])]
-    [:div [:div.anwendung.pt-3.pb-3.pl-3.pr-3
+    [:div
+     [:div.anwendung.pt-3.pb-3.pl-3.pr-3
       [:div.columns
        [:div.anzeige.column.is-two-thirds
         [mapview]
@@ -300,12 +303,9 @@
        [:div.column
         [energy-mix]
         [energy-needed]
-        ]]]
-
-     
-     
-     [death-toll]
-     [detailed-settings]]
+        ]]
+      [death-toll]
+      [detailed-settings]]]
     
     ;; [:div
     ;;  [energy-mix]
@@ -324,3 +324,4 @@
  
  
  
+  

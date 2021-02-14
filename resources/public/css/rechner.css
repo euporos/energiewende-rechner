@@ -6,11 +6,13 @@
 .anzeige {
   position: relative; }
 
-.aufkarte {
+.karte {
   z-index: 1;
-  width: 100%;
-  position: absolute;
-  top: 0; }
+  max-height: 50rem;
+  background-repeat: no-repeat;
+  background-image: url("../imgs/deutschland2.svg");
+  background-position: center;
+  background-size: contain; }
 
 .todesanzeige {
   z-index: 2; }
