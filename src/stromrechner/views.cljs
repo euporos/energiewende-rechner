@@ -4,7 +4,6 @@
    [re-frame.core :as rf]
    [stromrechner.subs :as subs]
    [stromrechner.sources :as sources]
-   [stromrechner.events :as events]
    [clojure.string :as str]
    [stromrechner.icons :as icons  :refer [icon]]
    [clojure.edn :as edn]

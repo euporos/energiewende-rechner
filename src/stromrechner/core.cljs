@@ -3,7 +3,6 @@
    [stromrechner.db-interaction :refer [load-default-pubs]]
    [reagent.dom :as rdom]
    [re-frame.core :as re-frame]
-   [stromrechner.events :as events]
    [stromrechner.views :as views]
    [stromrechner.config :as config]
    ))
