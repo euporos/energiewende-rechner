@@ -8,10 +8,6 @@
      (assoc sofar key (f val)))
    {} coll))
 
-
-
-
-
 (defn reverse-paths
   ""
   [indata]
@@ -30,11 +26,7 @@
 
 
 
-(reverse-paths
- (reverse-paths
-  {:flaechenverbrauch {:biogas 120, :wind 40, :solar 140, :kern 0.1},
-   :vollast {:biogas 0.8, :solar 0.33, :wind 0.45, :kern 0.85},
-   :tote {:biogas 2, :solar 0.4, :wind 0.1, :kern 0.9}}))
+
 
 
 
