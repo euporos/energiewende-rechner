@@ -1,49 +1,74 @@
+;; ##################################
+;; ####### Publication Format #######
+;; ##################################
 
-;; Units
+;; The order of the publications determines the defaults.
+;; The default publication for any given property
+;; (i.e. :energy-needed, :deaths, :power-density)
+;; is the first one providing a value for that property
+
+;; ### Units
 
 ;; Power-density: W/m²
 ;; capacity-facor: 1=100%
 ;; Deaths: per TWh
+;; co2: t/TWh
+
+;; ########################
+;; ##### Publications #####
+;; ########################
 
 [{:id "Quaschning (2016) – 2050 optimistisch"
-    :link "https://www.volker-quaschning.de/publis/studien/sektorkopplung/Sektorkopplungsstudie.pdf"
-    :energy-needed 1300}
-   {:id "Quaschning (2016) – 2050 pessimistisch"
-    :link "https://www.volker-quaschning.de/publis/studien/sektorkopplung/Sektorkopplungsstudie.pdf"
-    :energy-needed 3000}
-   {:id "Forbes"
-    :link "https://web.archive.org/web/20150724024259/http://nextbigfuture.com/2011/03/deaths-per-twh-by-energy-source.html"
-    :energy-sources {:bio {:deaths 12}
-                 :solar {:deaths 0.44}
-                 :wind {:deaths 0.12}
-                 :nuclear {:deaths 0.09}}}
-   {:id "Conservation Biology"
-    :link "https://doi.org/10.1111/cobi.12433"
-    :energy-sources {:bio {:deaths 4}
-                 :solar {:deaths 0.44}
-                 :wind {:deaths 0.15}
-                 :nuclear {:deaths 0.04}}}
-   {:id "Energy Policy (Metastudie)"
-    :link "https://doi.org/10.1016/j.enpol.2018.08.023"
-    :energy-sources {:bio {:power-density 0.85
-                          :capacity-factor 0.53}
-                     :solar {:power-density 6.32
-                         :capacity-factor 1}
-                     :wind {:power-density 6.37
-                        :capacity-factor 0.3}
-                     :nuclear {:power-density 259
-                           :capacity-factor 0.93}}}
-   {:id "BMVI, Berlin, 2015"
-    :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
-    :energy-sources {:wind {:power-density 20
-                        :capacity-factor 0.23}
-                 :solar {:power-density 44.44
-                         :capacity-factor 0.11}
-                 :bio {:power-density 0.2  ;; brauch ich noch Hilfe
-                       :capacity-factor 0.3}}}
-   {:id "Deutscher Bundestag, 2007"
-    :link "https://www.bundestag.de/resource/blob/406432/70f77c4c170d9048d88dcc3071b7721c/wd-8-056-07-pdf-data.pdf"
-    :energy-sources {:wind {:co2 24000} ; per t/TWh
-                     :solar {:co2 101000}
-                     :nuclear {:co2 19000}
-                     :bio {:co2 0}}}]
+  :link "https://www.volker-quaschning.de/publis/studien/sektorkopplung/Sektorkopplungsstudie.pdf"
+  :energy-needed 1300}
+ {:id "Quaschning (2016) – 2050 pessimistisch"
+  :link "https://www.volker-quaschning.de/publis/studien/sektorkopplung/Sektorkopplungsstudie.pdf"
+  :energy-needed 3000}
+ {:id "Forbes"
+  :link "https://web.archive.org/web/20150724024259/http://nextbigfuture.com/2011/03/deaths-per-twh-by-energy-source.html"
+  :energy-sources
+  {:deaths
+   {:bio 12
+    :solar 0.44
+    :wind 0.12
+    :nuclear 0.09}}}
+ {:id "Conservation Biology"
+  :link "https://doi.org/10.1111/cobi.12433"
+  :energy-sources
+  {:deaths
+   {:bio 4
+    :solar 0.44
+    :wind 0.15
+    :nuclear 0.04}}}
+ {:id "Energy Policy (Metastudie)"
+  :link "https://doi.org/10.1016/j.enpol.2018.08.023"
+  :energy-sources
+  {:power-density
+   {:bio 0.85
+    :solar 6.32
+    :wind 6.37
+    :nuclear 259}
+   :capacity-factor
+   {:bio 0.53
+    :solar 1
+    :wind 0.3
+    :nuclear 0.93}}}
+ {:id "BMVI, Berlin, 2015"
+  :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
+  :energy-sources
+  {:power-density
+   {:wind 20
+    :solar 44.44
+    :bio 0.2}
+   :capacity-factor
+   {:wind 0.23
+    :solar 0.11
+    :bio 0.3}}}
+ {:id "Deutscher Bundestag, 2007"
+  :link "https://www.bundestag.de/resource/blob/406432/70f77c4c170d9048d88dcc3071b7721c/wd-8-056-07-pdf-data.pdf"
+  :energy-sources
+  {:co2
+   {:wind 24000
+    :solar 101000
+    :nuclear 19000
+    :bio 0}}}]

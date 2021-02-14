@@ -1,5 +1,5 @@
 (ns stromrechner.macros)
 
-(defmacro def-from-file [var file]
+(defmacro def-from-file [var file f]
   `(def ~var
-    ~(read-string (slurp file))))
+     (~f ~(read-string (slurp file)))))

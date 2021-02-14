@@ -1,9 +1,24 @@
 (ns stromrechner.sources
+  (:require [stromrechner.helpers :as h])
   (:require-macros [stromrechner.macros :as m]))
 
 
-(m/def-from-file publications 
-  "resources/publications.edn")
+(defn transpose-energy-sources
+  ""
+  [publications]
+  (map
+   (fn [pub]
+     (if (:energy-sources pub)
+       (update pub :energy-sources
+               #(h/reverse-paths %))
+       pub))
+   publications))
+
+
+
+(m/def-from-file publications
+  "resources/publications.edn"
+  transpose-energy-sources)
 
 
 
@@ -63,11 +78,6 @@
 
 
 
-
-(reverse-paths
- {:flaechenverbrauch {:bio 120, :wind 40, :solar 140, :kern 0.1},
-  :vollast {:bio 0.8, :solar 0.33, :wind 0.45, :kern 0.85},
-  :deaths {:bio 2, :solar 0.4, :wind 0.1, :kern 0.9}})
 
 
 

@@ -2,10 +2,14 @@
 \#*#
 *~
 
+# Temp files
+/scss/.sass-cache
+
+
 /out/
 /resources/public/js/compiled/
 /resources/public/js/test/
-/resources/public/js/css/
+/resources/public/css/
 /target/
 /*-init.clj
 /*.log
