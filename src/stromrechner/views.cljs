@@ -2,7 +2,6 @@
   (:require
    [stromrechner.constants :as constants]
    [re-frame.core :as rf]
-   [stromrechner.subs :as subs]
    [stromrechner.sources :as sources]
    [clojure.string :as str]
    [stromrechner.icons :as icons  :refer [icon]]

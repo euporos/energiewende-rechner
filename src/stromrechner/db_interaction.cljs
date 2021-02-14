@@ -1,7 +1,6 @@
 (ns stromrechner.db-interaction
   (:require
    [re-frame.core :as rf :refer [reg-event-db reg-sub]]
-   [stromrechner.db :as db]
    [day8.re-frame.tracing :refer-macros [fn-traced]]
    [reagent.core :as r]
    [reagent.ratom :as ratom]
@@ -165,7 +164,7 @@
   []
   (rf/dispatch [:energy-needed/load
                 (first (sources/pubs-for-needed-power))])
-  (doseq [nrg-key (map first (:energy-sources db/default-db))
+  (doseq [nrg-key (map first (:energy-sources default-db))
           param-key (map first constants/parameters)]
     (rf/dispatch [:pub/load nrg-key param-key
                   (sources/default-pub nrg-key param-key)])))
@@ -213,7 +212,7 @@
 ;; ############################
 ;; ###### Derived-values ######
 ;; ############################
-
+  
 
 (comment
   @(rf/subscribe [:nrg/get :wind])

@@ -1,2 +1,0 @@
-(ns stromrechner.map)
-
