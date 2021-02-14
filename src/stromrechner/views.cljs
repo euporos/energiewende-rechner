@@ -240,7 +240,8 @@
    ;;         :src "imgs/deutschland2.svg"}]]
    (into [:svg.karte
           {:viewBox "0 0 640 876"
-           :preserveAspectRatio true}]
+           ;:preserveAspectRatio true
+           }]
          (doall (map circle-energy
                      @(rf/subscribe [:global/energy-keys]))))])
 
