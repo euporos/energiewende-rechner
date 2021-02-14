@@ -10,27 +10,32 @@
    [stromrechner.logic :as logic]
    [stromrechner.constants :as constants]
    [stromrechner.constants :as const]
-   [stromrechner.helpers :as h]))
+   [stromrechner.helpers :as h]
+   [stromrechner.config :as cfg]))
+
 
 ;; ########################
 ;; ##### Global Stuff #####
 ;; ########################
 
+(def default-db
+  {:energy-sources
+   (get cfg/settings :init-mix)})
+
 (rf/reg-event-db
  :global/initialize-db
- (fn-traced [_ _]
-            db/default-db))
-
+ (fn-traced [_ _] 
+            default-db))
+ 
 (reg-sub
  :global/name
  (fn [db]
    (:name db)))
 
-
 (reg-sub
- :global/energy-sources
- (fn [db]
-   (:energy-sources db)))
+ :global/energy-needed
+ (fn [db _]
+   (get db :energy-needed)))
 
 (reg-sub
  :global/energy-keys
@@ -44,8 +49,28 @@
 
 (reg-event-db
  :global/set-path
- (fn [db [_ path newval]]
-   ))
+ (fn [db [_ path newval]]))
+
+;; ############
+;; ### NRGS ###
+;; ############
+
+(def nrg-consts
+  (get cfg/settings :nrg-constants))
+
+(reg-sub
+ :global/energy-sources
+ (fn [db]
+   (merge-with merge
+               nrg-consts
+               (:energy-sources db))))
+
+(reg-sub
+ :nrg/get
+ (fn [_]
+   (rf/subscribe [:global/energy-sources]))
+ (fn [nrgs [_ nrg-key]]
+   (get nrgs nrg-key)))
 
 
 ;; ######################
@@ -176,6 +201,10 @@
 ;; ############################
 ;; ###### Derived-values ######
 ;; ############################
+(comment
+  @(rf/subscribe [:nrg/get :wind])
+  @(rf/subscribe [:global/energy-needed]))
+
 
 (defn radius-from-area-circle
   ""
@@ -184,11 +213,12 @@
 
 (reg-sub
  :deriv/surface-added
- (fn [db [_ nrg-key]]
+ (fn [[_ nrg-key]]
+   [(rf/subscribe [:global/energy-needed])
+    (rf/subscribe [:nrg/get nrg-key])])
+ (fn [[energy-needed nrg] [_ nrg-key]]
    (let [{:keys [share power-density props
-                 capacity-factor deaths] :as nrg}
-         (get-in db [:energy-sources nrg-key])
-         {:keys [energy-needed]} db
+                 capacity-factor deaths] :as nrg} nrg
          surface (-> energy-needed
                 (* share)
                 (/ 100) ; share in TWh ;TODO: from constant
@@ -204,30 +234,13 @@
             :radius radius
             :diameter (* 2 radius )))))
 
-(reg-sub
- :deriv/rounded-shares
- (fn []
-   ))
-
-
-(defn nan->nil
-  ""
-  [val]
-  (if (js/isNaN val) nil val))
-
-(defn nan->0
-  ""
-  [val]
-  (if (js/isNaN val) 0 val))
-
-
- 
-
-
 
 (reg-sub
  :deriv/deaths
- (fn [{:keys [energy-sources energy-needed] :as db} [_ _]]
+ (fn [[_ nrg-key]]
+   [(rf/subscribe [:global/energy-needed])
+    (rf/subscribe [:global/energy-sources])])
+ (fn [[energy-needed energy-sources] [_ _]]
    (let [abs-deaths-added
          (h/map-vals
           #(assoc %
@@ -238,21 +251,17 @@
                           (* (:deaths %))))
           energy-sources)
          total-deaths
-         (reduce #(+ %1 (:absolute-deaths (second %2))) 0 abs-deaths-added)
+         (reduce #(+ %1 (:absolute-deaths (second %2)))
+                 0 abs-deaths-added)
          deaths-share-added 
          (h/map-vals
           #(assoc % :death-share
                   (-> (:absolute-deaths %)
                       (/ total-deaths)
                       (* 100)
-                      (nan->0))) ;TODO: from const
+                      (h/nan->0))) ;TODO: from const
           abs-deaths-added)]
 
 
      {:total-deaths total-deaths
       :energy-sources deaths-share-added})))
-
-
-
-(comment
-  @(rf/subscribe [:global/energy-sources]))

@@ -23,10 +23,15 @@
                  (get-in indata nextpath)))
      {} paths)))
 
+(defn nan->nil
+  ""
+  [val]
+  (if (js/isNaN val) nil val))
 
-
-
-
+(defn nan->0
+  ""
+  [val]
+  (if (js/isNaN val) 0 val))
 
 
 
