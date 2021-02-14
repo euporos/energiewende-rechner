@@ -7,7 +7,7 @@
    [stromrechner.config :as config]
    ))
 
-(def version "0.10")
+(def version "0.31")
 
 (defn dev-setup []
   (when config/debug?

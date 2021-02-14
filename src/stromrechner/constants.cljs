@@ -26,7 +26,7 @@
                            :pattern "0.00"
                            :step "0.01"
                            :min 0.01}}]
-   [:co2 {:name "CO2-Äquivalent kt/TWh"
+   [:co2 {:name "CO2-Äquivalent"
           :unit "kt/TWh"
           :abs-unit "kt"
           :parse-fn js/parseInt
