@@ -98,9 +98,6 @@
            (get-in db (conj pre-path param-key))))
 
 
-@(rf/subscribe [:param/get [:energy-needed]])
-
-
 ;; ########################
 ;; ##### Publications #####
 ;; ########################
@@ -191,6 +188,20 @@
  :nrg-share/get
  (fn [db [_ nrg-key]]
    (get-in db [:energy-sources nrg-key :share])))
+
+(reg-sub
+ :nrg-share/get-abs
+ (fn [[_ nrg-key]]
+   [(rf/subscribe [:global/energy-needed])
+    (rf/subscribe [:nrg-share/get nrg-key])])
+ (fn [[energy-needed share] [_ nrg-key]]
+   (-> share
+       (/ 100)
+       (* energy-needed))))
+
+(comment
+  @(rf/subscribe [:global/energy-needed])
+  @(rf/subscribe [:nrg-share/get-abs :wind]))
 
 (reg-event-db
  :nrg-share/remix

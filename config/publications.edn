@@ -1,0 +1,74 @@
+;; ##################################
+;; ####### Publication Format #######
+;; ##################################
+
+;; The order of the publications determines the defaults.
+;; The default publication for any given property
+;; (i.e. :energy-needed, :deaths, :power-density)
+;; is the first one providing a value for that property
+
+;; ### Units
+
+;; Power-density: W/m²
+;; capacity-facor: 1=100%
+;; Deaths: per TWh
+;; co2: kt/TWh
+
+;; ########################
+;; ##### Publications #####
+;; ########################
+
+[{:id "Quaschning (2016) – 2050 optimistisch"
+  :link "https://www.volker-quaschning.de/publis/studien/sektorkopplung/Sektorkopplungsstudie.pdf"
+  :energy-needed 1300}
+ {:id "Quaschning (2016) – 2050 pessimistisch"
+  :link "https://www.volker-quaschning.de/publis/studien/sektorkopplung/Sektorkopplungsstudie.pdf"
+  :energy-needed 3000}
+ {:id "Forbes"
+  :link "https://web.archive.org/web/20150724024259/http://nextbigfuture.com/2011/03/deaths-per-twh-by-energy-source.html"
+  :energy-sources
+  {:deaths
+   {:bio 12
+    :solar 0.44
+    :wind 0.12
+    :nuclear 0.09}}}
+ {:id "Conservation Biology"
+  :link "https://doi.org/10.1111/cobi.12433"
+  :energy-sources
+  {:deaths
+   {:bio 4
+    :solar 0.44
+    :wind 0.15
+    :nuclear 0.04}}}
+ {:id "Energy Policy (Metastudie)"
+  :link "https://doi.org/10.1016/j.enpol.2018.08.023"
+  :energy-sources
+  {:power-density
+   {:bio 0.85
+    :solar 6.32
+    :wind 6.37
+    :nuclear 259}
+   :capacity-factor
+   {:bio 0.53
+    :solar 1
+    :wind 0.3
+    :nuclear 0.93}}}
+ {:id "BMVI, Berlin, 2015"
+  :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
+  :energy-sources
+  {:power-density
+   {:wind 20
+    :solar 44.44
+    :bio 0.2}
+   :capacity-factor
+   {:wind 0.23
+    :solar 0.11
+    :bio 0.3}}}
+ {:id "Deutscher Bundestag, 2007"
+  :link "https://www.bundestag.de/resource/blob/406432/70f77c4c170d9048d88dcc3071b7721c/wd-8-056-07-pdf-data.pdf"
+  :energy-sources
+  {:co2
+   {:wind 24
+    :solar 101
+    :nuclear 19
+    :bio 0}}}]

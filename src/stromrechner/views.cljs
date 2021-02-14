@@ -182,7 +182,8 @@
    [lock-icon nrg-key]
    [:label [:strong name " "
             (/ (Math/round (* 10 share)) 10)"% | "
-            " TWh)"]]
+            (Math/round 
+             @(rf/subscribe [:nrg-share/get-abs nrg-key])) " TWh)"]]
    [:input {:type "range"  :min 0 :max 100
             :style {:width "100%"}
             :value (str (/ share 1))
@@ -320,23 +321,17 @@
 ;; ############################
 
 (defn main-panel []
-  (let [name (rf/subscribe [:global/name])]
-    [:div
-     [:div.anwendung.pt-3.pb-3.pl-3.pr-3
-      [:div.columns
-       [:div.anzeige.column.is-two-thirds
-        [mapview]]
-       [:div.column
-        [energy-mix]
-        [energy-needed]]]
-      [death-toll]
-      [co2-emissions]
-      [detailed-settings]]]))
-
-
-
-
- 
+  [:div
+   [:div.anwendung.pt-3.pb-3.pl-3.pr-3
+    [:div.columns
+     [:div.anzeige.column.is-two-thirds
+      [mapview]]
+     [:div.column
+      [energy-mix]
+      [energy-needed]]]
+    [death-toll]
+    [co2-emissions]]
+   [detailed-settings]])
  
  
   
