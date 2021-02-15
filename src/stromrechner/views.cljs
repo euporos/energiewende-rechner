@@ -312,7 +312,7 @@
      [:div.column
       [energy-mix]
       [energy-needed]]]
-    [indicator "Statistisch erwartbare Todesfälle pro Jahr:"
+    [indicator "Statistisch erwartbare Todesfälle pro Jahr: "
      :deaths]
     [indicator "Jährlicher CO2-Ausstoß: "
      :co2]]
