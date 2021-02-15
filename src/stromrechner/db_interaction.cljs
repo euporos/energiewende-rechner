@@ -232,7 +232,7 @@
  (fn [[energy-needed nrg] [_ nrg-key]]
    (let [{:keys [share power-density props
                  capacity-factor deaths] :as nrg} nrg
-         surface (-> energy-needed
+         area (-> energy-needed
                      (* share)
                      (/ 100) ; share in TWh ;TODO: from constant
                      (* 1000000000000) ; share in Wh
@@ -240,10 +240,10 @@
                      (/ capacity-factor) ; needed brute W
                      (/ power-density) ; needed m²
                      (/ 1000000)) ; needed km²
-         radius (if (js/isNaN surface) 0
-                    (radius-from-area-circle surface))]
+         radius (if (js/isNaN area) 0
+                    (radius-from-area-circle area))]
      (assoc nrg
-            :surface surface
+            :area area
             :radius radius
             :diameter (* 2 radius )))))
 

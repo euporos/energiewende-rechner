@@ -6,7 +6,8 @@
    [clojure.string :as str]
    [stromrechner.icons :as icons  :refer [icon]]
    [clojure.edn :as edn]
-   [stromrechner.constants :as const]))
+   [stromrechner.constants :as const]
+   [stromrechner.helpers :as h]))
 
 ;; ########################
 ;; ##### Common Stuff #####
@@ -182,7 +183,7 @@
    [:label [:strong name " "
             (/ (Math/round (* 10 share)) 10)"% | "
             (Math/round 
-             @(rf/subscribe [:nrg-share/get-abs nrg-key])) " TWh)"]]
+             @(rf/subscribe [:nrg-share/get-abs nrg-key])) " TWh"]]
    [:input {:type "range"  :min 0 :max 100
             :style {:width "100%"}
             :value (str (/ share 1))
@@ -207,7 +208,7 @@
 ;; #########
 
 
-(defn circle-by-surface
+(defn circle-by-area
   ""
   [radius opts props]
   [:circle 
@@ -217,13 +218,32 @@
      :stroke-width "2"}
     props)])
 
+
+
+
+
 (defn circle-energy
   ""
   [nrg-key] 
-  (let [{:keys [props radius]}
-        @(rf/subscribe [:deriv/surface-added nrg-key]) ]
-    (circle-by-surface
-     radius {} props)))
+  (let [{:keys [props radius area]}
+        @(rf/subscribe [:deriv/surface-added nrg-key])
+        text-x (:cx props)
+        text-y (:cy props)]
+    [:<>
+     (circle-by-area
+      radius {} props)
+     [:text {:text-anchor "middle"
+             :zindex 1000
+             :alignment-baseline "middle"
+             :font-weight "bold"
+             :x text-x
+             :y (if (< radius 55)
+                  (- text-y radius 10)
+                  text-y)
+             ;; :transform "translate(-50 5)"
+             }
+      (str (h/structure-int
+            (Math/round area)) " km²")]]))
 
 (defn mapview
   ""
@@ -255,7 +275,8 @@
      (into [:div ] (interpose " | "
                               (map (fn [{:keys [name absolute]}]
                                      [:span 
-                                      name ": " (Math/round absolute) unit ])
+                                      name ": " (h/structure-int
+                                                 (Math/round absolute)) unit ])
                                    (vals energy-sources))))]
     [:div
      (into [:svg 
@@ -278,7 +299,7 @@
              (vals energy-sources))))]]))
 
 
-;; ############################
+;; ############################ 
 ;; ###### Main Component ######
 ;; ############################
 

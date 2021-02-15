@@ -1,4 +1,6 @@
-(ns stromrechner.helpers)
+(ns stromrechner.helpers
+  (:require
+   [clojure.string :as str]))
 
 (defn map-vals
   ""
@@ -35,4 +37,20 @@
 
 
 
+
+(defn structure-int
+  "Structures large integers
+  by interposing it with whitespace"
+  [integer]
+  (if (= 0 integer)
+    "0"
+   (str/replace 
+    (->> integer
+         str
+         reverse
+         (partition 3 3 (repeat "0"))
+         (interpose " ")
+         flatten
+         reverse
+         (apply str)) #"^0*" "")))
 
