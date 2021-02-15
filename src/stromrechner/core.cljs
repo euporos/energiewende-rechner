@@ -4,10 +4,12 @@
    [reagent.dom :as rdom]
    [re-frame.core :as re-frame]
    [stromrechner.views :as views]
-   [stromrechner.config :as config]
-   ))
+   [stromrechner.config :as config])
+  (:require-macros [stromrechner.macros :as m]))
 
-(def version "0.32")
+
+(m/def-string-from-file version
+  "resources/version.txt" str)
 
 (defn dev-setup []
   (when config/debug?
@@ -30,3 +32,6 @@
    
 
   
+ 
+   
+ 
