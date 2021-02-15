@@ -26,7 +26,7 @@
                    :locked? false} 
             :solar {:share 40
                     :locked? false}
-            :nuclear {:share 4
+            :nuclear {:share 5
                       :locked? false}
             :bio {:share 15
                   :locked? false}
