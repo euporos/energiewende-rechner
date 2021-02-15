@@ -4,7 +4,7 @@
                                 :fill "rgba(135, 206, 250,0.6)" ; lightskyblue
                                 }} 
                  :solar {:name "Sonne"
-                         :props {:cx 350
+                         :props {:cx 380
                                  :cy 700
                                  :fill "rgba(255, 255, 0, 0.6)"}}
                  :nuclear {:name "Kernenergie"
@@ -14,14 +14,24 @@
                  :bio {:name "Biogas"
                        :props {:cx 320
                                :cy 450
-                               :fill "rgba(50, 205, 50, 0.5)"}}}
+                               :fill "rgba(50, 205, 50, 0.5)"}}
+                 ;; :natural {:name "Erdgas"
+                 ;;           :props {:cx 50
+                 ;;                   :cy 450
+                 ;;                   :fill "rgb(153, 102, 51)"}}
+                 }
 
  
  :init-mix {:wind {:share 40
                    :locked? false} 
             :solar {:share 40
                     :locked? false}
-            :nuclear {:share 5
+            :nuclear {:share 4
                       :locked? false}
             :bio {:share 15
-                  :locked? false}}}
+                  :locked? false}
+            ;; :natural {:share 1
+            ;;           :locked? false}
+            }}
+ 
+ 

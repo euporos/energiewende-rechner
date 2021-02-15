@@ -221,7 +221,7 @@
 
 
 
-
+ 
 (defn circle-energy
   ""
   [nrg-key] 
