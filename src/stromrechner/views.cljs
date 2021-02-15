@@ -232,16 +232,20 @@
     [:<>
      (circle-by-area
       radius {} props)
-     [:text {:text-anchor "middle"
-             :zindex 1000
-             :alignment-baseline "middle"
-             :font-weight "bold"
-             :x text-x
-             :y (if (< radius 55)
-                  (- text-y radius 10)
-                  text-y)}
-      (str (h/structure-int
-            (Math/round area)) " km²")]]))
+     (let [area (Math/round area) ]
+       
+
+       (when (> area 0)
+         [:text {:text-anchor "middle"
+                 :zindex 1000
+                 :alignment-baseline "middle"
+                 :font-weight "bold"
+                 :x text-x
+                 :y (if (< radius 55)
+                      (- text-y radius 10)
+                      text-y)}
+          (str (h/structure-int
+                area) " km²")]))]))
 
 (defn mapview
   ""
