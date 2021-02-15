@@ -85,7 +85,7 @@
 
 ;; ########################
 ;; ##### Energy Needed ####
-;; ########################
+;; ######################## 
 
 (defn energy-needed-dropdown
   ""
@@ -95,7 +95,7 @@
     :partial-dispatch [:energy-needed/load]
     :publications (sources/pubs-for-needed-power)}])
 
-
+ 
 (defn energy-needed
   ""
   []
@@ -239,9 +239,7 @@
              :x text-x
              :y (if (< radius 55)
                   (- text-y radius 10)
-                  text-y)
-             ;; :transform "translate(-50 5)"
-             }
+                  text-y)}
       (str (h/structure-int
             (Math/round area)) " km²")]]))
 
