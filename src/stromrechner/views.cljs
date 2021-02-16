@@ -153,7 +153,8 @@
   [:div.block
    [:span.title.is-4 (:name nrg)]
    [:div.columns
-    (map (partial param-settings nrg-key) constants/parameters)]])
+    (map (partial param-settings nrg-key)
+         constants/parameters)]])
 
 (defn detailed-settings []
   (collapsible-panel
@@ -272,8 +273,8 @@
         @(rf/subscribe [:deriv/data-for-indicator param-key])]
    [:div.todesanzeige.mb-3
     [:div
-     [:strong (str heading
-                   (Math/round param-total) unit )]
+     [:strong heading (str
+                   (h/structure-int (Math/round param-total)) unit )]
      (into [:div ] (interpose " | "
                               (map (fn [{:keys [name absolute]}]
                                      [:span 
@@ -316,7 +317,7 @@
       [energy-needed]]]
     [indicator "Statistisch erwartbare Todesfälle pro Jahr: "
      :deaths]
-    [indicator "Jährlicher CO2-Ausstoß: "
+    [indicator [:span "Jährliches CO" [:sub "2"] "-Äquivalent: " ]
      :co2]]
    [detailed-settings]])
  
