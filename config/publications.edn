@@ -31,7 +31,8 @@
    {:bio 12
     :solar 0.44
     :wind 0.12
-    :nuclear 0.09}}}
+    :nuclear 0.09
+    :natural-gas 4}}}
  {:id "Conservation Biology"
   :link "https://doi.org/10.1111/cobi.12433"
   :energy-sources
@@ -47,12 +48,14 @@
    {:bio 0.85
     :solar 6.32
     :wind 6.37
-    :nuclear 259}
+    :nuclear 259
+    :natural-gas 482}
    :capacity-factor
    {:bio 0.53
     :solar 1
     :wind 0.3
-    :nuclear 0.93}}}
+    :nuclear 0.93
+    :natural-gas 1}}}
  {:id "BMVI, Berlin, 2015"
   :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
   :energy-sources
@@ -71,4 +74,5 @@
    {:wind 24
     :solar 101
     :nuclear 19
-    :bio 0}}}]
+    :bio 0
+    :natural-gas 428}}}]

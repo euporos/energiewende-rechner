@@ -15,10 +15,10 @@
                        :props {:cx 320
                                :cy 450
                                :fill "rgba(50, 205, 50, 0.5)"}}
-                 ;; :natural {:name "Erdgas"
-                 ;;           :props {:cx 50
-                 ;;                   :cy 450
-                 ;;                   :fill "rgb(153, 102, 51)"}}
+                 :natural-gas {:name "Erdgas"
+                           :props {:cx 50
+                                   :cy 450
+                                   :fill "rgb(153, 102, 51)"}}
                  }
 
  
@@ -30,8 +30,9 @@
                       :locked? false}
             :bio {:share 15
                   :locked? false}
-            ;; :natural {:share 1
-            ;;           :locked? false}
+            :natural-gas {:share 0
+                      :locked? false}
             }}
+ 
  
  
