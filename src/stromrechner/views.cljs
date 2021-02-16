@@ -7,7 +7,8 @@
    [stromrechner.icons :as icons  :refer [icon]]
    [clojure.edn :as edn]
    [stromrechner.constants :as const]
-   [stromrechner.helpers :as h]))
+   [stromrechner.helpers :as h]
+   [stromrechner.config :as cfg]))
 
 ;; ########################
 ;; ##### Common Stuff #####
@@ -169,6 +170,7 @@
 ;; ##### Energy-Mix #####
 ;; ######################
 
+
 (defn lock-icon
   ""
   [nrg-key]
@@ -182,10 +184,16 @@
   [:div.eslider {:style {:background-color (:fill props)
                          :width "100%"}}
    [lock-icon nrg-key]
-   [:label [:strong name " "
+   [:label
+    ;; [:img {:src  (get-in cfg/settings [:nrg-constants nrg-key :icon])
+    ;;        :style {:height "1rem"
+    ;;                :padding-top "0.2rem"
+    ;;                :margin-right "0.2rem"}}]
+    [:strong name " "
             (/ (Math/round (* 10 share)) 10)"% | "
             (Math/round 
-             @(rf/subscribe [:nrg-share/get-abs nrg-key])) " TWh"]]
+             @(rf/subscribe [:nrg-share/get-abs nrg-key]))            
+            " TWh"]]
    [:input {:type "range"  :min 0 :max 100
             :style {:width "100%"}
             :value (str (/ share 1))
@@ -217,7 +225,7 @@
    (merge
     {:r (str radius) ; str avoids a NaN error
      :stroke "black" 
-     :stroke-width "2"}
+     :stroke-width "0"}
     props)])
 
 
@@ -238,6 +246,7 @@
        
 
        (when (> area 0)
+         
          [:text {:text-anchor "middle"
                  :zindex 1000
                  :alignment-baseline "middle"

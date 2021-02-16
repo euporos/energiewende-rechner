@@ -1,24 +1,29 @@
 {:nrg-constants {:wind {:name "Wind"
+                        :icon "imgs/windmill.svg"
                         :props {:cx 400
                                 :cy 250
                                 :fill "rgba(135, 206, 250,0.6)" ; lightskyblue
                                 }} 
                  :solar {:name "Sonne"
+                         :icon "imgs/solarenergie.svg"
                          :props {:cx 380
                                  :cy 700
                                  :fill "rgba(255, 255, 0, 0.6)"}}
                  :nuclear {:name "Kernenergie"
+                           :icon "imgs/atome.svg"
                            :props {:cx 130
                                    :cy 450
                                    :fill "rgba(250, 147, 38, 0.5)"}}
                  :bio {:name "Biogas"
+                       :icon "imgs/plant.svg"
                        :props {:cx 320
                                :cy 450
                                :fill "rgba(50, 205, 50, 0.5)"}}
                  :natural-gas {:name "Erdgas"
-                           :props {:cx 200
-                                   :cy 750
-                                   :fill "rgb(153, 102, 51, 0.7)"}}}
+                               :icon "imgs/flamme.svg"
+                               :props {:cx 200
+                                       :cy 750
+                                       :fill "rgb(153, 102, 51, 0.7)"}}}
 
  
  :init-mix {:wind {:share 40
@@ -30,8 +35,8 @@
             :bio {:share 15
                   :locked? false}
             :natural-gas {:share 0
-                      :locked? false}
-            }}
+                      :locked? false}}}
+ 
  
  
  
