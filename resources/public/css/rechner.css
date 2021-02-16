@@ -18,7 +18,9 @@
   z-index: 2; }
 
 .mainframe {
-  min-height: calc(100vh - 144px); }
+  min-height: calc(100vh - 144px);
+  padding-left: 0;
+  padding-right: 0; }
 
 .footer {
   height: 80px !important; }

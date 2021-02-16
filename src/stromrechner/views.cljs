@@ -157,11 +157,12 @@
          constants/parameters)]])
 
 (defn detailed-settings []
-  (collapsible-panel
-   "Detaillierte Einstellungen"
-   (for [nrg-source @(rf/subscribe [:global/energy-sources])]
-     ^{:key (first nrg-source)}
-     [params-for-energy-source nrg-source])))
+  [:div#detailed-settings.pl-3.pr-3
+   (collapsible-panel
+    "Detaillierte Einstellungen"
+    (for [nrg-source @(rf/subscribe [:global/energy-sources])]
+      ^{:key (first nrg-source)}
+      [params-for-energy-source nrg-source]))])
 
 
 ;; ######################
