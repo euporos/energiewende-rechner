@@ -16,10 +16,9 @@
                                :cy 450
                                :fill "rgba(50, 205, 50, 0.5)"}}
                  :natural-gas {:name "Erdgas"
-                           :props {:cx 50
-                                   :cy 450
-                                   :fill "rgb(153, 102, 51)"}}
-                 }
+                           :props {:cx 200
+                                   :cy 750
+                                   :fill "rgb(153, 102, 51, 0.7)"}}}
 
  
  :init-mix {:wind {:share 40
