@@ -18,10 +18,10 @@
 ;; ##### Publications #####
 ;; ########################
 
-[{:id "Quaschning (2016) – 2050 optimistisch"
+[{:id "2050, größere Effizienz (Quaschning 2016)"
   :link "https://www.volker-quaschning.de/publis/studien/sektorkopplung/Sektorkopplungsstudie.pdf"
   :energy-needed 1300}
- {:id "Quaschning (2016) – 2050 pessimistisch"
+ {:id "2050,  gleiche Effizienz (Quaschning 2016)"
   :link "https://www.volker-quaschning.de/publis/studien/sektorkopplung/Sektorkopplungsstudie.pdf"
   :energy-needed 3000}
  {:id "Forbes"

@@ -31,7 +31,7 @@
    publications))
 
 (defn matching-pubs
-  ""
+  ""  
   [nrg-key param-key value]
   (filter
    #(= (get-in % [:energy-sources nrg-key param-key]) value)
