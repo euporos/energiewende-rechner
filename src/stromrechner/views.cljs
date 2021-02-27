@@ -100,7 +100,7 @@
 (defn energy-needed
   ""
   []
-  (panel [:span "Jährlicher Strombedarf "
+  (panel [:span "Jährlicher Strombedarf ";; (icons/icon2 "#999999" icons/sun)
           (if-let [href (:link @(rf/subscribe [:energy-needed/loaded]))]
             [:a {:target "_blank"
                  :href href} "→ Quelle"])]
@@ -180,8 +180,8 @@
            icons/lock-filled icons/lock-open))])
 
 
-(defn energy-slider [[nrg-key {:keys [name props share]}]]
-  [:div.eslider {:style {:background-color (:fill props)
+(defn energy-slider [[nrg-key {:keys [name props share color]}]]
+  [:div.eslider {:style {:background-color color
                          :width "100%"}}
    [lock-icon nrg-key]
    [:label
@@ -208,7 +208,7 @@
   []
   (panel "Strommix"
          [:div.mb-3
-          "Stelle hier hier den Strommix der Zukunft zusammen…"]
+          "Stelle hier den Strommix der Zukunft zusammen…"]
          (for [nrg-source @(rf/subscribe [:global/energy-sources])]
            ^{:key (str (first nrg-source))}
            [:div [energy-slider nrg-source]])))
@@ -227,22 +227,19 @@
      :stroke "black" 
      :stroke-width "0"}
     props)])
-
-
-
-
  
 (defn circle-energy
   ""
   [nrg-key] 
-  (let [{:keys [props radius area]}
+  (let [{:keys [props radius area color darker-color]}
         @(rf/subscribe [:deriv/surface-added nrg-key])
         text-x (:cx props)
         text-y (:cy props)]
     [:<>
      (circle-by-area
       radius {} props)
-     (let [area (Math/round area) ]
+     (let [area (Math/round area)
+           outside? (< radius 55)]
        
 
        (when (> area 0)
@@ -251,10 +248,12 @@
                  :zindex 1000
                  :alignment-baseline "middle"
                  :font-weight "bold"
+                 :fill (if (< radius 5) darker-color)
                  :x text-x
-                 :y (if (< radius 55)
+                 :y (if outside?
                       (- text-y radius 10)
                       text-y)}
+          
           (str (h/structure-int
                 area) " km²")]))]))
 
@@ -297,7 +296,7 @@
              :height "2em"}]
            (second
             (reduce
-             (fn [[left-marg sofar] {:keys [name param-share props]}]
+             (fn [[left-marg sofar] {:keys [name param-share color]}]
                [(+ left-marg
                    param-share) (conj sofar
                                       [:rect 
@@ -305,7 +304,7 @@
                                         :x (str left-marg "%")
                                         :width (str param-share "%") 
                                         :height "2em" 
-                                        :style {:fill (:fill props)
+                                        :style {:fill color
                                                 :stroke-width "0"
                                                 :stroke "black"}}])])
              [0 []]
@@ -325,10 +324,11 @@
      [:div.column
       [energy-mix]
       [energy-needed]]]
+    [indicator [:span "Jährliches CO" [:sub "2"] "-Äquivalent: " ]
+     :co2]
     [indicator "Statistisch erwartbare Todesfälle pro Jahr: "
      :deaths]
-    [indicator [:span "Jährliches CO" [:sub "2"] "-Äquivalent: " ]
-     :co2]]
+    ]
    [detailed-settings]])
  
  
