@@ -6,6 +6,14 @@
 .anzeige {
   position: relative; }
 
+.ttip {
+  border: solid black 1px;
+  border-radius: 1rem;
+  font-weight: bold;
+  width: 1.5rem;
+  display: inline-block;
+  text-align: center; }
+
 .karte {
   z-index: 1;
   max-height: 50rem;

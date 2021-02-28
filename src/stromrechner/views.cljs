@@ -26,13 +26,24 @@
    (into [:div.pt-3.pb-3.pr-3.pl-3] 
            comps)])
 
+;; (defn collapsible-panel
+;;   ""
+;;   [heading & comps]
+;;   [:nav 
+;;      {:class "panel"} 
+;;      [:details 
+;;       [:summary 
+;;        {:class "panel-heading"} heading] 
+;;       (into [:div.block.pt-3.pb-3.pr-3.pl-3 ] comps)]])
+
+
 (defn collapsible-panel
   ""
   [heading & comps]
-  [:nav 
+  [:nav
      {:class "panel"} 
-     [:details 
-      [:summary 
+     [:div
+      [:div
        {:class "panel-heading"} heading] 
       (into [:div.block.pt-3.pb-3.pr-3.pl-3 ] comps)]])
 
@@ -48,7 +59,7 @@
      [:div.field-body 
       [:div.field
        {:style {:width "7.5rem"}}
-       [:p.control.is-expanded.has-icons-right
+       [:p.control.is-expanded ;.has-icons-right
         [:input.input         
          (merge input-attrs
                 {:value @(rf/subscribe [:param/get pre-path param-key])
@@ -59,9 +70,10 @@
                                             (-> eventobj
                                                 .-target
                                                 .-value)]))})] 
-        [:span.icon.is-small.is-right
-         {:style {:margin-right "1rem"}}
-         unit]]]]]))
+        ;; [:span.icon.is-small.is-right
+        ;;  {:style {:margin-right "1rem"}}
+        ;;  unit]
+        ]]]]))
 
 (defn publication-dropdown
   ""
@@ -131,7 +143,7 @@
 (defn energy-needed
   ""
   []
-  (panel [:span "Jährlicher Strombedarf";; (icons/icon2 "#999999" icons/sun)
+  (panel [:span "Jährlicher Strombedarf in TWh";; (icons/icon2 "#999999" icons/sun)
           (if-let [href (:link @(rf/subscribe [:energy-needed/loaded]))]
             [:a {:target "_blank"
                  :href href} "→ Quelle"])]
@@ -183,7 +195,7 @@
   ""
   [[nrg-key nrg]]
   [:div.block
-   [:span.title.is-4 (:name nrg)]
+   [:span.title.is-4 (:name nrg)] [:span.ttip.ml-1 {:data-tooltip "Tooltip Text"} "?"]
    [:div.columns
     (map (partial param-settings nrg-key)
          constants/parameters)]])
@@ -192,16 +204,15 @@
   [:div#detailed-settings.pl-3.pr-3
    (collapsible-panel
     "Detaillierte Einstellungen"
-    (for [nrg-source @(rf/subscribe [:global/energy-sources])]
-      ^{:key (first nrg-source)}
-      [params-for-energy-source nrg-source])
-
-    [:span "Solarkapazität Dächer";; (icons/icon2 "#999999" icons/sun)
+    [:span "Solarkapazität Dächer in TWh";; (icons/icon2 "#999999" icons/sun)
           (if-let [href (:link @(rf/subscribe [:pub/loaded :solar :arealess-capacity]))]
             [:a {:target "_blank"
                  :href href} "→ Quelle"])]
     [solar-roof-capacity-dropdown]
-    [solar-roof-capacity-input])])
+    [solar-roof-capacity-input]
+    (for [nrg-source @(rf/subscribe [:global/energy-sources])]
+      ^{:key (first nrg-source)}
+      [params-for-energy-source nrg-source]))])
 
 
 ;; ######################
@@ -209,7 +220,6 @@
 ;; ######################
 
 (Math/round (* 10 (/ 100 3)))
-
 
 (defn lock-icon
   ""
@@ -220,11 +230,27 @@
            icons/lock-filled icons/lock-open))])
 
 
+(defn toggler
+  ""
+  [nrg-key]
+  (let [id  (str "toggler-" (name nrg-key))]
+    [:span.field
+     [:input.switch.is-small.is-rounded
+      {:id id
+       :type "checkbox"
+       :on-change #(rf/dispatch [:nrg/toggle-lock nrg-key])
+       :checked @(rf/subscribe [:nrg/locked? nrg-key])}] 
+     [:label 
+      {:for id} ;; [lock-icon nrg-key]
+      ]]))
+
+
+
+
 (defn energy-slider [[nrg-key {:keys [name props share color]}]]
   [:div.eslider {:style {:background-color color
                          :width "100%"}}
-   [lock-icon nrg-key]
-   [:label
+   [:label.ml-2
     ;; [:img {:src  (get-in cfg/settings [:nrg-constants nrg-key :icon])
     ;;        :style {:height "1rem"
     ;;                :padding-top "0.2rem"
@@ -234,7 +260,10 @@
      (Math/round share)"% | "
             (Math/round 
              @(rf/subscribe [:nrg-share/get-abs nrg-key]))            
-            " TWh"]]
+     " TWh"]]
+   
+   [lock-icon nrg-key]
+   [toggler nrg-key]
    [:input {:type "range"  :min 0 :max 100
             :style {:width "100%"}
             :value (str (/ share 1))
@@ -320,18 +349,18 @@
   ""
   [heading param-key]
   (let [{:keys [param-total unit energy-sources formatter] :as nrg}
-        @(rf/subscribe [:deriv/data-for-indicator param-key])]
+        @(rf/subscribe [:deriv/data-for-indicator param-key])
+        unit (if unit (str " " unit))]
    [:div.todesanzeige.mb-3
     [:div
-     [:strong heading (str
-                   (h/structure-int (Math/round param-total)) unit )]
+     [:strong heading (formatter param-total) unit]
      (into [:div ] (interpose " | "
                               (map (fn [{:keys [name absolute]}]
                                      [:span 
-                                      name ": " (formatter absolute) (if unit (str " " unit)) ])
+                                      name ": " (formatter absolute) unit ])
                                    (vals energy-sources))))]
     [:div
-     (into [:svg 
+     (into [:svg
             {:width "100%" 
              :height "2em"}]
            (second
@@ -362,14 +391,15 @@
      [:div.anzeige.column.is-two-thirds
       [mapview]]
      [:div.column
+      
       [energy-mix]
       [energy-needed]
-      [solar-roof-capacity]]]
+      ;; [solar-roof-capacity]
+      ]]
     [indicator [:span "Jährliches CO" [:sub "2"] "-Äquivalent: " ]
      :co2]
     [indicator "Statistisch erwartbare Todesfälle pro Jahr: "
-     :deaths]
-    ]
+     :deaths]]
    [detailed-settings]])
  
  

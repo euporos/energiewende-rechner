@@ -26,6 +26,17 @@
     position: relative;
 }
 
+.ttip {
+    // color: black;
+    // background: black;
+    border: solid black 1px;
+    border-radius: 1rem;
+    font-weight: bold;
+    width: 1.5rem;
+    display: inline-block;
+    text-align: center;
+}
+
 .mapview {
     // max-height: 60rem;
     // background-image: url("../imgs/deutschland2.svg");
@@ -63,7 +74,7 @@
 }
 
 
-#detailed-settings {
+#detailed-settings { 
     
 }
 

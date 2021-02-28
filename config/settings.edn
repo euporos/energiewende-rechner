@@ -24,11 +24,11 @@
                                :color "rgb(170, 120, 70)"
                                :props {:cx 200
                                        :cy 750}}
-                 ;; :coal {:name "Kohle"
-                 ;;               :icon "imgs/flamme.svg"
-                 ;;               :color "rgb(170, 120, 70)"
-                 ;;               :props {:cx 200
-                 ;;                       :cy 750}}
+                 :coal {:name "Kohle"
+                               :icon "imgs/flamme.svg"
+                               :color "rgb(120, 120, 120)"
+                               :props {:cx 200
+                                       :cy 750}}
                  } 
  :init-mix {:wind {:share 40
                    :locked? false} 

@@ -177,7 +177,8 @@
 (reg-sub
  :nrg/locked?
  (fn [db [_ nrg-key]]
-   (get-in db [:energy-sources nrg-key :locked?])))
+   (if (get-in db [:energy-sources nrg-key :locked?])
+     true false)))
 
 (reg-event-db
  :nrg/toggle-lock

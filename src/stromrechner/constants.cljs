@@ -54,7 +54,7 @@
 
 
 (def arealess-capacity
-  [:arealess-capacity {:name "Solarkapazität Dächer"
+  [:arealess-capacity {:name "Solarkapazität Dächer in TWh"
                          :unit "TWh"
                          :parse-fn js/parseFloat
                          :input-attrs {:type "number"
