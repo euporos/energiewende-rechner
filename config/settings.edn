@@ -14,7 +14,7 @@
                            :color "rgba(250, 147, 38)"
                            :props {:cx 130
                                    :cy 450}}
-                 :bio {:name "Biogas"
+                 :bio {:name "Biomasse"
                        :icon "imgs/plant.svg"
                        :color "rgba(50, 205, 50)"
                        :props {:cx 320
