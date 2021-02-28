@@ -13,7 +13,7 @@
                            :icon "imgs/atome.svg"
                            :color "rgba(250, 147, 38)"
                            :props {:cx 130
-                                   :cy 450}}
+                                   :cy 630}}
                  :bio {:name "Biomasse"
                        :icon "imgs/plant.svg"
                        :color "rgba(50, 205, 50)"
@@ -26,23 +26,37 @@
                                        :cy 750}}
                  :coal {:name "Kohle"
                                :icon "imgs/flamme.svg"
-                               :color "rgb(120, 120, 120)"
-                               :props {:cx 200
-                                       :cy 750}}
+                               :color "rgb(140, 140, 140)"
+                               :props {:cx 130
+                                       :cy 430}}
                  } 
- :init-mix {:wind {:share 40
+ :init-mix {:wind {:share 26
                    :locked? false} 
-            :solar {:share 40
+            :solar {:share 10
                     :locked? false}
-            :nuclear {:share 5
+            :nuclear {:share 14
                       :locked? false}
-            :bio {:share 15
+            :bio {:share 9
                   :locked? false}
-            :natural-gas {:share 0
+            :natural-gas {:share 11
                           :locked? false}
-            :coal {:share 0
+            :coal {:share 30
                       :locked? false}}}
  
  
  
  
+
+
+;; :init-mix {:wind {:share 40
+;;                    :locked? false} 
+;;             :solar {:share 40
+;;                     :locked? false}
+;;             :nuclear {:share 5
+;;                       :locked? false}
+;;             :bio {:share 15
+;;                   :locked? false}
+;;             :natural-gas {:share 0
+;;                           :locked? false}
+;;             :coal {:share 0
+;;                       :locked? false}}

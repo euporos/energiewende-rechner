@@ -1,5 +1,6 @@
 (ns stromrechner.helpers
   (:require
+   [re-frame.core :as rf :refer [reg-event-db reg-sub]]
    [clojure.string :as str]))
 
 (defn map-vals
@@ -53,4 +54,18 @@
          flatten
          reverse
          (apply str)) #"^0*" "")))
+
+(defn dispatch-on-x
+  ""
+  ([event]
+   (dispatch-on-x nil event))
+  ([sync? event]
+   (dispatch-on-x sync? event nil))
+  ([sync? event after-fn]
+   #(let [newval (-> % .-target .-value)]
+      (.preventDefault %)
+      (when after-fn (after-fn))
+      ((if sync?
+         rf/dispatch-sync
+         rf/dispatch) (conj event newval)))))
 

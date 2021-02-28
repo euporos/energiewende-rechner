@@ -41,11 +41,44 @@
   ""
   [heading & comps]
   [:nav
-     {:class "panel"} 
+   {:class "panel"} 
      [:div
       [:div
        {:class "panel-heading"} heading] 
       (into [:div.block.pt-3.pb-3.pr-3.pl-3 ] comps)]])
+
+
+
+
+(defn panel-toggler
+  ""
+  [open?]
+  [:div.mr-1
+   {:style {:display "inline-block"
+            :transition "all .2s"
+            :transform (if open? "rotate(90deg)" nil)}}
+   "►"])
+
+
+
+(defn controlled-panel
+  ""
+  [key heading & comps]
+  (let [open? @(rf/subscribe [:ui/panel-open? key])]
+    [:nav
+     {:class "panel"
+      :on-click (h/dispatch-on-x [:ui/toggle-panel key])} 
+     [:div
+      [:div
+       {:class "panel-heading"}
+       (panel-toggler open?)
+       heading] 
+      [:div
+            {:style {:overflow "hidden"
+                     :max-height (if (not open?) 0)
+                     ;:transition "max-height 1s ease-out"
+                     }}
+       (into [:div.block.pt-3.pb-3.pr-3.pl-3 ] comps)]]]))
 
 ;;
 ;; Inputs
@@ -63,13 +96,15 @@
         [:input.input         
          (merge input-attrs
                 {:value @(rf/subscribe [:param/get pre-path param-key])
-                 :on-change (fn [eventobj]
-                              (.preventDefault eventobj)
-                              (rf/dispatch [:param/set-unparsed
-                                             pre-path param
-                                            (-> eventobj
-                                                .-target
-                                                .-value)]))})] 
+                 :on-change (h/dispatch-on-x [:param/set-unparsed pre-path param])
+                 ;; (fn [eventobj]
+                 ;;              (.preventDefault eventobj)
+                 ;;              (rf/dispatch [:param/set-unparsed
+                 ;;                             pre-path param
+                 ;;                            (-> eventobj
+                 ;;                                .-target
+                 ;;                                .-value)]))
+                 })] 
         ;; [:span.icon.is-small.is-right
         ;;  {:style {:margin-right "1rem"}}
         ;;  unit]
@@ -85,7 +120,7 @@
       [:select.input
        {;:name (str/join ["pub" nrg-key param])
         :value (str value-subscription)
-        :on-change #(let [newval (-> % .-target .-value)]
+        :on-change #(let [newval (-> % .-target .-value)] 
                       (.preventDefault %)
                       (rf/dispatch (conj partial-dispatch
                                          (edn/read-string newval))))}
@@ -202,7 +237,7 @@
 
 (defn detailed-settings []
   [:div#detailed-settings.pl-3.pr-3
-   (collapsible-panel
+   (controlled-panel :details
     "Detaillierte Einstellungen"
     [:span "Solarkapazität Dächer in TWh";; (icons/icon2 "#999999" icons/sun)
           (if-let [href (:link @(rf/subscribe [:pub/loaded :solar :arealess-capacity]))]
@@ -213,6 +248,17 @@
     (for [nrg-source @(rf/subscribe [:global/energy-sources])]
       ^{:key (first nrg-source)}
       [params-for-energy-source nrg-source]))])
+
+
+;; ########################
+;; ##### Explanations #####
+;; ########################
+
+(defn explanations
+  ""
+  []
+  [:div#detailed-settings.pl-3.pr-3.mt-4
+   [controlled-panel :explanations "Erläuterungen" "boo"]])
 
 
 ;; ######################
@@ -400,7 +446,8 @@
      :co2]
     [indicator "Statistisch erwartbare Todesfälle pro Jahr: "
      :deaths]]
-   [detailed-settings]])
+   [detailed-settings]
+   [explanations]])
  
  
   

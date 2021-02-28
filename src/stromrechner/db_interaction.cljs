@@ -293,6 +293,26 @@
 
 
 ;; ##############
+;; ### Panels ###
+;; ##############
+
+(rf/reg-event-db
+ :ui/toggle-panel
+ (fn [db [_ panel-key]]
+   (update-in db [:ui :panels panel-key] not)))
+
+(reg-sub
+ :ui/panel-open?
+ (fn [db [_ panel-key]]
+   (get-in db [:ui :panels panel-key])))
+
+
+(comment
+  (rf/dispatch [:ui/toggle-panel :explanations])
+  @(rf/subscribe [:ui/toggle-panel :explanations]))
+
+
+;; ##############
 ;; ### Legacy ###
 ;; ############## 
 
