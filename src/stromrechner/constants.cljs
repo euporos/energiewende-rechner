@@ -11,14 +11,14 @@
                                   :step "0.01"
                                   :min 0.01}}]
    
-   [:capacity-factor {:name "Kapazitätsfaktor"
-                      :unit "1=100%"
-                      :parse-fn js/parseFloat
-                      :input-attrs {:type "number"
-                                    :pattern "0.00"
-                                    :step "0.01"
-                                    :min 0.01
-                                    :max 1}}]
+   ;; [:capacity-factor {:name "Kapazitätsfaktor"
+   ;;                    :unit "1=100%"
+   ;;                    :parse-fn js/parseFloat
+   ;;                    :input-attrs {:type "number"
+   ;;                                  :pattern "0.00"
+   ;;                                  :step "0.01"
+   ;;                                  :min 0.01
+   ;;                                  :max 1}}]
    [:deaths {:name "Todesfälle/TWh"
              :unit "/TWh"
              :parse-fn js/parseFloat

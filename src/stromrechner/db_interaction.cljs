@@ -101,7 +101,6 @@
 ;; ##### Publications #####
 ;; ########################
 
-
 ;; ### Power needed
 
 (reg-event-db
@@ -240,7 +239,8 @@
                      (- (:arealess-capacity nrg 0))
                      (* 1000000000000) ; share in Wh
                      (/ const/hours-per-year) ; needed netto W
-                     (/ capacity-factor) ; needed brute W
+                     ;; (/ capacity-factor)
+                                        ; needed brute W
                      (/ power-density) ; needed m²
                      (/ 1000000)) ; needed km²
          radius (if (js/isNaN area) 0

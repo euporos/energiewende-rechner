@@ -45,28 +45,31 @@
   :link "https://doi.org/10.1016/j.enpol.2018.08.023"
   :energy-sources
   {:power-density
-   {:bio 0.85
+   {:bio 0.45 ; 0.85 ; checken auf p. 86  steht 0.05, auf 87 0.045!!!
     :solar 6.32
-    :wind 6.37
-    :nuclear 259
-    :natural-gas 482}
+    :wind 2.02 ; 6.37 ; onshore
+    :nuclear 240.8
+    :natural-gas 482.1
+    :coal 121.5}
    :capacity-factor
-   {:bio 0.53
+   {:bio 1 ; 0.53
     :solar 1
-    :wind 0.3
-    :nuclear 0.93
+    :wind 1 ; 0.3
+    :nuclear 1 ; 0.93
     :natural-gas 1}}}
  {:id "BMVI, Berlin, 2015"
   :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
   :energy-sources
   {:power-density
-   {:wind 20
-    :solar 44.44
-    :bio 0.2}
+   {:wind 4.7 ; 20
+    :solar 5.2 ; ausgehend von 2.25 ha/MW inst.Leistung
+    :bio 0.16 ; ausgehend von 75 ha/GWh*a p.63
+    }
    :capacity-factor
-   {:wind 0.23
-    :solar 0.11
-    :bio 0.3}}}
+   {:wind 1 ; 0.23
+    :solar 1 ; 0.11
+    :bio 1 ; 0.06
+    }}}
  {:id "Deutscher Bundestag, 2007"
   :link "https://www.bundestag.de/resource/blob/406432/70f77c4c170d9048d88dcc3071b7721c/wd-8-056-07-pdf-data.pdf"
   :energy-sources
@@ -75,6 +78,7 @@
     :solar 101
     :nuclear 19
     :bio 0
+    :coal 949
     :natural-gas 428}}}
  {:id "Dummy"
   :link "#"

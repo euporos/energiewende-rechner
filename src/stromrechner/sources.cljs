@@ -20,8 +20,7 @@
   "config/publications.edn" 
   transpose-energy-sources)
 
-
-
+ 
 
 (defn pubs-for-param
   ""
