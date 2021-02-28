@@ -167,7 +167,9 @@
   (doseq [nrg-key (map first (:energy-sources default-db))
           param-key (map first constants/parameters)]
     (rf/dispatch [:pub/load nrg-key param-key
-                  (sources/default-pub nrg-key param-key)])))
+                  (sources/default-pub nrg-key param-key)]))
+  (rf/dispatch [:pub/load :solar :arealess-capacity
+                  (sources/default-pub :solar :arealess-capacity)]))
 
 ;; ###########################
 ;; ###### Energy shares ######
@@ -235,6 +237,7 @@
          area (-> energy-needed
                      (* share)
                      (/ 100) ; share in TWh ;TODO: from constant
+                     (- (:arealess-capacity nrg 0))
                      (* 1000000000000) ; share in Wh
                      (/ const/hours-per-year) ; needed netto W
                      (/ capacity-factor) ; needed brute W

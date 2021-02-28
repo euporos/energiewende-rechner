@@ -1,6 +1,6 @@
 (ns stromrechner.sources
   (:require [stromrechner.helpers :as h])
-  (:require-macros [stromrechner.macros :as m]))
+  (:require-macros [stromrechner.macros :as m])) 
 
 
 (defn transpose-energy-sources

@@ -44,6 +44,16 @@
                                  :step "1"
                                  :min 0}}])
 
+
+(def arealess-capacity
+  [:arealess-capacity {:name "Solarkapazität Dächer"
+                         :unit "TWh"
+                         :parse-fn js/parseFloat
+                         :input-attrs {:type "number"
+                                       :pattern "1"
+                                       :step "1"
+                                       :min 0}}])
+
 (def parameter-map (into {} parameters))
 
 

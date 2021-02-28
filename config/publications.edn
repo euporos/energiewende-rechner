@@ -75,4 +75,9 @@
     :solar 101
     :nuclear 19
     :bio 0
-    :natural-gas 428}}}]
+    :natural-gas 428}}}
+ {:id "Dummy"
+  :link "#"
+  :energy-sources
+  {:arealess-capacity
+   {:solar 120}}}]

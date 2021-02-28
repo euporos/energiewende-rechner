@@ -82,6 +82,37 @@
          ^{:key (:id pub)}           
          [:option {:value (str pub)}
           (:id pub)])]]]]])
+
+;; #####################################
+;; ######## Solar-Roof-capacity ########
+;; #####################################
+
+(defn solar-roof-capacity-dropdown
+  ""
+  []
+  [publication-dropdown
+   {:value-subscription @(rf/subscribe [:pub/loaded :solar :arealess-capacity])
+    :partial-dispatch [:pub/load :solar :arealess-capacity]
+    :publications (sources/pubs-for-param :solar :arealess-capacity)}])
+
+(defn solar-roof-capacity-input
+  ""
+  []
+  [param-input [:energy-sources :solar] const/arealess-capacity])
+
+
+(defn solar-roof-capacity
+  ""
+  []
+  (panel [:span "Solarkapazität Dächer";; (icons/icon2 "#999999" icons/sun)
+          (if-let [href (:link @(rf/subscribe [:pub/loaded :solar :arealess-capacity]))]
+            [:a {:target "_blank"
+                 :href href} "→ Quelle"])]
+         [:div.block
+          [:div.mb-1
+           [solar-roof-capacity-dropdown]]
+          [:div
+           [solar-roof-capacity-input]]]))
  
 
 ;; ########################
@@ -100,7 +131,7 @@
 (defn energy-needed
   ""
   []
-  (panel [:span "Jährlicher Strombedarf ";; (icons/icon2 "#999999" icons/sun)
+  (panel [:span "Jährlicher Strombedarf";; (icons/icon2 "#999999" icons/sun)
           (if-let [href (:link @(rf/subscribe [:energy-needed/loaded]))]
             [:a {:target "_blank"
                  :href href} "→ Quelle"])]
@@ -163,7 +194,14 @@
     "Detaillierte Einstellungen"
     (for [nrg-source @(rf/subscribe [:global/energy-sources])]
       ^{:key (first nrg-source)}
-      [params-for-energy-source nrg-source]))])
+      [params-for-energy-source nrg-source])
+
+    [:span "Solarkapazität Dächer";; (icons/icon2 "#999999" icons/sun)
+          (if-let [href (:link @(rf/subscribe [:pub/loaded :solar :arealess-capacity]))]
+            [:a {:target "_blank"
+                 :href href} "→ Quelle"])]
+    [solar-roof-capacity-dropdown]
+    [solar-roof-capacity-input])])
 
 
 ;; ######################
@@ -323,7 +361,8 @@
       [mapview]]
      [:div.column
       [energy-mix]
-      [energy-needed]]]
+      [energy-needed]
+      [solar-roof-capacity]]]
     [indicator [:span "Jährliches CO" [:sub "2"] "-Äquivalent: " ]
      :co2]
     [indicator "Statistisch erwartbare Todesfälle pro Jahr: "
