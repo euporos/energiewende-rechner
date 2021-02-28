@@ -208,6 +208,8 @@
 ;; ##### Energy-Mix #####
 ;; ######################
 
+(Math/round (* 10 (/ 100 3)))
+
 
 (defn lock-icon
   ""
@@ -228,7 +230,8 @@
     ;;                :padding-top "0.2rem"
     ;;                :margin-right "0.2rem"}}]
     [:strong name " "
-            (/ (Math/round (* 10 share)) 10)"% | "
+     ;; (/ (Math/round (* 10 share)) 10)
+     (Math/round share)"% | "
             (Math/round 
              @(rf/subscribe [:nrg-share/get-abs nrg-key]))            
             " TWh"]]
