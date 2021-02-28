@@ -3,7 +3,7 @@
 (def hours-per-year (* 24 365))
 
 (def parameters
-  [[:power-density {:name "Leistungsdichte"
+  [[:power-density {:name "Ø-Leistung in W/m²"
                     :unit "W/m²"
                     :parse-fn js/parseFloat
                     :input-attrs {:type "number"
