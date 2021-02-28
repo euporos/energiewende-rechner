@@ -1,4 +1,5 @@
-(ns stromrechner.constants)
+(ns stromrechner.constants
+  (:require [stromrechner.helpers :as h]))
 
 (def hours-per-year (* 24 365))
 
@@ -22,13 +23,20 @@
    [:deaths {:name "Todesfälle/TWh"
              :unit "/TWh"
              :parse-fn js/parseFloat
+             :indicator-formatter #(h/structure-int
+                                    (Math/round %))
              :input-attrs {:type "number"
                            :pattern "0.00"
                            :step "0.01"
                            :min 0.01}}]
-   [:co2 {:name [:span "CO" [:sub "2"] "-Äquivalent: " ]
-          :unit "kt/TWh"
-          :abs-unit "kt"
+   [:co2 {:name [:span "CO" [:sub "2"] "-Äquivalent in g/kWh: " ]
+          :unit "g/kWh"
+          :indicator-formatter #(-> %
+                                    (* 0.001) ; convert to Mio t
+                                    (* 10)
+                                    Math/round
+                                    (/ 10))
+          :abs-unit "Mio. t"
           :parse-fn js/parseInt
           :input-attrs {:type "number"
                         :pattern "0"

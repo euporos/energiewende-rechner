@@ -319,7 +319,7 @@
 (defn indicator
   ""
   [heading param-key]
-  (let [{:keys [param-total unit energy-sources]}
+  (let [{:keys [param-total unit energy-sources formatter] :as nrg}
         @(rf/subscribe [:deriv/data-for-indicator param-key])]
    [:div.todesanzeige.mb-3
     [:div
@@ -328,8 +328,7 @@
      (into [:div ] (interpose " | "
                               (map (fn [{:keys [name absolute]}]
                                      [:span 
-                                      name ": " (h/structure-int
-                                                 (Math/round absolute)) unit ])
+                                      name ": " (formatter absolute) (if unit (str " " unit)) ])
                                    (vals energy-sources))))]
     [:div
      (into [:svg 

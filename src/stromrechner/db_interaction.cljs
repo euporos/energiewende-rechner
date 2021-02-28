@@ -254,11 +254,11 @@
 
 (defn enrich-data-for-indicator
   [[energy-needed energy-sources] [_ param-key]]
-   (let [abs-added (h/map-vals
+  (let [abs-added (h/map-vals
                     #(assoc % :absolute
                             (-> (:share %)
                                 (/ 100)            ;TODO: from const
-                                (* energy-needed)  ; TWh of this nrg
+                                (* energy-needed)  ; TWh of this nrg                                
                                 (* (param-key %))))
                     energy-sources)
          total (reduce #(+ %1 (:absolute (second %2)))
@@ -270,9 +270,12 @@
                                    (* 100)
                                    (h/nan->0))) ;TODO: from const
                        abs-added)]
-     {:param-total total
-      :unit (get-in const/parameter-map [param-key :abs-unit])
-      :energy-sources shares-added}))
+    {:param-total total
+     :factor (get-in const/parameter-map [param-key :indicator-factor] 0)
+     :formatter (get-in const/parameter-map
+                        [param-key :indicator-formatter] #(Math/round %))
+     :unit (get-in const/parameter-map [param-key :abs-unit])
+     :energy-sources shares-added}))
 
 
 (reg-sub ; param-key should be :co2 or :deaths

@@ -12,7 +12,7 @@
 ;; Power-density: W/m²
 ;; capacity-facor: 1=100%
 ;; Deaths: per TWh
-;; co2: kt/TWh
+;; co2: kt/TWh bzw. g/kWh
 
 ;; ########################
 ;; ##### Publications #####
