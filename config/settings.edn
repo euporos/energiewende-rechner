@@ -39,6 +39,8 @@
             :bio {:share 15
                   :locked? false}
             :natural-gas {:share 0
+                          :locked? false}
+            :coal {:share 0
                       :locked? false}}}
  
  
