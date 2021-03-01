@@ -32,7 +32,8 @@
     :solar 0.44
     :wind 0.12
     :nuclear 0.09
-    :natural-gas 4}}}
+    :natural-gas 4
+    :coal 161}}} 
  {:id "Conservation Biology"
   :link "https://doi.org/10.1111/cobi.12433"
   :energy-sources
