@@ -30,5 +30,7 @@
   enrich-settings)
    
 
-  
+(def nrg-keys (map first (get settings :init-mix)))
     
+
+

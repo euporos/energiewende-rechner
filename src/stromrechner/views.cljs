@@ -8,7 +8,9 @@
    [clojure.edn :as edn]
    [stromrechner.constants :as const]
    [stromrechner.helpers :as h]
-   [stromrechner.config :as cfg]))
+   [stromrechner.config :as cfg]
+   [stromrechner.text :as text]
+   ))
 
 ;; ########################
 ;; ##### Common Stuff #####
@@ -66,11 +68,11 @@
   [key heading & comps]
   (let [open? @(rf/subscribe [:ui/panel-open? key])]
     [:nav
-     {:class "panel"
-      :on-click (h/dispatch-on-x [:ui/toggle-panel key])} 
+     {:class "panel"} 
      [:div
       [:div
-       {:class "panel-heading"}
+       {:class "panel-heading"
+        :on-click (h/dispatch-on-x [:ui/toggle-panel key])}
        (panel-toggler open?)
        heading] 
       [:div
@@ -226,11 +228,16 @@
     [:div.column.is-narrow    
      [param-input [:energy-sources nrg-key] param]]]])
 
-(defn params-for-energy-source
+
+(get-in text/snippets [:wind :text])
+
+(defn params-for-energy-source    
   ""
   [[nrg-key nrg]]
   [:div.block
-   [:span.title.is-4 (:name nrg)] [:span.ttip.ml-1 {:data-tooltip "Tooltip Text"} "?"]
+   [:span.title.is-4 (:name nrg)]
+   [:span.ttip.ml-1
+    {:data-tooltip (get-in text/snippets [nrg-key :text])} "?"]
    [:div.columns
     (map (partial param-settings nrg-key)
          constants/parameters)]])
@@ -254,11 +261,35 @@
 ;; ##### Explanations #####
 ;; ########################
 
+(defn format-snippet
+  ""
+  [key]
+  (let [{:keys [heading text]}
+             (get text/snippets key)]
+         [:div.block
+          {:id (str "explanation-" (name key))}
+          [:h4.title.is-4 heading]
+          [:div.content
+           (h/dangerous-html text)]]))
+
 (defn explanations
   ""
   []
   [:div#detailed-settings.pl-3.pr-3.mt-4
-   [controlled-panel :explanations "Erläuterungen" "boo"]])
+   [controlled-panel :explanations "Erläuterungen"
+    [:div.block
+     [:h3.title.is-3 "Was ist das?"]
+     (h/dangerous-html (get-in text/snippets [:general :text]))]
+    [:div.block
+     [:h3.title.is-3 "Energiequellen"]
+     (map
+      format-snippet
+      cfg/nrg-keys)]
+    [:h3.title.is-3 "Parameter"]
+    (map
+     format-snippet
+     (concat
+      (map first const/parameters)))]])
 
 
 ;; ######################
@@ -285,7 +316,7 @@
       {:id id
        :type "checkbox"
        :on-change #(rf/dispatch [:nrg/toggle-lock nrg-key])
-       :checked @(rf/subscribe [:nrg/locked? nrg-key])}] 
+       :checked (not @(rf/subscribe [:nrg/locked? nrg-key]))}] 
      [:label 
       {:for id} ;; [lock-icon nrg-key]
       ]]))
@@ -294,9 +325,12 @@
 
 
 (defn energy-slider [[nrg-key {:keys [name props share color]}]]
-  [:div.eslider {:style {:background-color color
+  [:div.eslider.pt-1 {:style {:background-color color
                          :width "100%"}}
-   [:label.ml-2
+   [:span.ml-2 [toggler nrg-key]
+    [lock-icon nrg-key]
+    ]   
+   [:label
     ;; [:img {:src  (get-in cfg/settings [:nrg-constants nrg-key :icon])
     ;;        :style {:height "1rem"
     ;;                :padding-top "0.2rem"
@@ -308,8 +342,7 @@
              @(rf/subscribe [:nrg-share/get-abs nrg-key]))            
      " TWh"]]
    
-   [lock-icon nrg-key]
-   [toggler nrg-key]
+   
    [:input {:type "range"  :min 0 :max 100
             :style {:width "100%"}
             :value (str (/ share 1))
@@ -362,7 +395,7 @@
          
          [:text {:text-anchor "middle"
                  :zindex 1000
-                 :alignment-baseline "middle"
+                 :alignment-baseline "central"
                  :font-weight "bold"
                  :fill (if (< radius 5) darker-color)
                  :x text-x
@@ -389,7 +422,6 @@
 ;; ######################
 ;; ##### Indicators #####
 ;; ######################
-
 
 (defn indicator
   ""

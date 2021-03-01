@@ -69,3 +69,10 @@
          rf/dispatch-sync
          rf/dispatch) (conj event newval)))))
 
+
+(defn dangerous-html
+  ""
+  [htmlstring]
+  [:div {:dangerouslySetInnerHTML
+        {:__html
+         htmlstring}}])
