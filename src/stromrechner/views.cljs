@@ -229,6 +229,11 @@
      [param-input [:energy-sources nrg-key] param]]]])
 
 
+
+;; document.getElementById('id').scrollIntoView();
+
+
+
 (get-in text/snippets [:wind :text])
 
 (defn params-for-energy-source    
@@ -237,7 +242,9 @@
   [:div.block
    [:span.title.is-4 (:name nrg)]
    [:span.ttip.ml-1
-    {:data-tooltip (get-in text/snippets [nrg-key :text])} "?"]
+    {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation nrg-key])}
+    ;; {:data-tooltip (get-in text/snippets [nrg-key :text])}
+    "?"]
    [:div.columns
     (map (partial param-settings nrg-key)
          constants/parameters)]])
@@ -263,11 +270,12 @@
 
 (defn format-snippet
   ""
-  [key]
+  [i exp-key]
   (let [{:keys [heading text]}
-             (get text/snippets key)]
+             (get text/snippets exp-key)]
          [:div.block
-          {:id (str "explanation-" (name key))}
+          {:key i
+           :id (str "explanation-" (name exp-key))}
           [:h4.title.is-4 heading]
           [:div.content
            (h/dangerous-html text)]]))
@@ -278,15 +286,14 @@
   [:div#detailed-settings.pl-3.pr-3.mt-4
    [controlled-panel :explanations "Erläuterungen"
     [:div.block
-     [:h3.title.is-3 "Was ist das?"]
+     [:h3.title.is-3 {:id "was-ist-das"}"Was ist das?"]
      (h/dangerous-html (get-in text/snippets [:general :text]))]
     [:div.block
      [:h3.title.is-3 "Energiequellen"]
-     (map
-      format-snippet
-      cfg/nrg-keys)]
+     (map-indexed
+      format-snippet cfg/nrg-keys)]
     [:h3.title.is-3 "Parameter"]
-    (map
+    (map-indexed
      format-snippet
      (concat
       (map first const/parameters)))]])

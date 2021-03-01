@@ -287,7 +287,6 @@
  enrich-data-for-indicator)
 
 
-
 (comment
   @(rf/subscribe [:deriv/data-for-indicator :deaths]))
 
@@ -300,6 +299,21 @@
  :ui/toggle-panel
  (fn [db [_ panel-key]]
    (update-in db [:ui :panels panel-key] not)))
+
+(rf/reg-event-db
+ :ui/set-panel-visibility
+ (fn [db [_ panel-key open?]]
+   (assoc-in db [:ui :panels panel-key] open?)))
+
+
+(rf/reg-event-db
+ :ui/scroll-to-explanation
+ (fn [db [_ exp-key]]
+   (rf/dispatch [:ui/set-panel-visibility :explanations true])
+   (.setTimeout js/window
+    #(.scrollIntoView
+      (.getElementById js/document (str "explanation-" (name exp-key)))) 100)
+   db))
 
 (reg-sub
  :ui/panel-open?
