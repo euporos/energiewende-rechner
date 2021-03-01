@@ -68,21 +68,8 @@
                  (get-in indata nextpath)))
      {} paths)))
 
-
 (defn default-pub
   ""
   [nrg-key param-key]
   (some #(if (get-in % [:energy-sources nrg-key param-key]) %)
         publications))
- 
-
-
-
-
-
-
-
-
-  
- 
- 

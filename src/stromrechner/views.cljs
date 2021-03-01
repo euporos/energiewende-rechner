@@ -589,9 +589,9 @@
     [indicator [:span "Jährliches CO" [:sub "2"] "-Äquivalent: " ]
      :co2]
     [indicator "Statistisch erwartbare Todesfälle pro Jahr: "
-     :deaths]]
-   [detailed-settings-tabular]
-   [explanations]])
+     :deaths] 
+    [detailed-settings-tabular]
+    [explanations]]])
  
  
   
