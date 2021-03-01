@@ -273,7 +273,10 @@
 ;; ####### Tabular Settings #######
 ;; ################################
 
-
+(defn with-tooltip
+  ""
+  [text tooltip]
+  [:div {:data-tooltip tooltip} text [:a "*"]])
 
 (defn param-settings-tabular
   ""
@@ -294,7 +297,7 @@
    [:th.is-vcentered
     {:style {:cursor "help"}
      :on-click (h/dispatch-on-x [:ui/scroll-to-explanation nrg-key])}
-    (:name nrg) [:a "*"]]
+    (with-tooltip (:name nrg) "Zur Erläuterung springen")]
    (map-indexed
     (fn [i param]
       [:td {:key i} [param-settings-tabular
@@ -304,21 +307,21 @@
 (defn settings-table-top-row
   ""
   []
-  [:tr [:th ]
+  [:tr  [:th ]
        (map-indexed
         (fn [i [param-key param]]
           [:th.has-text-centered
            {:key i
             :style {:cursor "help"}
             :on-click (h/dispatch-on-x [:ui/scroll-to-explanation param-key])}
-           (:name param)[:a "*"]])
+           (with-tooltip (:name param) "Zur Erläuterung springen")])
         const/parameters)])
 
 (defn detailed-settings-tabular []
   [:div#detailed-settings.is-hidden-touch.is-hidden-touch
    (controlled-panel :details
     "Parameter"          
-    [:table.table
+    [:table.table.mt-3
      {:style {:margin-left "auto"
               :margin-right "auto"}}
      [:thead
