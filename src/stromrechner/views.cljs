@@ -68,10 +68,11 @@
   [key heading & comps]
   (let [open? @(rf/subscribe [:ui/panel-open? key])]
     [:nav
-     {:class "panel"} 
+     {:class "panel"}
      [:div
       [:div
        {:class "panel-heading"
+        :style {:cursor "pointer"}
         :on-click (h/dispatch-on-x [:ui/toggle-panel key])}
        (panel-toggler open?)
        heading] 
@@ -206,13 +207,13 @@
 
 (defn pub-link
   ""
-  [nrg-key [param-key _]]
+  [nrg-key param-key]
   (if-let [loaded-pub-link
            (:link @(rf/subscribe
                     [:pub/loaded nrg-key param-key]))]
     [:a {:href loaded-pub-link
          :target "_blank"
-         :rel "noopener noreferrer"} " → Quelle"]))
+         :rel "noopener noreferrer"} "→ Quelle"]))
 
 (defn param-settings
   ""
@@ -221,7 +222,7 @@
    {:key (str nrg-key (first param))}
    [:h3.title.is-5
     (:name (second param))
-    [pub-link nrg-key param]]
+    [pub-link nrg-key (first param)]]
    [:div.columns.is-mobile
     [:div.column
      [param-dropdown nrg-key param]]
@@ -249,54 +250,158 @@
     (map (partial param-settings nrg-key)
          constants/parameters)]])
 
+;; (defn quellenlink
+;;   ""
+;;   [nrg-key parameter]
+;;   (if-let [href (:link @(rf/subscribe [:pub/loaded nrg-key parameter]))]
+;;                     [:a {:target "_blank"
+;;                          :href href} "→ Quelle"]))
+
 (defn detailed-settings []
   [:div#detailed-settings.pl-3.pr-3
    (controlled-panel :details
     "Detaillierte Einstellungen"
     [:span "Solarkapazität Dächer in TWh";; (icons/icon2 "#999999" icons/sun)
-          (if-let [href (:link @(rf/subscribe [:pub/loaded :solar :arealess-capacity]))]
-            [:a {:target "_blank"
-                 :href href} "→ Quelle"])]
+     [pub-link :solar :arealess-capacity]]
     [solar-roof-capacity-dropdown]
     [solar-roof-capacity-input]
     (for [nrg-source @(rf/subscribe [:global/energy-sources])]
       ^{:key (first nrg-source)}
       [params-for-energy-source nrg-source]))])
 
+;; ################################
+;; ####### Tabular Settings #######
+;; ################################
+
+
+
+(defn param-settings-tabular
+  ""
+  [nrg-key param]
+  [:div
+   {:key (str nrg-key (first param))}
+   [:div
+    [:div.columns.is-vcentered.is-mobile
+     [:div.column
+      [param-input [:energy-sources nrg-key] param]]
+     [:div.column [pub-link nrg-key (first param)]]]]
+   [:div.mt-1 [param-dropdown nrg-key param]]])
+
+(defn settings-table-row
+  ""
+  [[nrg-key nrg]]
+  [:tr
+   [:th.is-vcentered
+    {:style {:cursor "help"}
+     :on-click (h/dispatch-on-x [:ui/scroll-to-explanation nrg-key])}
+    (:name nrg) [:a "*"]]
+   (map-indexed
+    (fn [i param]
+      [:td {:key i} [param-settings-tabular
+                     nrg-key param] ])
+    const/parameters)])
+
+(defn settings-table-top-row
+  ""
+  []
+  [:tr [:th ]
+       (map-indexed
+        (fn [i [param-key param]]
+          [:th.has-text-centered
+           {:key i
+            :style {:cursor "help"}
+            :on-click (h/dispatch-on-x [:ui/scroll-to-explanation param-key])}
+           (:name param)[:a "*"]])
+        const/parameters)])
+
+(defn detailed-settings-tabular []
+  [:div#detailed-settings.is-hidden-touch.pl-3.pr-3.is-hidden-touch
+   (controlled-panel :details
+    "Detaillierte Einstellungen"          
+    [:table.table
+     {:style {:margin-left "auto"
+              :margin-right "auto"}}
+     [:thead
+      [settings-table-top-row]]
+     [:tbody
+      (for [nrg-source @(rf/subscribe [:global/energy-sources])]
+        ^{:key (first nrg-source)}
+        [settings-table-row nrg-source])]]
+    [:div
+     {:style {:margin-left "auto"
+              :margin-right "auto"}}
+     [:span.has-text-weight-bold
+      "Solarkapazität Dächer in TWh"]
+     [:div.columns.is-mobile.is-vcentered      
+      [:div.column [solar-roof-capacity-input]]
+      [:div.column [solar-roof-capacity-dropdown]]
+      [:div.column [pub-link :solar :arealess-capacity]]]])])
+
 
 ;; ########################
 ;; ##### Explanations #####
 ;; ########################
 
+
+(defn param-settings-pair-explanations
+  ""
+  [nrg-key param]
+  [:div.block
+   {:key (str nrg-key (first param))}
+   [:div.has-text-weight-bold.mb-1
+    (:name (second param)) " "
+    [pub-link nrg-key (first param)]]
+   [:div.columns.is-mobile
+    [:div.column
+     [param-dropdown nrg-key param]]
+    [:div.column.is-narrow    
+     [param-input [:energy-sources nrg-key] param]]]])
+
+(defn params-for-explanations
+  ""
+  [nrg-key nrg]
+  (js/console.log "nrg is " nrg)
+  [:div.is-hidden-desktop
+   [:h5.title.is-5 "Parameter für " (:name nrg) ":"]
+   (map
+    (fn [param]
+      [param-settings-pair-explanations nrg-key param])
+    const/parameters)
+   (when (= nrg-key :solar)
+     [param-settings-pair-explanations
+      nrg-key const/arealess-capacity])])
+
 (defn format-snippet
   ""
-  [i exp-key]
-  (let [{:keys [heading text]}
-             (get text/snippets exp-key)]
-         [:div.block
-          {:key i
-           :id (str "explanation-" (name exp-key))}
-          [:h4.title.is-4 heading]
-          [:div.content
-           (h/dangerous-html text)]]))
+  ([i exp-key]
+   (format-snippet i exp-key nil))
+  ([i exp-key supplement]
+   (let [{:keys [heading text]}
+         (get text/snippets exp-key)]
+     [:div.block
+      {:key i
+       :id (str "explanation-" (name exp-key))}
+      [:h4.title.is-4 heading]
+      [:div.content
+       (h/dangerous-html text)]
+      supplement])))
 
 (defn explanations
   ""
   []
   [:div#detailed-settings.pl-3.pr-3.mt-4
-   [controlled-panel :explanations "Erläuterungen"
+   [controlled-panel :explanations
+    [:<> "Erläuterungen" [:span.is-hidden-desktop " und Parameter" ]]
     [:div.block
      [:h3.title.is-3 {:id "was-ist-das"}"Was ist das?"]
      (h/dangerous-html (get-in text/snippets [:general :text]))]
     [:div.block
      [:h3.title.is-3 "Energiequellen"]
-     (map-indexed
-      format-snippet cfg/nrg-keys)]
+     (map-indexed (fn [i [nrg-key nrg]]
+                    (format-snippet
+                     i nrg-key (params-for-explanations nrg-key nrg))) cfg/nrgs)]
     [:h3.title.is-3 "Parameter"]
-    (map-indexed
-     format-snippet
-     (concat
-      (map first const/parameters)))]])
+    (map-indexed format-snippet const/param-keys)]])
 
 
 ;; ######################
@@ -485,7 +590,7 @@
      :co2]
     [indicator "Statistisch erwartbare Todesfälle pro Jahr: "
      :deaths]]
-   [detailed-settings]
+   [detailed-settings-tabular]
    [explanations]])
  
  

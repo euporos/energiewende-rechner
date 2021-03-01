@@ -29,7 +29,7 @@
                            :pattern "0.00"
                            :step "0.01"
                            :min 0.01}}]
-   [:co2 {:name [:span "CO" [:sub "2"] "-Äquivalent in g/kWh: " ]
+   [:co2 {:name [:span "CO" [:sub "2"] "-Äquivalent in g/kWh" ]
           :unit "g/kWh"
           :indicator-formatter #(-> %
                                     (* 0.001) ; convert to Mio t
@@ -42,6 +42,8 @@
                         :pattern "0"
                         :step "1"
                         :min 1}}]])
+
+(def param-keys (map first parameters))
 
 (def energy-needed
   [:energy-needed {:name "Strombedarf"

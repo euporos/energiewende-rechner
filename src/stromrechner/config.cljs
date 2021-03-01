@@ -28,9 +28,12 @@
 (m/def-from-file settings 
   "config/settings.edn"
   enrich-settings)
-   
+
+(def nrgs (get settings :nrg-constants))
 
 (def nrg-keys (map first (get settings :init-mix)))
+
+
     
 
 

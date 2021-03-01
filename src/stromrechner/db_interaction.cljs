@@ -244,7 +244,8 @@
                                         ; needed brute W
                      (/ power-density) ; needed m²
                      (/ 1000000)) ; needed km²
-         radius (if (js/isNaN area) 0
+         radius (if (or (< area 0) ; area < 0 possible with arealess-capacity
+                     (js/isNaN area)) 0
                     (radius-from-area-circle area))]
      (assoc nrg
             :area area
@@ -312,7 +313,7 @@
    (rf/dispatch [:ui/set-panel-visibility :explanations true])
    (.setTimeout js/window
     #(.scrollIntoView
-      (.getElementById js/document (str "explanation-" (name exp-key)))) 100)
+      (.getElementById js/document (str "explanation-" (name exp-key)))) 50)
    db))
 
 (reg-sub
