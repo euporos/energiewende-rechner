@@ -260,7 +260,7 @@
 (defn detailed-settings []
   [:div#detailed-settings.pl-3.pr-3
    (controlled-panel :details
-    "Detaillierte Einstellungen"
+    "Parameter"
     [:span "Solarkapazität Dächer in TWh";; (icons/icon2 "#999999" icons/sun)
      [pub-link :solar :arealess-capacity]]
     [solar-roof-capacity-dropdown]
@@ -315,9 +315,9 @@
         const/parameters)])
 
 (defn detailed-settings-tabular []
-  [:div#detailed-settings.is-hidden-touch.pl-3.pr-3.is-hidden-touch
+  [:div#detailed-settings.is-hidden-touch.is-hidden-touch
    (controlled-panel :details
-    "Detaillierte Einstellungen"          
+    "Parameter"          
     [:table.table
      {:style {:margin-left "auto"
               :margin-right "auto"}}
@@ -327,15 +327,17 @@
       (for [nrg-source @(rf/subscribe [:global/energy-sources])]
         ^{:key (first nrg-source)}
         [settings-table-row nrg-source])]]
-    [:div
+    [:div.has-text-centered
      {:style {:margin-left "auto"
               :margin-right "auto"}}
      [:span.has-text-weight-bold
-      "Solarkapazität Dächer in TWh"]
-     [:div.columns.is-mobile.is-vcentered      
-      [:div.column [solar-roof-capacity-input]]
-      [:div.column [solar-roof-capacity-dropdown]]
-      [:div.column [pub-link :solar :arealess-capacity]]]])])
+      "Solarkapazität auf Dächern in TWh"]
+     [:div.columns.is-mobile.is-vcentered.mt-1
+      [:div.column]
+      [:div.column.is-narrow [solar-roof-capacity-input]]
+      [:div.column.is-narrow [solar-roof-capacity-dropdown]]
+      [:div.column.is-narrow [pub-link :solar :arealess-capacity]]
+      [:div.column]]])])
 
 
 ;; ########################
@@ -389,7 +391,7 @@
 (defn explanations
   ""
   []
-  [:div#detailed-settings.pl-3.pr-3.mt-4
+  [:div#detailed-settings.mt-4
    [controlled-panel :explanations
     [:<> "Erläuterungen" [:span.is-hidden-desktop " und Parameter" ]]
     [:div.block
@@ -580,8 +582,7 @@
     [:div.columns
      [:div.anzeige.column.is-two-thirds
       [mapview]]
-     [:div.column
-      
+     [:div.column      
       [energy-mix]
       [energy-needed]
       ;; [solar-roof-capacity]
