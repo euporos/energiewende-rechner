@@ -424,7 +424,7 @@
            icons/lock-filled icons/lock-open))])
 
 
-(defn toggler
+(defn lock-toggler
   ""
   [nrg-key]
   (let [id  (str "toggler-" (name nrg-key))]
@@ -438,15 +438,14 @@
       {:for id} ;; [lock-icon nrg-key]
       ]]))
 
-
-
-
 (defn energy-slider [[nrg-key {:keys [name props share color]}]]
   [:div.eslider.pt-1 {:style {:background-color color
                          :width "100%"}}
-   [:span.ml-2 [toggler nrg-key]
-    [lock-icon nrg-key]
-    ]   
+   [:span.ml-2 ;; [lock-toggler nrg-key]
+    [:button.mr-1 {:style {:transform "scale(0.75)"}
+              :on-click (h/dispatch-on-x [:nrg/toggle-lock nrg-key])}
+     (icon (if @(rf/subscribe [:nrg/locked? nrg-key])
+                     icons/lock-filled icons/lock-open))]]   
    [:label
     ;; [:img {:src  (get-in cfg/settings [:nrg-constants nrg-key :icon])
     ;;        :style {:height "1rem"
