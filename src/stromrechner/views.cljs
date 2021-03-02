@@ -183,7 +183,7 @@
   (panel [:span "Jährlicher Strombedarf in TWh";; (icons/icon2 "#999999" icons/sun)
           (if-let [href (:link @(rf/subscribe [:energy-needed/loaded]))]
             [:a {:target "_blank"
-                 :href href} "→ Quelle"])]
+                 :href href} " → Quelle"])]
          [:div.block
           [:div.mb-1
            [energy-needed-dropdown]]
