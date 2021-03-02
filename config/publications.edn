@@ -24,6 +24,16 @@
  {:id "2050,  gleiche Effizienz (Quaschning 2016)"
   :link "https://www.volker-quaschning.de/publis/studien/sektorkopplung/Sektorkopplungsstudie.pdf"
   :energy-needed 3000}
+ {:id "Our Word in Data"
+  :link "https://ourworldindata.org/safest-sources-of-energy"
+  :energy-sources
+  {:deaths
+   {:bio 4.63
+    :solar 0.02
+    :wind 0.04
+    :nuclear 0.07
+    :natural-gas 2.82
+    :coal 28.67}}}
  {:id "Forbes"
   :link "https://web.archive.org/web/20150724024259/http://nextbigfuture.com/2011/03/deaths-per-twh-by-energy-source.html"
   :energy-sources

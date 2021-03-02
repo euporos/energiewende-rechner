@@ -18,8 +18,7 @@
  
 (m/def-from-file publications
   "config/publications.edn" 
-  transpose-energy-sources)
-   
+  transpose-energy-sources)   
 
 (defn pubs-for-param
   ""
@@ -73,3 +72,4 @@
   (some #(if (get-in % [:energy-sources nrg-key param-key]) %)
         publications))
  
+
