@@ -42,7 +42,7 @@
                         :pattern "0"
                         :step "1"
                         :min 1}}]
-   [:resources {:name "Ressourcenvebrauch in t/TWh"
+   [:resources {:name "Ressourcenverbrauch in t/TWh"
                 :unit "t/TWh"
                 :abs-unit "kt"
                 :parse-fn js/parseFloat

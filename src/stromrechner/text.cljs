@@ -7,6 +7,7 @@
     :power-density {:heading "Durchschnittsleistung"}
     :deaths {:heading "Statistisch erwartbare Todesfälle pro TWh"}
     :co2 {:heading [:span "CO" [:sub "2"] "-Äquivalent" ]}
+    :resources {:heading "Ressourcenverbrauch"}
     :wind {:heading "Windenergie"}
     :solar {:heading "Photovoltaik"}
     :nuclear {:heading "Kernenergie"}
@@ -17,6 +18,6 @@
 
 
 
-
+ 
  
  

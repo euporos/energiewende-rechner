@@ -375,8 +375,7 @@
          (map
           (fn [param]
             [param-settings-pair-explanations nrg-key param])
-          const/parameters))
-   ])
+          const/parameters))])
 
 (defn format-snippet
   ""
