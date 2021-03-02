@@ -274,8 +274,10 @@
 
 (defn with-tooltip
   ""
-  [text tooltip]
-  [:div {:data-tooltip tooltip} text [:a "*"]])
+  ([text]
+   (with-tooltip text "zur Erläuterung springen"))
+  ([text tooltip]
+   [:span {:data-tooltip tooltip} text [:a "*"]]))
 
 (defn param-settings-tabular
   ""
@@ -296,7 +298,7 @@
    [:th.is-vcentered
     {:style {:cursor "help"}
      :on-click (h/dispatch-on-x [:ui/scroll-to-explanation nrg-key])}
-    (with-tooltip (:name nrg) "Zur Erläuterung springen")]
+    (with-tooltip (:name nrg))]
    (map-indexed
     (fn [i param]
       [:td {:key i} [param-settings-tabular
@@ -313,7 +315,7 @@
            {:key i
             :style {:cursor "help"}
             :on-click (h/dispatch-on-x [:ui/scroll-to-explanation param-key])}
-           (with-tooltip (:name param) "Zur Erläuterung springen")])
+           (with-tooltip (:name param))])
         const/parameters)])
 
 (defn detailed-settings-tabular []
@@ -334,7 +336,7 @@
               :margin-right "auto"}}
      [:span.has-text-weight-bold
       {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :solar])}
-      (with-tooltip "Solarkapazität auf Dächern in TWh" "Zur Erläuterung springen")]
+      (with-tooltip "Solarkapazität auf Dächern in TWh")]
      [:div.columns.is-mobile.is-vcentered.mt-1
       [:div.column]
       [:div.column.is-narrow [solar-roof-capacity-input]]
@@ -548,7 +550,9 @@
         unit (if unit (str " " unit))]
    [:div.todesanzeige.mb-3
     [:div
-     [:strong heading (formatter param-total) unit]
+     [:strong
+      {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation param-key])}
+      (with-tooltip heading) " " (formatter param-total) unit]
      (into [:div ] (interpose " | "
                               (map (fn [{:keys [name absolute]}]
                                      [:span 
@@ -580,8 +584,8 @@
   []
   (controlled-panel
    :indicators "Weitere Ergebnisse"
-   [indicator "Statistisch erwartbare Todesfälle pro Jahr: " :deaths]
-                    [indicator "Jährlicher Ressourcenverbrauch: " :resources]))
+   [indicator "Statistisch erwartbare Todesfälle pro Jahr:" :deaths]
+                    [indicator "Jährlicher Ressourcenverbrauch:" :resources]))
 
 
 ;; ############################ 
@@ -599,7 +603,7 @@
       [energy-needed]
       ;; [solar-roof-capacity]
       ]]
-    [indicator [:span "Jährliches CO" [:sub "2"] "-Äquivalent: " ] :co2]
+    [indicator [:span "Jährlich anfallendes CO" [:sub "2"] ":"] :co2]
     [indicators]
     [detailed-settings-tabular]
     [explanations]]])
