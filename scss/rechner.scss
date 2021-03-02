@@ -70,12 +70,15 @@ html {
  
  
 .karte {
-
+    
     z-index: 1;
     max-height: 50rem;
         @include respond(tab-port) {
     	max-height: 105vh;
-    }
+	}
+	@include respond(phone) {
+	    max-height: 50vh;
+	}
     background-repeat: no-repeat;
     
     // position: absolute;

@@ -319,7 +319,7 @@
         const/parameters)])
 
 (defn detailed-settings-tabular []
-  [:div#detailed-settings.is-hidden-touch.is-hidden-touch
+  [:div#detailed-settings.is-hidden-touch
    (controlled-panel :details
     "Parameter"          
     [:table.table.mt-3
@@ -415,8 +415,6 @@
 ;; ##### Energy-Mix #####
 ;; ######################
 
-(Math/round (* 10 (/ 100 3)))
-
 (defn lock-icon
   ""
   [nrg-key]
@@ -474,7 +472,7 @@
   "" 
   []
   (panel "Strommix"
-         [:div.mb-3
+         [:div.mb-3.is-hidden-touch
           "Stelle hier den Strommix der Zukunft zusammen…"]
          (for [nrg-source @(rf/subscribe [:global/energy-sources])]
            ^{:key (str (first nrg-source))}

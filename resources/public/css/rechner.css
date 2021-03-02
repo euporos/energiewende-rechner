@@ -36,6 +36,9 @@ html {
   @media (max-width: 56.25em) {
     .karte {
       max-height: 105vh; } }
+  @media (max-width: 768px) {
+    .karte {
+      max-height: 50vh; } }
 
 .todesanzeige {
   z-index: 2; }
