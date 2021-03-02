@@ -44,13 +44,13 @@
                         :min 1}}]
    [:resources {:name "Ressourcenvebrauch in t/TWh"
                 :unit "t/TWh"
-                :abs-unit "Mio. t"
+                :abs-unit "kt"
                 :parse-fn js/parseFloat
                 :indicator-formatter #(-> %
                                     (* 0.001) ; convert to Mio t                                    
                                     Math/round                                    
                                     (h/structure-int))
-                :input-attrs {:type "number"
+                :input-attrs {:type "number" 
                            :pattern "0.00"
                            :step "0.01"
                            :min 0.01}}]])
