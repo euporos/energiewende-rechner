@@ -5,6 +5,9 @@ html {
   max-width: 100vh;
   margin-left: auto;
   margin-right: auto; }
+  @media (max-width: 56.25em) {
+    .anwendung {
+      max-width: 1000vh; } }
 
 .anzeige {
   position: relative; }

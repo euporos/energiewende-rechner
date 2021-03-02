@@ -1,0 +1,44 @@
+
+@mixin respond($breakpoint) {
+    @if $breakpoint == phone {
+	@media (max-width: 37.5em) { @content }; //Schmedtmann 37.5
+    }
+    @if $breakpoint == tab-port {
+	@media (max-width: 56.25em) { @content }; //Schmedtmann 56.25
+    }
+    @if $breakpoint == tab-land {
+	@media (max-width: 75em) { @content };
+    }
+    @if $breakpoint == big-desk {
+	@media (min-width: 112.5em) { @content };
+    }
+}
+
+
+// //  #################################
+// //  ####### Bulma-breakpoints #######
+// //  #################################
+
+@mixin respond($breakpoint) {
+    @if $breakpoint == phone {
+	@media (max-width: 768px) { @content }; //Schmedtmann 37.5rem
+    }
+    @if $breakpoint == tab-port {
+	@media (max-width: 56.25em) { @content }; //Schmedtmann 56.25rem
+    }
+    @if $breakpoint == tab-land {
+	@media (max-width: 75em) { @content };
+    }
+    @if $breakpoint == big-desk {
+	@media (min-width: 112.5em) { @content };
+    }
+}
+
+
+ 
+
+@mixin hideon($medium) {
+    @include respond($medium) {
+	display: none;
+    }
+}

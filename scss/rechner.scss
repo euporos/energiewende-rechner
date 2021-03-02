@@ -15,6 +15,7 @@
 
 // @import "base/_base";
 
+@import "_mediaqueries";
 
 html {
       scroll-behavior: smooth;
@@ -23,6 +24,9 @@ html {
    
 .anwendung {
     max-width: 100vh;
+    @include respond(tab-port) {
+    	max-width: 1000vh;
+    }
     margin-left: auto; 
     margin-right: auto; 
 }
