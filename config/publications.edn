@@ -86,13 +86,13 @@
   :energy-sources
   {:arealess-capacity
    {:solar 120}}}
- {:id "DOE"
-  :link "https://cdn.discordapp.com/attachments/170398496912834561/812773290208657418/36670685_1958280787542704_6906375616048660480_o.jpg"
+ {:id "Quadrennial Technology Review" ; p.390
+  :link "https://www.energy.gov/sites/prod/files/2017/03/f34/quadrennial-technology-review-2015_1.pdf"
   :energy-sources
   {:resources
-   {:solar 16500
-    :wind 10500
-    :nuclear 1000
-    :coal 0
-    :natural-gas 0
-    :bio 0}}}]
+   {:solar (+ 680 3700 350 850 2700 210 57 7900)
+    :wind (+ 35 8000 23 92 120 190 1800)
+    :nuclear (+ 760 3 5 2 160)
+    :coal (+ 3 870 1 1 310)
+    :natural-gas (+ 1 400 1 170)
+    :bio (+ 6 760 4 310)}}}]
