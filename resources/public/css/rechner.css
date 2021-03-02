@@ -22,6 +22,8 @@ html {
   text-align: center; }
 
 .mapview {
+  position: sticky;
+  top: 0;
   user-select: none; }
 
 .karte {
@@ -31,6 +33,9 @@ html {
   background-image: url("../imgs/deutschland2.svg");
   background-position: center;
   background-size: contain; }
+  @media (max-width: 56.25em) {
+    .karte {
+      max-height: 105vh; } }
 
 .todesanzeige {
   z-index: 2; }

@@ -596,7 +596,7 @@
   [:div
    [:div.anwendung.pt-3.pb-3.pl-3.pr-3
     [:div.columns
-     [:div.anzeige.column.is-two-thirds
+     [:div.anzeige.column.is-two-thirds-desktop;; .is-one-third-mobile
       [mapview]]
      [:div.column      
       [energy-mix]

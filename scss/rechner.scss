@@ -48,7 +48,9 @@ html {
 }
 
 .mapview {
-    user-select: none
+        position: sticky;
+    top: 0;
+    user-select: none;
     // max-height: 60rem;
     // background-image: url("../imgs/deutschland2.svg");
     // background-size: contain;
@@ -68,8 +70,12 @@ html {
  
  
 .karte {
+
     z-index: 1;
     max-height: 50rem;
+        @include respond(tab-port) {
+    	max-height: 105vh;
+    }
     background-repeat: no-repeat;
     
     // position: absolute;
