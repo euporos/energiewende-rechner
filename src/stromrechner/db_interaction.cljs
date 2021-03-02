@@ -220,7 +220,7 @@
   @(rf/subscribe [:nrg/get :wind])
   @(rf/subscribe [:global/energy-needed]))
 
-view
+
 (defn radius-from-area-circle
   ""
   [surface]
