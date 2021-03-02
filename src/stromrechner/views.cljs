@@ -71,8 +71,7 @@
      {:class "panel"}
      [:div
       [:div
-       {:class "panel-heading"
-        :style {:cursor "pointer"}
+       {:class "panel-heading panel-heading--collapsible"
         :on-click (h/dispatch-on-x [:ui/toggle-panel key])}
        (panel-toggler open?)
        heading] 
@@ -334,7 +333,8 @@
      {:style {:margin-left "auto"
               :margin-right "auto"}}
      [:span.has-text-weight-bold
-      "Solarkapazität auf Dächern in TWh"]
+      {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :solar])}
+      (with-tooltip "Solarkapazität auf Dächern in TWh" "Zur Erläuterung springen")]
      [:div.columns.is-mobile.is-vcentered.mt-1
       [:div.column]
       [:div.column.is-narrow [solar-roof-capacity-input]]
@@ -365,16 +365,16 @@
 (defn params-for-explanations
   ""
   [nrg-key nrg]
-  (js/console.log "nrg is " nrg)
   [:div.is-hidden-desktop
    [:h5.title.is-5 "Parameter für " (:name nrg) ":"]
-   (map
-    (fn [param]
-      [param-settings-pair-explanations nrg-key param])
-    const/parameters)
-   (when (= nrg-key :solar)
+   (into [:div (when (= nrg-key :solar)
      [param-settings-pair-explanations
-      nrg-key const/arealess-capacity])])
+      nrg-key const/arealess-capacity])]
+         (map
+          (fn [param]
+            [param-settings-pair-explanations nrg-key param])
+          const/parameters))
+   ])
 
 (defn format-snippet
   ""
@@ -384,12 +384,12 @@
    (let [{:keys [heading text]}
          (get text/snippets exp-key)]
      [:div.block
-      {:key i
-       :id (str "explanation-" (name exp-key))}
-      [:h4.title.is-4 heading]
-      [:div.content
-       (h/dangerous-html text)]
-      supplement])))
+        {:key i
+         :id (str "explanation-" (name exp-key))}
+        [:h4.title.is-4 heading]
+        [:div.content
+         (h/dangerous-html text)]
+        supplement])))
 
 (defn explanations
   ""
@@ -406,7 +406,8 @@
                     (format-snippet
                      i nrg-key (params-for-explanations nrg-key nrg))) cfg/nrgs)]
     [:h3.title.is-3 "Parameter"]
-    (map-indexed format-snippet const/param-keys)]])
+    (map-indexed format-snippet const/param-keys)
+    ]])
 
 
 ;; ######################
@@ -574,6 +575,15 @@
              (vals energy-sources))))]]))
 
 
+(defn indicators
+  ""
+  []
+  (controlled-panel
+   :indicators "Weitere Ergebnisse"
+   [indicator "Statistisch erwartbare Todesfälle pro Jahr: " :deaths]
+                    [indicator "Jährlicher Ressourcenverbrauch: " :resources]))
+
+
 ;; ############################ 
 ;; ###### Main Component ######
 ;; ############################
@@ -589,10 +599,8 @@
       [energy-needed]
       ;; [solar-roof-capacity]
       ]]
-    [indicator [:span "Jährliches CO" [:sub "2"] "-Äquivalent: " ]
-     :co2]
-    [indicator "Statistisch erwartbare Todesfälle pro Jahr: "
-     :deaths] 
+    [indicator [:span "Jährliches CO" [:sub "2"] "-Äquivalent: " ] :co2]
+    [indicators]
     [detailed-settings-tabular]
     [explanations]]])
  

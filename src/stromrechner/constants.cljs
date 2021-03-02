@@ -4,7 +4,7 @@
 (def hours-per-year (* 24 365))
 
 (def parameters
-  [[:power-density {:name "Ø-Leistung in W/m²"
+  [[:power-density {:name "Ø-Leistung pro m² in W"
                     :unit "W/m²"
                     :parse-fn js/parseFloat
                     :input-attrs {:type "number"
@@ -41,7 +41,19 @@
           :input-attrs {:type "number"
                         :pattern "0"
                         :step "1"
-                        :min 1}}]])
+                        :min 1}}]
+   [:resources {:name "Ressourcenvebrauch in t/TWh"
+                :unit "t/TWh"
+                :abs-unit "Mio. t"
+                :parse-fn js/parseFloat
+                :indicator-formatter #(-> %
+                                    (* 0.001) ; convert to Mio t                                    
+                                    Math/round                                    
+                                    (h/structure-int))
+                :input-attrs {:type "number"
+                           :pattern "0.00"
+                           :step "0.01"
+                           :min 0.01}}]])
 
 (def param-keys (map first parameters))
 
@@ -56,7 +68,7 @@
 
 
 (def arealess-capacity
-  [:arealess-capacity {:name "Solarkapazität Dächer in TWh"
+  [:arealess-capacity {:name "Solarkapazität auf Dächern in TWh"
                          :unit "TWh"
                          :parse-fn js/parseFloat
                          :input-attrs {:type "number"

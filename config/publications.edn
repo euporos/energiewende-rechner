@@ -85,4 +85,14 @@
   :link "#"
   :energy-sources
   {:arealess-capacity
-   {:solar 120}}}]
+   {:solar 120}}}
+ {:id "DOE"
+  :link "https://cdn.discordapp.com/attachments/170398496912834561/812773290208657418/36670685_1958280787542704_6906375616048660480_o.jpg"
+  :energy-sources
+  {:resources
+   {:solar 16500
+    :wind 10500
+    :nuclear 1000
+    :coal 0
+    :natural-gas 0
+    :bio 0}}}]

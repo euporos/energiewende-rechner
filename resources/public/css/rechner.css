@@ -32,6 +32,10 @@ html {
 .todesanzeige {
   z-index: 2; }
 
+.panel-heading--collapsible {
+  cursor: pointer;
+  user-select: none; }
+
 .mainframe {
   min-height: calc(100vh - 144px);
   padding-left: 0;

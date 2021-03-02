@@ -85,6 +85,11 @@ html {
     
 }
 
+.panel-heading--collapsible {
+    cursor: pointer;
+    user-select: none;
+}
+
 
 // //  #################
 // //  #### Rundrum ####
@@ -99,3 +104,5 @@ html {
 	 .footer {
 	     height: 80px !important;
 	 }
+
+	 
