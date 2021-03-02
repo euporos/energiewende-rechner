@@ -76,7 +76,7 @@
        (panel-toggler open?)
        heading] 
       [:div
-            {:style {:overflow "hidden"
+            {:style {:overflow (if open? "visible" "hidden")
                      :max-height (if (not open?) 0)
                      ;:transition "max-height 1s ease-out"
                      }}
