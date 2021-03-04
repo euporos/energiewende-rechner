@@ -49,9 +49,6 @@
        {:class "panel-heading"} heading] 
       (into [:div.block.pt-3.pb-3.pr-3.pl-3 ] comps)]])
 
-
-
-
 (defn panel-toggler
   ""
   [open?]
@@ -60,8 +57,6 @@
             :transition "all .2s"
             :transform (if open? "rotate(90deg)" nil)}}
    "►"])
-
-
 
 (defn controlled-panel
   ""
@@ -322,7 +317,7 @@
   [:div#detailed-settings.is-hidden-touch
    (controlled-panel :details
     "Parameter"          
-    [:table.table.mt-3
+    [:table.table
      {:style {:margin-left "auto"
               :margin-right "auto"}}
      [:thead
@@ -551,9 +546,10 @@
       {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation param-key])}
       (with-tooltip heading) " " (formatter param-total) unit]
      (into [:div ] (interpose " | "
-                              (map (fn [{:keys [name absolute]}]
-                                     [:span 
-                                      name ": " (formatter absolute) unit ])
+                              (keep (fn [{:keys [name absolute]}]
+                                     (when (> absolute 0)
+                                      [:span 
+                                       name ": " (formatter absolute) unit ]))
                                    (vals energy-sources))))]
     [:div
      (into [:svg

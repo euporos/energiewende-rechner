@@ -56,7 +56,8 @@
   :link "https://doi.org/10.1016/j.enpol.2018.08.023"
   :energy-sources
   {:power-density
-   {:bio 0.45 ; 0.85 ; checken auf p. 86  steht 0.05, auf 87 0.045!!!
+   {:bio 0.4
+    5 ; 0.85 ; checken auf p. 86  steht 0.05, auf 87 0.045!!!
     :solar 6.32
     :wind 2.02 ; 6.37 ; onshore
     :nuclear 240.8

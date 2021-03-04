@@ -4,7 +4,7 @@
 (def snippets 
   (m/build-text-map
    {:general {:heading "Allgemeines"}
-    :power-density {:heading "Durchschnittsleistung"}
+    :power-density {:heading "Bemessungsleistung pro m²"}
     :deaths {:heading "Statistisch erwartbare Todesfälle pro TWh"}
     :co2 {:heading [:span "CO" [:sub "2"] "-Äquivalent" ]}
     :resources {:heading "Ressourcenverbrauch"}
@@ -14,10 +14,4 @@
     :bio {:heading "Biomasse"}
     :natural-gas {:heading "Erdgas"}
     :coal {:heading "Kohle"}
-    }))
-
-
-
- 
- 
- 
+    })) 

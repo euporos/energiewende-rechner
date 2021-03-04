@@ -72,4 +72,3 @@
   (some #(if (get-in % [:energy-sources nrg-key param-key]) %)
         publications))
  
-
