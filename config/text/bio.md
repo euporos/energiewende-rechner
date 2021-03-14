@@ -1,4 +1,3 @@
 <!-- Unter den Begriff »Biomasse« fallen eine ganze Reihe von verschiedener Methoden der Energieerzeugung.  -->
 
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit.  Donec hendrerit tempor tellus.  Donec pretium posuere tellus.  Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.  Nulla posuere.  Donec vitae dolor.  Nullam tristique diam non turpis.  Cras placerat accumsan nulla.  Nullam rutrum.  Nam vestibulum accumsan nisl.
-
+Unter den Begriff »Biomasse« fällt die Energiegewinnung durch Verbrennung sehr verschiedenartiger Stoffe biologischen Ursprungs. Dementsprechend verschieden fallen auch deren Parameter aus. Besonders umstritten ist ihr  CO<sub>2</sub>-Äquvalent, das bisweilen sogar als leicht negativ angegeben wird, wenn man annimt, dass der Anbau der Pfanzen der Atmosphäre mehr CO<sub>2</sub> entzieht, als bei ihrer Verbrennung wieder freigesetzt wird. Insofern Studien einen solchen leicht negativen Wert angeben, wird dieser – auch aus technischen Gründen – als 0 übernommen.

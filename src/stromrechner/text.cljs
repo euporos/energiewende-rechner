@@ -14,4 +14,4 @@
     :bio {:heading "Biomasse"}
     :natural-gas {:heading "Erdgas"}
     :coal {:heading "Kohle"}
-    })) 
+    }))
