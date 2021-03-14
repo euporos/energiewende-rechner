@@ -52,23 +52,6 @@
     :solar 0.44
     :wind 0.15
     :nuclear 0.04}}}
- {:id "Energy Policy (Metastudie)"
-  :link "https://doi.org/10.1016/j.enpol.2018.08.023"
-  :energy-sources
-  {:power-density
-   {:bio 0.4
-    5 ; 0.85 ; checken auf p. 86  steht 0.05, auf 87 0.045!!!
-    :solar 6.32
-    :wind 2.02 ; 6.37 ; onshore
-    :nuclear 240.8
-    :natural-gas 482.1
-    :coal 121.5}
-   :capacity-factor
-   {:bio 1 ; 0.53
-    :solar 1
-    :wind 1 ; 0.3
-    :nuclear 1 ; 0.93
-    :natural-gas 1}}}
  {:id "BMVI, Berlin, 2015"
   :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
   :energy-sources
@@ -82,6 +65,23 @@
     :solar 1 ; 0.11
     :bio 1 ; 0.06
     }}}
+ {:id "Energy Policy (Metastudie)"
+  :link "https://doi.org/10.1016/j.enpol.2018.08.023"
+  :energy-sources
+  {:power-density
+   {:bio 0.05
+     ; 0.85 ; checken auf p. 86  steht 0.05, auf 87 0.045!!!
+    :solar 6.32
+    :wind 2.02 ; 6.37 ; onshore
+    :nuclear 240.8
+    :natural-gas 482.1
+    :coal 121.5}
+   :capacity-factor
+   {:bio 1 ; 0.53
+    :solar 1
+    :wind 1 ; 0.3
+    :nuclear 1 ; 0.93
+    :natural-gas 1}}}
  {:id "Deutscher Bundestag, 2007"
   :link "https://www.bundestag.de/resource/blob/406432/70f77c4c170d9048d88dcc3071b7721c/wd-8-056-07-pdf-data.pdf"
   :energy-sources
