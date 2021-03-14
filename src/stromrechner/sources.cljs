@@ -56,7 +56,7 @@
   [indata]
   (let [first-level-keys (keys indata)
         second-level-keys (keys (reduce merge (map second indata)))
-        paths (for [flk first-level-keys
+        paths (for [flk first-level-keys 
                     slk second-level-keys]
                 [flk slk])]
     
@@ -72,3 +72,4 @@
   (some #(if (get-in % [:energy-sources nrg-key param-key]) %)
         publications))
  
+

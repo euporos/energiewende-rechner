@@ -24,16 +24,41 @@
  {:id "2050,  gleiche Effizienz (Quaschning 2016)"
   :link "https://www.volker-quaschning.de/publis/studien/sektorkopplung/Sektorkopplungsstudie.pdf"
   :energy-needed 3000}
- {:id "Our Word in Data"
-  :link "https://ourworldindata.org/safest-sources-of-energy"
+ {:id "The Lancet"
+  :link "https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(07)61253-7/fulltext"
   :energy-sources
   {:deaths
    {:bio 4.63
-    :solar 0.02
-    :wind 0.04
-    :nuclear 0.07
+    :nuclear 0.08
     :natural-gas 2.82
     :coal 28.67}}}
+ {:id "Statista"
+  :link "https://www.statista.com/statistics/494425/death-rate-worldwide-by-energy-source/"
+  :energy-sources
+  {:deaths
+   {:bio 12
+    :solar 0.44
+    :wind 0.12
+    :nuclear 0.09
+    :natural-gas 4
+    :coal 161}}}
+ {:id "Our World in Data"
+  :link "https://ourworldindata.org/safest-sources-of-energy"
+  :energy-sources
+  {:deaths
+   {:solar 0.44
+    :wind 0.15
+    :nuclear 0.09
+    :natural-gas 4
+    :coal 100}}} 
+ {:id "Conservation Biology"
+  :link "https://doi.org/10.1111/cobi.12433"
+  :energy-sources
+  {:deaths
+   {:bio 4
+    :solar 0.44
+    :wind 0.15
+    :nuclear 0.04}}}
  {:id "Forbes"
   :link "https://web.archive.org/web/20150724024259/http://nextbigfuture.com/2011/03/deaths-per-twh-by-energy-source.html"
   :energy-sources
@@ -43,15 +68,7 @@
     :wind 0.12
     :nuclear 0.09
     :natural-gas 4
-    :coal 161}}} 
- {:id "Conservation Biology"
-  :link "https://doi.org/10.1111/cobi.12433"
-  :energy-sources
-  {:deaths
-   {:bio 4
-    :solar 0.44
-    :wind 0.15
-    :nuclear 0.04}}}
+    :coal 161}}}
  {:id "BMVI, Berlin, 2015"
   :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
   :energy-sources
@@ -82,6 +99,14 @@
     :wind 1 ; 0.3
     :nuclear 1 ; 0.93
     :natural-gas 1}}}
+ ;; {:id "Öko-Institut"
+ ;;  :link "https://www.oeko.de/fileadmin/oekodoc/Stromsystem-II-Regionalisierung-der-erneuerbaren-Stromerzeugung.pdf"
+ ;;  :energy-sources
+ ;;  {:power-density ; S. 81
+ ;;   {:wind 4.7 ; 61.75 m2/kW
+ ;;    :solar 5.2 ; ausgehend von 2.25 ha/MW inst.Leistung
+ ;;    :bio 0.16 ; ausgehend von 75 ha/GWh*a p.63
+ ;;    }}}
  {:id "Deutscher Bundestag, 2007"
   :link "https://www.bundestag.de/resource/blob/406432/70f77c4c170d9048d88dcc3071b7721c/wd-8-056-07-pdf-data.pdf"
   :energy-sources
@@ -93,10 +118,11 @@
     :coal 949
     :natural-gas 428}}}
  {:id "Dummy"
-  :link "#"
+  :link "https://www.oeko.de/fileadmin/oekodoc/Stromsystem-II-Regionalisierung-der-erneuerbaren-Stromerzeugung.pdf"
   :energy-sources
   {:arealess-capacity
-   {:solar 120}}}
+   {:solar 120 ; S.72
+    }}}
  {:id "Quadrennial Technology Review" ; p.390
   :link "https://www.energy.gov/sites/prod/files/2017/03/f34/quadrennial-technology-review-2015_1.pdf"
   :energy-sources
