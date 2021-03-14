@@ -359,7 +359,7 @@
     [:div.column.is-narrow    
      [param-input [:energy-sources nrg-key] param]]]])
 
-(defn params-for-explanations
+(defn params-for-nrg-explanations
   ""
   [nrg-key nrg]
   [:div.is-hidden-desktop
@@ -371,6 +371,22 @@
           (fn [param]
             [param-settings-pair-explanations nrg-key param])
           const/parameters))])
+
+
+(defn params-for-param-explanations
+  ""
+  [param-key param-dfn]
+  [:div.is-hidden-desktop
+   [:h5.title.is-5 (:name param-dfn) " für verschiedene Energiequellen:"]
+   [param-settings-pair-explanations :solar [param-key param-dfn]]
+   ;; (into [:div (when (= nrg-key :solar)
+   ;;   [param-settings-pair-explanations
+   ;;    nrg-key const/arealess-capacity])]
+   ;;       (map
+   ;;        (fn [nrg]
+   ;;          [param-settings-pair-explanations nrg-key param])
+   ;;        cfg/nrgs))
+   ])
 
 (defn format-snippet
   ""
@@ -400,9 +416,14 @@
      [:h3.title.is-3 "Energiequellen"]
      (map-indexed (fn [i [nrg-key nrg]]
                     (format-snippet
-                     i nrg-key (params-for-explanations nrg-key nrg))) cfg/nrgs)]
+                     i nrg-key (params-for-nrg-explanations nrg-key nrg))) cfg/nrgs)]
     [:h3.title.is-3 "Parameter"]
-    (map-indexed format-snippet const/param-keys)
+    (map-indexed
+     format-snippet const/param-keys)
+    ;; (map-indexed (fn [i [param-key param-dfn]]
+    ;;                 (format-snippet
+    ;;                  i param-key (params-for-param-explanations param-key param-dfn)))
+    ;;              const/parameters)
     ]])
 
 
