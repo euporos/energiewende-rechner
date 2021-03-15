@@ -117,12 +117,30 @@
     :bio 0
     :coal 949
     :natural-gas 428}}}
- {:id "Dummy"
-  :link "https://www.oeko.de/fileadmin/oekodoc/Stromsystem-II-Regionalisierung-der-erneuerbaren-Stromerzeugung.pdf"
+ {:id "Quaschning, 2020"
+  :link "https://www.volker-quaschning.de/downloads/Klima2000.pdf"
   :energy-sources
   {:arealess-capacity
-   {:solar 120 ; S.72
+   {:solar 139 ; Wirkungsgrad 13.5% Dach + Fassaden + Verkehr
     }}}
+ {:id "BMVI, Berlin, 2015" ; !!!!!
+  :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
+  :energy-sources
+  {:arealess-capacity
+   {:solar 142 ; S. 95
+    }}}
+ {:id "Föderal Erneuerbar"
+  :link "https://www.foederal-erneuerbar.de/landesinfo/bundesland/SL/kategorie/solar/auswahl/528-technisches_potenzia/"
+  :energy-sources
+  {:arealess-capacity
+   {:solar 205 ; Alle Bundesländer addiert
+    }}}
+ ;; {:id "Symp. Energieinnovation"
+ ;;  :link "https://mediatum.ub.tum.de/doc/969497/969497.pdf"
+ ;;  :energy-sources
+ ;;  {:arealess-capacity
+ ;;   {:solar 205 ; 161 GWp
+ ;;    }}}
  {:id "Quadrennial Technology Review" ; p.390
   :link "https://www.energy.gov/sites/prod/files/2017/03/f34/quadrennial-technology-review-2015_1.pdf"
   :energy-sources
