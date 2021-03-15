@@ -8,8 +8,8 @@
                     :unit "W/m²"
                     :parse-fn js/parseFloat
                     :input-attrs {:type "number"
-                                  :pattern "0.00"
-                                  :step "0.01"
+                                  :pattern "0.0"
+                                  :step "0.1"
                                   :min 0.01}}]
    
    ;; [:capacity-factor {:name "Kapazitätsfaktor"
