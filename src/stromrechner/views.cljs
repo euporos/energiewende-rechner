@@ -411,7 +411,7 @@
     [:<> "Erläuterungen" [:span.is-hidden-desktop " und Parameter" ]]
     [:div.block
      [:h3.title.is-3 {:id "was-ist-das"}"Was ist das?"]
-     (h/dangerous-html (get-in text/snippets [:general :text]))]
+     [:div.content (h/dangerous-html (get-in text/snippets [:general :text]))]]
     [:div.block
      [:h3.title.is-3 "Energiequellen"]
      (map-indexed (fn [i [nrg-key nrg]]
