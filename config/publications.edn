@@ -50,15 +50,7 @@
     :wind 0.15
     :nuclear 0.09
     :natural-gas 4
-    :coal 100}}} 
- {:id "Conservation Biology"
-  :link "https://doi.org/10.1111/cobi.12433"
-  :energy-sources
-  {:deaths
-   {:bio 4
-    :solar 0.44
-    :wind 0.15
-    :nuclear 0.04}}}
+    :coal 100}}}  
  {:id "Forbes"
   :link "https://web.archive.org/web/20150724024259/http://nextbigfuture.com/2011/03/deaths-per-twh-by-energy-source.html"
   :energy-sources
@@ -69,6 +61,30 @@
     :nuclear 0.09
     :natural-gas 4
     :coal 161}}}
+ {:id "Energy Policy (inkl. Infrastruktur)"
+  :link "https://doi.org/10.1016/j.enpol.2018.08.023"
+  :energy-sources
+  {:power-density
+   {:bio 0.08 ; p.85
+     ; 0.85 ; checken auf p. 86  steht 0.05, auf 87 0.045!!!
+    :solar 6.63
+    :wind 1.84 ; 6.37 ; onshore
+    :nuclear 240.8
+    :natural-gas 482.1
+    :coal 135.1}
+   ;; {:bio 0.05
+   ;;   ; 0.85 ; checken auf p. 86  steht 0.05, auf 87 0.045!!!
+   ;;  :solar 6.32
+   ;;  :wind 2.02 ; 6.37 ; onshore
+   ;;  :nuclear 240.8
+   ;;  :natural-gas 482.1
+   ;;  :coal 121.5}
+   :capacity-factor
+   {:bio 1 ; 0.53
+    :solar 1
+    :wind 1 ; 0.3
+    :nuclear 1 ; 0.93
+    :natural-gas 1}}}
  {:id "BMVI, Berlin, 2015"
   :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
   :energy-sources
@@ -82,23 +98,40 @@
     :solar 1 ; 0.11
     :bio 1 ; 0.06
     }}}
- {:id "Energy Policy (Metastudie)"
+ {:id "Energy Policy (ohne Infrastruktur)"
   :link "https://doi.org/10.1016/j.enpol.2018.08.023"
   :energy-sources
   {:power-density
-   {:bio 0.05
+   {:bio (/ 0.08 0.1) ; p.85
      ; 0.85 ; checken auf p. 86  steht 0.05, auf 87 0.045!!!
-    :solar 6.32
-    :wind 2.02 ; 6.37 ; onshore
-    :nuclear 240.8
-    :natural-gas 482.1
-    :coal 121.5}
-   :capacity-factor
-   {:bio 1 ; 0.53
-    :solar 1
-    :wind 1 ; 0.3
-    :nuclear 1 ; 0.93
-    :natural-gas 1}}}
+    :solar (/ 6.63 0.2)
+    :wind (/ 1.84 0.9) ; 6.37 ; onshore
+    :nuclear (/ 240.8 0.57)
+    :natural-gas (/ 482.1 0.44)
+    :coal (/ 135.1 0.72)}
+   ;; {:bio 0.05
+   ;;   ; 0.85 ; checken auf p. 86  steht 0.05, auf 87 0.045!!!
+   ;;  :solar 6.32
+   ;;  :wind 2.02 ; 6.37 ; onshore
+   ;;  :nuclear 240.8
+   ;;  :natural-gas 482.1
+   ;;  :coal 121.5}
+   }}
+ {:id "CB (inkl. Brennstoffgewinnung)"
+  :link "https://doi.org/10.1111/cobi.12433"
+  :energy-sources
+  {:deaths
+   {:bio 4
+    :solar 0.44
+    :wind 0.15
+    :nuclear 0.04}
+   :power-density
+   {:solar 20.03
+    :wind 2.48
+    :bio 1.2
+    :nuclear 1141.55
+    :natural-gas 103.78
+    :coal 51.89}}}
  ;; {:id "Öko-Institut"
  ;;  :link "https://www.oeko.de/fileadmin/oekodoc/Stromsystem-II-Regionalisierung-der-erneuerbaren-Stromerzeugung.pdf"
  ;;  :energy-sources
