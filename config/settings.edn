@@ -30,18 +30,30 @@
                                :props {:cx 130
                                        :cy 430}}
                  } 
- :init-mix {:wind {:share 26
-                   :locked? false} 
-            :solar {:share 10
-                    :locked? false}
-            :nuclear {:share 14
-                      :locked? false}
-            :bio {:share 9
-                  :locked? false}
-            :natural-gas {:share 11
-                          :locked? false}
-            :coal {:share 30
-                      :locked? false}}}
+ :init-mix ;; {:wind {:share 26
+ ;;         :locked? false} 
+ ;;  :solar {:share 10
+ ;;          :locked? false}
+ ;;  :nuclear {:share 14
+ ;;            :locked? false}
+ ;;  :bio {:share 9
+ ;;        :locked? false}
+ ;;  :natural-gas {:share 11
+ ;;                :locked? false}
+ ;;  :coal {:share 30
+ ;;         :locked? false}}
+ {:wind {:share 28
+         :locked? false} 
+  :solar {:share 12
+          :locked? false}
+  :nuclear {:share 15
+            :locked? false}
+  :bio {:share 2
+        :locked? false}
+  :natural-gas {:share 12
+                :locked? false}
+  :coal {:share 31
+         :locked? false}}}
  
  
  

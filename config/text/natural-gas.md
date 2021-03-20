@@ -1,5 +1,1 @@
-Ideen:
-
-- Methanleckagen
-- Ressourcenverbrauch umfasst nicht die Gasdgewinnung (Pipelines etc.)
-
+Erdgas gilt als Brückentechnologie auf dem Weg zu einer klimafreundlichen Stromversorgung und zudem als eine unerlässliche Ergänzung zu Wind-und Solarenergie, deren schwankende Produktion durch schnell regelbare Gaskraftwerke kompensiert werden kann. Während die Klimabilanz des einzelnen Gaskraftwerks zwar besser ausfällt als diejenige von Kohle, kann durch Leckagen bei Gasgewinnung und -transport ein noch weitaus gefährlicheres Treibhausgas in die Atmosphäre entweichen.
