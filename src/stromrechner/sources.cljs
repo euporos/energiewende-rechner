@@ -8,13 +8,11 @@
   [publications]
   (map
    (fn [pub]
-     (if (:energy-sources pub)
+     (if (:energy-sources pub) 
        (update pub :energy-sources
                #(h/reverse-paths %))
        pub))
    publications))
-
- 
  
 (m/def-from-file publications
   "config/publications.edn" 
@@ -22,7 +20,7 @@
 
 (defn pubs-for-param
   ""
-  [nrg-key param-key]
+  [nrg-key param-key]  
   (filter
    #(get-in % [:energy-sources nrg-key param-key])    
    publications))
@@ -71,3 +69,31 @@
   [nrg-key param-key]
   (some #(if (get-in % [:energy-sources nrg-key param-key]) %)
         publications))
+
+;; #################
+;; #### Helpers ####
+;; #################
+
+(defn annual-twh-per-km2-to-W-per-m2
+  ""
+  [input]  
+  (-> (/ 1 input) ; km² / TWh → TWh/km²
+      (/ 1000000) ; TWh/m²
+      (* 1000000000000) ; Wh/m² (per year)
+      (/ (* 24 365)) ; W/m²
+      ))
+
+(comment
+  (h/map-vals
+  #(-> %
+       annual-twh-per-km2-to-W-per-m2
+       (* 100)
+       Math/round
+       (/ 100.0))
+  {:solar 5.7
+   :wind 46    
+   :bio 95
+   :nuclear 0.1
+   :natural-gas 1.1
+   :coal 2.2}))
+    
