@@ -20,7 +20,8 @@ Um diese – und weitere – Faktoren zu berücksichten muss ein bestimmter Mix 
 
 #### Wie funktioniert der Rechner?
 
-Wer herausfinden will, wie der Rechner »unter der Haube« funktioniert, kann den Quellcode auf [GitHub](https://github.com/euporos/stromwenderechner) einsehen. Das Programm ist Open Source und kann von jedem verbessert werden, der sich auskennt. Wenn Du den Rechner auf Deiner eigenen Seite einsetzen möchtest, wäre es nett, einen Link auf die Originalseite zu setzen.
+Wer herausfinden will, wie der Rechner »unter der Haube« funktioniert, kann den Quellcode auf
+<a href="https://github.com/euporos/stromwenderechner" target="blank">GitHub</a> einsehen. Das Programm ist Open Source und kann von jedem verbessert werden, der sich auskennt. Wenn Du den Rechner auf Deiner eigenen Seite einsetzen möchtest, wäre es nett, einen Link auf die Originalseite zu setzen.
 
 #### Kann man hier mitmachen?
 
