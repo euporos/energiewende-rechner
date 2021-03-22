@@ -96,4 +96,3 @@
    :nuclear 0.1
    :natural-gas 1.1
    :coal 2.2}))
-    

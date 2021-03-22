@@ -53,7 +53,7 @@
                 :input-attrs {:type "number" 
                            :pattern "0.00"
                            :step "0.01"
-                           :min 0.01}}]])
+                              :min 0.01}}]])
 
 (def param-keys (map first parameters))
 
@@ -76,6 +76,8 @@
                                        :min 0}}])
 
 (def parameter-map (into {} parameters))
+
+(def area-germany 357581)
 
 
 

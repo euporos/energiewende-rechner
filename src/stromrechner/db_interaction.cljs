@@ -249,6 +249,7 @@
                     (radius-from-area-circle area))]
      (assoc nrg
             :area area
+            :relative-area (/ area const/area-germany)
             :radius radius
             :diameter (* 2 radius )))))
 

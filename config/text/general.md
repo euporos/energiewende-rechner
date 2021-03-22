@@ -12,7 +12,7 @@ Um Ergebnisse zu liefern, muss man den Rechner mit Zahlen füttern. Diese kannst
 Freilich muss der Rechner einige Zusammenhänge vereinfachen.  Das gilt inbesondere für Effekte, die nicht der einzelnen Energiequelle, sondern nur dem Energiesystem als ganzem zuegordnet werden können: 
 
 - *Speicherverluste*. Diese betreffen insbesondere Solar- und Windenergie, deren unregelmäßige Leistung durch verlustbehaftete Speicher geglättet werden muss.
-- *Verlust von Stromspitzen*: Ein hoher Anteil an Solar- und Windenergie wird manchmal mehr Strom produzieren, als die Speicher aufnehmen können. Dieser ungenutzte Strom muss eigentlich zum jährlichen Strombedarf addiert werden.
+- *Verlust von Stromspitzen*: Bei einem hohen Anteil an Solar- und Windenergie wird manchmal mehr Strom produziert, als die Speicher aufnehmen können. Dieser ungenutzte Strom muss eigentlich zum jährlichen Strombedarf addiert werden.
 - Um Netzschwankungen auszugleichen, müssen – insbesondere bei einem hohen Anteil von Wind- und Solarenergie – flexible *Backup-Kraftwerke* (Gas/Wasserstoff) vorgehalten werden. Deren Flächen- und Ressourcenverbauch ist hier nicht berücksichtigt.
 - Wo immer Du die Einheit Watt (W) findest, ist *stets elektrische Leistung* gemeint. Die mögliche direkte Nutzung der thermischen Leistung mancher Kaftwerke zum Heizen könnte den Gesamtstrombedarf reduzieren.
 

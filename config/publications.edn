@@ -61,12 +61,43 @@
     :nuclear 0.09
     :natural-gas 4
     :coal 161}}}
+ {:id "BMVI, Berlin, 2015"
+  :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
+  :energy-sources
+  {:power-density
+   {:wind 4.7 ; 20
+    :solar 5.2 ; ausgehend von 2.25 ha/MW inst.Leistung
+    :bio 0.16 ; ausgehend von 75 ha/GWh*a p.63
+    }
+   :capacity-factor
+   {:wind 1 ; 0.23
+    :solar 1 ; 0.11
+    :bio 1 ; 0.06
+    }}}
+ {:id "Energy Policy (ohne Infrastruktur)"
+  :link "https://doi.org/10.1016/j.enpol.2018.08.023"
+  :energy-sources
+  {:power-density
+   {:bio 0.8; (/ 0.08 0.1) 
+    :solar 33.15 ; (/ 6.63 0.2)
+    :wind 2.04; (/ 1.84 0.9) ; 6.37
+    :nuclear 422.5 ;(/ 240.8 0.57)
+    :natural-gas 1095 ; (/ 482.1 0.44)
+    :coal 187.6 ; (/ 135.1 0.72)
+    }
+   ;; {:bio 0.05
+   ;;   ; 0.85 ; checken auf p. 86  steht 0.05, auf 87 0.045!!!
+   ;;  :solar 6.32
+   ;;  :wind 2.02 ; 6.37 ; onshore
+   ;;  :nuclear 240.8
+   ;;  :natural-gas 482.1
+   ;;  :coal 121.5}
+   }}
  {:id "Energy Policy (inkl. Infrastruktur)"
   :link "https://doi.org/10.1016/j.enpol.2018.08.023"
   :energy-sources
   {:power-density
-   {:bio 0.08 ; p.85
-     ; 0.85 ; checken auf p. 86  steht 0.05, auf 87 0.045!!!
+   {:bio 0.08
     :solar 6.63
     :wind 1.84 ; 6.37 ; onshore
     :nuclear 240.8
@@ -85,38 +116,6 @@
     :wind 1 ; 0.3
     :nuclear 1 ; 0.93
     :natural-gas 1}}}
- {:id "BMVI, Berlin, 2015"
-  :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
-  :energy-sources
-  {:power-density
-   {:wind 4.7 ; 20
-    :solar 5.2 ; ausgehend von 2.25 ha/MW inst.Leistung
-    :bio 0.16 ; ausgehend von 75 ha/GWh*a p.63
-    }
-   :capacity-factor
-   {:wind 1 ; 0.23
-    :solar 1 ; 0.11
-    :bio 1 ; 0.06
-    }}}
- {:id "Energy Policy (ohne Infrastruktur)"
-  :link "https://doi.org/10.1016/j.enpol.2018.08.023"
-  :energy-sources
-  {:power-density
-   {:bio (/ 0.08 0.1) ; p.85
-     ; 0.85 ; checken auf p. 86  steht 0.05, auf 87 0.045!!!
-    :solar (/ 6.63 0.2)
-    :wind (/ 1.84 0.9) ; 6.37 ; onshore
-    :nuclear (/ 240.8 0.57)
-    :natural-gas (/ 482.1 0.44)
-    :coal (/ 135.1 0.72)}
-   ;; {:bio 0.05
-   ;;   ; 0.85 ; checken auf p. 86  steht 0.05, auf 87 0.045!!!
-   ;;  :solar 6.32
-   ;;  :wind 2.02 ; 6.37 ; onshore
-   ;;  :nuclear 240.8
-   ;;  :natural-gas 482.1
-   ;;  :coal 121.5}
-   }}
  {:id "CB (inkl. Brennstoffgewinnung)"
   :link "https://doi.org/10.1111/cobi.12433"
   :energy-sources
@@ -149,6 +148,16 @@
     :nuclear 19
     :bio 0
     :coal 949
+    :natural-gas 428}}}
+ {:id "Öko-Institut, 2007"
+  :link "https://www.oeko.de/oekodoc/318/2007-008-de.pdf"
+  :energy-sources
+  {:co2 ; p.7
+   {:wind 23
+    :solar 101
+    :nuclear 31
+    :bio 0
+    :coal 941
     :natural-gas 428}}}
  {:id "BMVI, Berlin, 2015" ; !!!!!
   :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
