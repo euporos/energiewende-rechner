@@ -512,15 +512,22 @@
 (defn circle-energy
   ""
   [nrg-key] 
-  (let [{:keys [props radius area color darker-color]}
+  (let [{:keys [props radius area relative-area color darker-color]}
         @(rf/subscribe [:deriv/surface-added nrg-key])
         text-x (:cx props)
         text-y (:cy props)]
     [:<>
-     (circle-by-area
+     (circle-by-area 
       radius {} props)
      (let [area (Math/round area)
-           outside? (< radius 55)]
+           area-percent (-> relative-area
+                            (* 1000)
+                            Math/round
+                            (/ 10))
+           outside? (< radius 55)
+           variable-y (if outside?
+                      (- text-y radius 18)
+                      text-y)]
        
 
        (when (> area 0)
@@ -531,12 +538,16 @@
                  :font-weight "bold"
                  :fill (if (< radius 5) darker-color)
                  :x text-x
-                 :y (if outside?
-                      (- text-y radius 10)
-                      text-y)}
+                 :y variable-y}
           
-          (str (h/structure-int
-                area) " km²")]))]))
+          [:tspan {:x text-x
+                   :y (- variable-y 8)} area-percent "%"]
+          
+          [:tspan {:x text-x
+                   :y (+ variable-y 8)}
+           (str           
+            (h/structure-int
+             area) " km²")]]))]))
 
 (defn mapview
   ""
