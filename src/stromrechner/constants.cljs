@@ -4,7 +4,7 @@
 (def hours-per-year (* 24 365))
 
 (def parameters
-  [[:power-density {:name "Bemessungsleistung pro m² in W"
+  [[:power-density {:name "Bemessungsleistung pro m² in W"
                     :unit "W/m²"
                     :parse-fn js/parseFloat
                     :input-attrs {:type "number"
@@ -29,7 +29,7 @@
                            :pattern "0.00"
                            :step "0.01"
                            :min 0.01}}]
-   [:co2 {:name [:span "CO" [:sub "2"] "-Äquivalent in g/kWh" ]
+   [:co2 {:name [:span "Spezifische CO" [:sub "2"] "-Emiss. in g/kWh" ]
           :unit "g/kWh"
           :indicator-formatter #(-> %
                                     (* 0.001) ; convert to Mio t
@@ -85,4 +85,6 @@
 
 ;; (def deaths-granularity 1000) ; 100% ≙ 1000
  
+
+
 

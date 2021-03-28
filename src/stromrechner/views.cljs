@@ -410,7 +410,7 @@
    [controlled-panel :explanations
     [:<> "Erläuterungen" [:span.is-hidden-desktop " und Parameter" ]]
     [:div.block
-     [:h3.title.is-3 {:id "was-ist-das"} "Der Rechner zur Energiewende"]
+     [:h3.title.is-3 {:id "explanation-general"} "Der Rechner zur Energiewende"]
      [:div.content (h/dangerous-html (get-in text/snippets [:general :text]))]]
     [:div.block
      [:h3.title.is-3 "Energiequellen"]
@@ -526,7 +526,7 @@
                             (/ 10))
            outside? (< radius 55)
            variable-y (if outside?
-                      (- text-y radius 18)
+                      (- text-y radius 19)
                       text-y)]
        
 
@@ -541,10 +541,12 @@
                  :y variable-y}
           
           [:tspan {:x text-x
-                   :y (- variable-y 8)} area-percent "%"]
+                   :y (- variable-y 9)}
+           (if (= 0 area-percent)
+             "<0.1" area-percent) " %"]
           
           [:tspan {:x text-x
-                   :y (+ variable-y 8)}
+                   :y (+ variable-y 9)}
            (str           
             (h/structure-int
              area) " km²")]]))]))
@@ -613,13 +615,17 @@
                     [indicator "Jährlicher Ressourcenverbrauch:" :resources]))
 
 
-;; ############################ 
+;; ############################   
 ;; ###### Main Component ######
 ;; ############################
 
 (defn main-panel []
   [:div
-   [:div.anwendung.pt-3.pb-3.pl-3.pr-3
+   [:p.subtitle.has-text-centered
+    {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :general])
+     :style {:cursor "pointer"}}
+    "→ Was ist das? ←"]
+   [:div.anwendung.pt-3.pb-3.pl-3.pr-3    
     [:div.columns
      [:div.anzeige.column.is-two-thirds-desktop;; .is-one-third-mobile
       [mapview]]

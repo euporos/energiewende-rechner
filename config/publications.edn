@@ -61,7 +61,7 @@
     :nuclear 0.09
     :natural-gas 4
     :coal 161}}}
- {:id "BMVI, Berlin, 2015"
+ {:id "BMVI (2015)"
   :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
   :energy-sources
   {:power-density
@@ -74,17 +74,39 @@
     :solar 1 ; 0.11
     :bio 1 ; 0.06
     }}}
+ {:id "Energy Policy (Nur Generatoren)"
+  :link "https://doi.org/10.1016/j.enpol.2018.08.023"
+  :energy-sources
+  {:power-density
+   {:bio 0.8
+    :wind 18.4 
+    }}}
+ {:id "Energy Policy (Nur Generatoren + Infrastruktur)"
+  :link "https://doi.org/10.1016/j.enpol.2018.08.023"
+  :energy-sources
+  {:power-density
+   {:bio 0.8
+    :wind 1.84
+    }}}
  {:id "Energy Policy (ohne Infrastruktur)"
   :link "https://doi.org/10.1016/j.enpol.2018.08.023"
   :energy-sources
   {:power-density
-   {:bio 0.09 ; (/ 0.08 0.9) 
-    :solar 8.3 ; (/ 6.63 0.8)
-    :wind 18.4 ; (/ 1.84 0.1)
+   {:bio 0.8
+    :solar 8.3 ;(/ 6.63 0.8)
+    ; :wind 18.4  ; (/ 1.84 0.1) 
     :nuclear 560 ; (/ 240.8 0.43)
     :natural-gas 860.9 ; (/ 482.1 0.56)
     :coal 482.5 ; (/ 135.1 0.28)
     }   
+   ;; {:bio 0.09 ; (/ 0.08 0.9) 
+   ;;  :solar 8.3 ; (/ 6.63 0.8)
+   ;;  :wind 18.4 ; (/ 1.84 0.1)
+   ;;  :nuclear 560 ; (/ 240.8 0.43)
+   ;;  :natural-gas 860.9 ; (/ 482.1 0.56)
+   ;;  :coal 482.5 ; (/ 135.1 0.28)
+   ;;  }
+   
    ;; {:bio 0.8; (/ 0.08 0.1) 
    ;;  :solar 33.15 ; (/ 6.63 0.2)
    ;;  :wind 2.04; (/ 1.84 0.9) ; 6.37
@@ -113,7 +135,6 @@
   {:power-density
    {:bio 0.08
     :solar 6.63
-    :wind 1.84 ; 6.37 ; onshore
     :nuclear 240.8
     :natural-gas 482.1
     :coal 135.1}
@@ -153,7 +174,17 @@
  ;;    :solar 5.2 ; ausgehend von 2.25 ha/MW inst.Leistung
  ;;    :bio 0.16 ; ausgehend von 75 ha/GWh*a p.63
  ;;    }}}
- {:id "Deutscher Bundestag, 2007"
+ {:id "IPCC (2018)"
+  :link "https://www.ipcc.ch/site/assets/uploads/2018/02/ipcc_wg3_ar5_annex-iii.pdf#page=7"
+  :energy-sources
+  {:co2
+   {:wind 11
+    :solar 44
+    :nuclear 12
+    :bio 230
+    :coal 820
+    :natural-gas 490}}}
+ {:id "Deutscher Bundestag (2007)"
   :link "https://www.bundestag.de/resource/blob/406432/70f77c4c170d9048d88dcc3071b7721c/wd-8-056-07-pdf-data.pdf"
   :energy-sources
   {:co2
@@ -163,7 +194,7 @@
     :bio 0
     :coal 949
     :natural-gas 428}}}
- {:id "Öko-Institut, 2007"
+ {:id "Öko-Institut (2007)"
   :link "https://www.oeko.de/oekodoc/318/2007-008-de.pdf"
   :energy-sources
   {:co2 ; p.7
@@ -173,13 +204,13 @@
     :bio 0
     :coal 941
     :natural-gas 428}}}
- {:id "BMVI, Berlin, 2015" ; !!!!!
+ {:id "BMVI, (2015)" ; !!!!!
   :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
   :energy-sources
   {:arealess-capacity
    {:solar 142 ; S. 95
     }}}
- {:id "Quaschning, 2000"
+ {:id "Quaschning (2000)"
   :link "https://www.volker-quaschning.de/downloads/Klima2000.pdf"
   :energy-sources
   {:arealess-capacity

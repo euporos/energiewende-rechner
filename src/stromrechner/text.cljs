@@ -6,7 +6,7 @@
    {:general {:heading "Allgemeines"}
     :power-density {:heading "Bemessungsleistung pro m²"}
     :deaths {:heading "Statistisch erwartbare Todesfälle pro TWh"}
-    :co2 {:heading [:span "CO" [:sub "2"] "-Äquivalent" ]}
+    :co2 {:heading [:span "Spezifische CO" [:sub "2"] "-Emissionen" ]}
     :resources {:heading "Ressourcenverbrauch"}
     :wind {:heading "Windenergie"}
     :solar {:heading "Photovoltaik"}
