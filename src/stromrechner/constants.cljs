@@ -75,6 +75,16 @@
                                        :step "1"
                                        :min 0}}])
 
+
+(def arealess-capacity-wind
+  [:arealess-capacity {:name "Kapazität für Offshore Windkraft in TWh"
+                         :unit "TWh"
+                         :parse-fn js/parseFloat
+                         :input-attrs {:type "number"
+                                       :pattern "1"
+                                       :step "1"
+                                       :min 0}}])
+
 (def parameter-map (into {} parameters))
 
 (def area-germany 357581)

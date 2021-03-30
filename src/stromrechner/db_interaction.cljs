@@ -73,6 +73,31 @@
    (get nrgs nrg-key)))
 
 
+
+(reg-sub
+ :nrg/get-param
+ (fn [_]
+   (rf/subscribe [:global/energy-sources]))
+ (fn [nrgs [_ nrg-key param]]
+   (get-in nrgs [nrg-key param])))
+
+(reg-sub
+ :nrg/exhausted-arealess
+ (fn [[_ nrg-key]]
+   [(rf/subscribe [:nrg/get-param nrg-key :arealess-capacity])
+    (rf/subscribe [:nrg-share/get-abs nrg-key])])
+ (fn [[arealess-capacity twh-share] [_ nrg-key]]
+   (if (> twh-share arealess-capacity)
+     arealess-capacity
+     twh-share)))
+
+
+(comment
+  @(rf/subscribe [:nrg/get-param :wind :arealess-capacity])
+  @(rf/subscribe [:nrg/exhausted-arealess :wind])
+
+  )
+
 ;; ######################
 ;; ##### Parameters #####
 ;; ######################
@@ -168,7 +193,9 @@
     (rf/dispatch [:pub/load nrg-key param-key
                   (sources/default-pub nrg-key param-key)]))
   (rf/dispatch [:pub/load :solar :arealess-capacity
-                  (sources/default-pub :solar :arealess-capacity)]))
+                (sources/default-pub :solar :arealess-capacity)])
+  (rf/dispatch [:pub/load :wind :arealess-capacity
+                  (sources/default-pub :wind :arealess-capacity)]))
 
 ;; ###########################
 ;; ###### Energy shares ######

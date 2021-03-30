@@ -91,7 +91,8 @@
        (/ 100.0))
   {:solar 5.7
    :wind 46    
-   :bio 95
+   :bio 95 
    :nuclear 0.1
    :natural-gas 1.1
    :coal 2.2}))
+ 
