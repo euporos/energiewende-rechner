@@ -145,18 +145,38 @@
   [param-input [:energy-sources :solar] const/arealess-capacity])
 
 
-(defn solar-roof-capacity
+;; (defn solar-roof-capacity
+;;   ""
+;;   []
+;;   (panel [:span "Solarkapazität Dächer";; (icons/icon2 "#999999" icons/sun)
+;;           (if-let [href (:link @(rf/subscribe [:pub/loaded :solar :arealess-capacity]))]
+;;             [:a {:target "_blank"
+;;                  :href href} "→ Quelle"])]
+;;          [:div.block
+;;           [:div.mb-1
+;;            [solar-roof-capacity-dropdown]]
+;;           [:div
+;;            [solar-roof-capacity-input]]]))
+
+
+;; ###########################
+;; ###### Offshore Wind ######
+;; ###########################
+
+(defn offshore-wind-capacity-dropdown
   ""
   []
-  (panel [:span "Solarkapazität Dächer";; (icons/icon2 "#999999" icons/sun)
-          (if-let [href (:link @(rf/subscribe [:pub/loaded :solar :arealess-capacity]))]
-            [:a {:target "_blank"
-                 :href href} "→ Quelle"])]
-         [:div.block
-          [:div.mb-1
-           [solar-roof-capacity-dropdown]]
-          [:div
-           [solar-roof-capacity-input]]]))
+  [publication-dropdown
+   {:value-subscription @(rf/subscribe [:pub/loaded :wind :arealess-capacity])
+    :partial-dispatch [:pub/load :wind :arealess-capacity]
+    :publications (sources/pubs-for-param :wind :arealess-capacity)}])
+
+(defn offshore-wind-capacity-input
+  ""
+  []
+  [param-input [:energy-sources :wind] const/arealess-capacity])
+
+
  
 
 ;; ########################
@@ -251,17 +271,17 @@
 ;;                     [:a {:target "_blank"
 ;;                          :href href} "→ Quelle"]))
 
-(defn detailed-settings []
-  [:div#detailed-settings.pl-3.pr-3
-   (controlled-panel :details
-    "Parameter"
-    [:span "Solarkapazität Dächer in TWh";; (icons/icon2 "#999999" icons/sun)
-     [pub-link :solar :arealess-capacity]]
-    [solar-roof-capacity-dropdown]
-    [solar-roof-capacity-input]
-    (for [nrg-source @(rf/subscribe [:global/energy-sources])]
-      ^{:key (first nrg-source)}
-      [params-for-energy-source nrg-source]))])
+;; (defn detailed-settings []
+;;   [:div#detailed-settings.pl-3.pr-3
+;;    (controlled-panel :details
+;;     "Parameter"
+;;     [:span "Solarkapazität Dächer in TWh";; (icons/icon2 "#999999" icons/sun)
+;;      [pub-link :solar :arealess-capacity]]
+;;     [solar-roof-capacity-dropdown]
+;;     [solar-roof-capacity-input]
+;;     (for [nrg-source @(rf/subscribe [:global/energy-sources])]
+;;       ^{:key (first nrg-source)}
+;;       [params-for-energy-source nrg-source]))])
 
 ;; ################################
 ;; ####### Tabular Settings #######
@@ -337,7 +357,22 @@
       [:div.column.is-narrow [solar-roof-capacity-input]]
       [:div.column.is-narrow [solar-roof-capacity-dropdown]]
       [:div.column.is-narrow [pub-link :solar :arealess-capacity]]
-      [:div.column]]])])
+      [:div.column]]]
+
+
+    [:div.has-text-centered
+     {:style {:margin-left "auto"
+              :margin-right "auto"}}
+     [:span.has-text-weight-bold
+      {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :solar])}
+      (with-tooltip "Kapazität für Offshore Windkraft in TWh")]
+     [:div.columns.is-mobile.is-vcentered.mt-1
+      [:div.column]
+      [:div.column.is-narrow [offshore-wind-capacity-input]]
+      [:div.column.is-narrow [offshore-wind-capacity-dropdown]]
+      [:div.column.is-narrow [pub-link :wind :arealess-capacity]]
+      [:div.column]]]
+    )])
 
 
 ;; ########################
@@ -364,29 +399,34 @@
   [nrg-key nrg]
   [:div.is-hidden-desktop
    [:h5.title.is-5 "Parameter für " (:name nrg) ":"]
-   (into [:div (when (= nrg-key :solar)
-     [param-settings-pair-explanations
-      nrg-key const/arealess-capacity])]
+   (into [:div
+          (when (= nrg-key :solar)
+            [param-settings-pair-explanations
+             nrg-key const/arealess-capacity])
+          (when (= nrg-key :wind)
+            [param-settings-pair-explanations
+             nrg-key const/arealess-capacity-wind])
+          ]
          (map
           (fn [param]
             [param-settings-pair-explanations nrg-key param])
           const/parameters))])
 
 
-(defn params-for-param-explanations
-  ""
-  [param-key param-dfn]
-  [:div.is-hidden-desktop
-   [:h5.title.is-5 (:name param-dfn) " für verschiedene Energiequellen:"]
-   [param-settings-pair-explanations :solar [param-key param-dfn]]
-   ;; (into [:div (when (= nrg-key :solar)
-   ;;   [param-settings-pair-explanations
-   ;;    nrg-key const/arealess-capacity])]
-   ;;       (map
-   ;;        (fn [nrg]
-   ;;          [param-settings-pair-explanations nrg-key param])
-   ;;        cfg/nrgs))
-   ])
+;; (defn params-for-param-explanations
+;;   ""
+;;   [param-key param-dfn]
+;;   [:div.is-hidden-desktop
+;;    [:h5.title.is-5 (:name param-dfn) " für verschiedene Energiequellen:"]
+;;    [param-settings-pair-explanations :solar [param-key param-dfn]]
+;;    ;; (into [:div (when (= nrg-key :solar)
+;;    ;;   [param-settings-pair-explanations
+;;    ;;    nrg-key const/arealess-capacity])]
+;;    ;;       (map
+;;    ;;        (fn [nrg]
+;;    ;;          [param-settings-pair-explanations nrg-key param])
+;;    ;;        cfg/nrgs))
+;;    ])
 
 (defn format-snippet
   ""
@@ -551,6 +591,25 @@
             (h/structure-int
              area) " km²")]]))]))
 
+
+(defn offshore-wind
+  ""
+  []
+  (let [offshore-wind  @(rf/subscribe [:nrg/exhausted-arealess :wind])]
+    (if (> offshore-wind 0)
+      [:text {:text-anchor "middle"
+              :zindex 1000
+              :fill "blue"
+              :alignment-baseline "central"
+              :font-weight "bold"}
+       [:tspan {:x 430
+                :y 30}
+        "Offshore Wind"]
+       [:tspan {:x 430
+                :y 48}
+        (Math/round @(rf/subscribe [:nrg/exhausted-arealess :wind])) " TWh"]])))
+
+
 (defn mapview
   ""
   []
@@ -558,7 +617,8 @@
    (into [:svg.karte
           {:viewBox "0 0 640 876"
            ;:preserveAspectRatio true
-           }]
+           }
+          [offshore-wind]]
          (doall (map circle-energy
                      @(rf/subscribe [:global/energy-keys]))))])
 
