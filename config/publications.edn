@@ -79,15 +79,13 @@
   :link "https://doi.org/10.1016/j.enpol.2018.08.023"
   :energy-sources
   {:power-density
-   {:bio 0.8
-    :wind 18.4 
+   {:wind 18.4 
     }}}
  {:id "Energy Policy (Nur Generatoren + Infrastruktur)"
   :link "https://doi.org/10.1016/j.enpol.2018.08.023"
   :energy-sources
   {:power-density
-   {:bio 0.8
-    :wind 1.84
+   {:wind 1.84
     }}}
  {:id "Energy Policy (ohne Infrastruktur)"
   :link "https://doi.org/10.1016/j.enpol.2018.08.023"
