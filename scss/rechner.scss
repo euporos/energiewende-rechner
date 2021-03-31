@@ -21,11 +21,19 @@ html {
       scroll-behavior: smooth;
 }
 
+input[type=range] {
+ pointer-events: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+ pointer-events:auto;
+}
+
    
 .anwendung {
     max-width: 100vh;
     @include respond(tab-port) {
-    	max-width: 1000vh;
+    	max-width: 1000vh; 
     }
     margin-left: auto; 
     margin-right: auto; 

@@ -1,6 +1,12 @@
 html {
   scroll-behavior: smooth; }
 
+input[type=range] {
+  pointer-events: none; }
+
+input[type=range]::-webkit-slider-thumb {
+  pointer-events: auto; }
+
 .anwendung {
   max-width: 100vh;
   margin-left: auto;
