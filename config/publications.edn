@@ -18,10 +18,13 @@
 ;; ##### Publications #####
 ;; ########################
 
-[{:id "2050, größere Effizienz (Quaschning 2016)"
+[{:id "2050, große Effizienzgewinne (Quaschning 2016)"
   :link "https://www.volker-quaschning.de/publis/studien/sektorkopplung/Sektorkopplungsstudie.pdf"
   :energy-needed 1300}
- {:id "2050,  gleiche Effizienz (Quaschning 2016)"
+ ;; {:id "2050,  mittlere Effizienzgewinne (Quaschning 2016)"
+ ;;  :link "https://www.volker-quaschning.de/publis/studien/sektorkopplung/Sektorkopplungsstudie.pdf"
+ ;;  :energy-needed 2150}
+ {:id "2050,  keine Effizienzgewinne (Quaschning 2016)"
   :link "https://www.volker-quaschning.de/publis/studien/sektorkopplung/Sektorkopplungsstudie.pdf"
   :energy-needed 3000}
  {:id "The Lancet"
@@ -74,6 +77,17 @@
    {:wind 1 ; 0.23
     :solar 1 ; 0.11
     :bio 1 ; 0.06
+    }}}
+ ;; {:id "PNAS"
+ ;;  :link "https://doi.org/10.1073/pnas.1408251112"
+ ;;  {:energy-sources
+ ;;   {:power-density
+ ;;    {:wind 1.1}}}}
+ {:id "PNAS (2015)"
+  :link "https://doi.org/10.1073/pnas.1408251112"
+  :energy-sources
+  {:power-density
+   {:wind 1.1
     }}}
  {:id "Energy Policy (Nur Generatoren)"
   :link "https://doi.org/10.1016/j.enpol.2018.08.023"
