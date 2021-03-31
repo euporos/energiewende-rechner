@@ -592,22 +592,55 @@
              area) " km²")]]))]))
 
 
-(defn offshore-wind
+(defn arealess-indicator
   ""
-  []
-  (let [offshore-wind  @(rf/subscribe [:nrg/exhausted-arealess :wind])]
-    (if (> offshore-wind 0)
+  [nrg-key {:keys [color x y label]}]
+  (let [arealess-indicator  @(rf/subscribe [:nrg/exhausted-arealess nrg-key])]
+    (if (> arealess-indicator 0)
       [:text {:text-anchor "middle"
               :zindex 1000
-              :fill "blue"
+              :fill color
               :alignment-baseline "central"
-              :font-weight "bold"}
-       [:tspan {:x 430
-                :y 30}
-        "Offshore Wind"]
-       [:tspan {:x 430
-                :y 48}
-        (Math/round @(rf/subscribe [:nrg/exhausted-arealess :wind])) " TWh"]])))
+              :font-weight "bold"              
+              :filter "url(#softGlow)"
+              }
+       [:tspan {:x x
+                :y y}
+        label]
+       [:tspan {:x x
+                :y (+ y 18)}
+        (Math/round @(rf/subscribe [:nrg/exhausted-arealess nrg-key])) " TWh"]])))
+
+
+(def svg-defs
+  [:defs           
+           [:filter#softGlow 
+            {:height "300%" 
+             :width "300%" 
+             :x "-75%" 
+             :y "-75%"} 
+            [:feMorphology 
+             {:operator "dilate" 
+              :radius "4" 
+              :in "SourceAlpha" 
+              :result "thicken"}] 
+            [:feGaussianBlur 
+             {:in "thicken" 
+              :stdDeviation "3" 
+              :result "blurred"}]              
+            [:feFlood 
+             {:flood-color "#555" 
+              :result "glowColor"}] 
+            [:feComposite 
+             {:in "glowColor" 
+              :in2 "blurred" 
+              :operator "in" 
+              :result "softGlow_colored"}]
+            [:feMerge 
+             [:feMergeNode 
+              {:in "softGlow_colored"}] 
+             [:feMergeNode 
+              {:in "SourceGraphic"}]]]])
 
 
 (defn mapview
@@ -618,7 +651,24 @@
           {:viewBox "0 0 640 876"
            ;:preserveAspectRatio true
            }
-          [offshore-wind]]
+
+          svg-defs
+          
+          [:rect 
+           {:width "90" 
+            :height "90" 
+            :stroke "green" 
+            :stroke-width "3" 
+            :fill "yellow" 
+            :filter "url(#f1)"}]
+          [arealess-indicator :wind {:label "Offshore-Wind"
+                                     :x 430
+                                     :y 30
+                                     :color "rgba(135, 206, 250)"}]
+          [arealess-indicator :solar {:label "Aufdach-PV"
+                                     :x 540
+                                     :y 600
+                                     :color "yellow"}]] 
          (doall (map circle-energy
                      @(rf/subscribe [:global/energy-keys]))))])
 
