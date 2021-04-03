@@ -18,20 +18,26 @@
 @import "_mediaqueries";
 
 html {
-      scroll-behavior: smooth;
+    scroll-behavior: smooth;
+    color: tomato;
 }
 
-input[type=range] {
+@include respond(tab-port)  {
+    input[type=range] {
  pointer-events: none;
 }
 
 input[type=range]::-webkit-slider-thumb {
  pointer-events:auto;
 }
+}
+
+
 
    
 .anwendung {
-    max-width: 100vh;
+    // max-width: 100vh;
+    max-width: 120rem;
     @include respond(tab-port) {
     	max-width: 1000vh; 
     }
@@ -57,8 +63,10 @@ input[type=range]::-webkit-slider-thumb {
 
 .mapview {
         position: sticky;
-    top: 0;
-    user-select: none;
+	top: 0;
+	user-select: none;
+	margin-left: auto;
+	margin-tight: auto;
     // max-height: 60rem;
     // background-image: url("../imgs/deutschland2.svg");
     // background-size: contain;
@@ -78,8 +86,9 @@ input[type=range]::-webkit-slider-thumb {
  
  
 .karte {
-    
-    z-index: 1;
+    margin-left: auto;
+    margin-right: auto;
+    z-index: 1; 
     max-height: 50rem;
         @include respond(tab-port) {
     	max-height: 105vh;
@@ -101,10 +110,6 @@ input[type=range]::-webkit-slider-thumb {
     z-index: 2;
 }
 
-
-#detailed-settings { 
-    
-}
 
 .panel-heading--collapsible {
     cursor: pointer;
