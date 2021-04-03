@@ -1,14 +1,15 @@
 html {
-  scroll-behavior: smooth; }
+  scroll-behavior: smooth;
+  color: tomato; }
 
-input[type=range] {
-  pointer-events: none; }
+@media (max-width: 56.25em) {
+  input[type=range] {
+    pointer-events: none; }
 
-input[type=range]::-webkit-slider-thumb {
-  pointer-events: auto; }
-
+  input[type=range]::-webkit-slider-thumb {
+    pointer-events: auto; } }
 .anwendung {
-  max-width: 100vh;
+  max-width: 120rem;
   margin-left: auto;
   margin-right: auto; }
   @media (max-width: 56.25em) {
@@ -30,9 +31,13 @@ input[type=range]::-webkit-slider-thumb {
 .mapview {
   position: sticky;
   top: 0;
-  user-select: none; }
+  user-select: none;
+  margin-left: auto;
+  margin-tight: auto; }
 
 .karte {
+  margin-left: auto;
+  margin-right: auto;
   z-index: 1;
   max-height: 50rem;
   background-repeat: no-repeat;

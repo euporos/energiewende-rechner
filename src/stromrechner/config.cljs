@@ -34,6 +34,7 @@
 (def nrg-keys (map first (get settings :init-mix)))
 
 
-    
-
-
+(defn icon-for-nrg
+  ""
+  [nrg-key]
+  (get-in nrgs [nrg-key :icon])) 

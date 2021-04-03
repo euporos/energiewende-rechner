@@ -1,31 +1,31 @@
 {:nrg-constants {:wind {:name "Wind"
-                        :icon "imgs/windmill.svg"
+                        :icon "symbols/wind2.svg"
                         :color "rgba(135, 206, 250)"
                         :props {:cx 400
                                 :cy 250
                                 }} 
                  :solar {:name "Sonne"
-                         :icon "imgs/solarenergie.svg"
+                         :icon "symbols/solar.svg"
                          :color "rgba(255, 255, 0)"
                          :props {:cx 380
                                  :cy 700}}
                  :nuclear {:name "Kernenergie"
-                           :icon "imgs/atome.svg"
+                           :icon "symbols/nuclear.svg"
                            :color "rgba(250, 147, 38)"
                            :props {:cx 130
                                    :cy 630}}
                  :bio {:name "Biomasse"
-                       :icon "imgs/plant.svg"
+                       :icon "symbols/bio.svg"
                        :color "rgba(50, 205, 50)"
                        :props {:cx 320
                                :cy 450}}
                  :natural-gas {:name "Erdgas"
-                               :icon "imgs/flamme.svg"
+                               :icon "symbols/gas.svg"
                                :color "rgb(170, 120, 70)"
                                :props {:cx 200
                                        :cy 750}}
                  :coal {:name "Kohle"
-                               :icon "imgs/flamme.svg"
+                               :icon "symbols/coal.svg"
                                :color "rgb(140, 140, 140)"
                                :props {:cx 130
                                        :cy 430}}

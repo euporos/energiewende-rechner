@@ -10,7 +10,7 @@
    [stromrechner.helpers :as h]
    [stromrechner.config :as cfg]
    [stromrechner.text :as text]
-   ))
+   [reagent.core :as r]))
 
 ;; ########################
 ;; ##### Common Stuff #####
@@ -145,18 +145,6 @@
   [param-input [:energy-sources :solar] const/arealess-capacity])
 
 
-;; (defn solar-roof-capacity
-;;   ""
-;;   []
-;;   (panel [:span "Solarkapazität Dächer";; (icons/icon2 "#999999" icons/sun)
-;;           (if-let [href (:link @(rf/subscribe [:pub/loaded :solar :arealess-capacity]))]
-;;             [:a {:target "_blank"
-;;                  :href href} "→ Quelle"])]
-;;          [:div.block
-;;           [:div.mb-1
-;;            [solar-roof-capacity-dropdown]]
-;;           [:div
-;;            [solar-roof-capacity-input]]]))
 
 
 ;; ###########################
@@ -494,26 +482,57 @@
       {:for id} ;; [lock-icon nrg-key]
       ]]))
 
+;; (defn energy-slider-old [[nrg-key {:keys [name props share color]}]]
+;;   [:div.eslider.pt-1 {:style {:background-color color
+;;                          :width "100%"}}
+;;    [:span.ml-2 ;; [lock-toggler nrg-key]
+;;     [:button.mr-1 {:style {:transform "scale(0.75)"}
+;;               :on-click (h/dispatch-on-x [:nrg/toggle-lock nrg-key])}
+;;      (icon (if @(rf/subscribe [:nrg/locked? nrg-key])
+;;                      icons/lock-filled icons/lock-open))]]   
+;;    [:label
+;;     ;; [:img {:src  (get-in cfg/settings [:nrg-constants nrg-key :icon])
+;;     ;;        :style {:height "1rem"
+;;     ;;                :padding-top "0.2rem"
+;;     ;;                :margin-right "0.2rem"}}]
+;;     [:strong name " "
+;;      ;; (/ (Math/round (* 10 share)) 10)
+;;      (Math/round share)" % | "
+;;             (Math/round 
+;;              @(rf/subscribe [:nrg-share/get-abs nrg-key]))            
+;;      " TWh"]]
+   
+   
+;;    [:input {:type "range"  :min 0 :max 100a
+;;             :style {:width "100%"}
+;;             :value (str (/ share 1))
+;;             :on-change #(let [newval (-> % .-target .-value)]
+;;                           (.preventDefault %)
+;;                           (rf/dispatch-sync
+;;                            [:nrg-share/remix
+;;                             nrg-key (* 1 (js/parseInt newval))]))}]])
+
+
 (defn energy-slider [[nrg-key {:keys [name props share color]}]]
   [:div.eslider.pt-1 {:style {:background-color color
-                         :width "100%"}}
-   [:span.ml-2 ;; [lock-toggler nrg-key]
-    [:button.mr-1 {:style {:transform "scale(0.75)"}
-              :on-click (h/dispatch-on-x [:nrg/toggle-lock nrg-key])}
+                              :width "100%"}}
+   [:div.columns.is-vcentered.is-gapless.mb-0.is-mobile
+    [:div.column.is-narrow
+     [:button {:style {:transform "scale(0.75)"}
+               :on-click (h/dispatch-on-x [:nrg/toggle-lock nrg-key])}
      (icon (if @(rf/subscribe [:nrg/locked? nrg-key])
-                     icons/lock-filled icons/lock-open))]]   
-   [:label
-    ;; [:img {:src  (get-in cfg/settings [:nrg-constants nrg-key :icon])
-    ;;        :style {:height "1rem"
-    ;;                :padding-top "0.2rem"
-    ;;                :margin-right "0.2rem"}}]
-    [:strong name " "
+             icons/lock-filled icons/lock-open))]]
+    [:div.column.is-narrow.mr-2.ml-1.mt-1
+     [:img {:src  (cfg/icon-for-nrg nrg-key)
+            :style {:height "1.5rem"}}]]
+    [:div.column.is-narrow  
+     [:label
+      [:strong name " "
      ;; (/ (Math/round (* 10 share)) 10)
      (Math/round share)" % | "
             (Math/round 
              @(rf/subscribe [:nrg-share/get-abs nrg-key]))            
-     " TWh"]]
-   
+     " TWh"]]]]   
    
    [:input {:type "range"  :min 0 :max 100
             :style {:width "100%"}
@@ -548,15 +567,121 @@
      :stroke "black" 
      :stroke-width "0"}
     props)])
+
+;; (defn energy-label
+;;   ""
+;;   [nrg-key]
+;;   (let [{:keys [props radius area relative-area color darker-color]}
+;;         @(rf/subscribe [:deriv/surface-added nrg-key])
+;;         area-percent (-> relative-area
+;;                             (* 1000)
+;;                             Math/round
+;;                             (/ 10))
+;;         area (Math/round area)]
+
+;;     [:g
+;;      [:image {:xlinkHref (cfg/icon-for-nrg nrg-key)
+;;               :y 5
+;;               :height 30}]
+;;      [:text {; :text-anchor "middle"
+;;              :zindex 1000
+;;              :alignment-baseline "central"
+;;              :font-weight "bold"}
+
+      
+;;       [:tspan {:x 37
+;;                :y 15}
+;;        (if (= 0 area-percent)
+;;          "<0.1" area-percent) " %"]
+;;       [:tspan {:x 37
+;;                :y 35}
+;;        (str           
+;;         (h/structure-int
+;;          area) " km²")]]]))
+
+(defn energy-label
+  ""
+  [nrg-key]
+  (let [{:keys [props radius area relative-area color darker-color]}
+        @(rf/subscribe [:deriv/surface-added nrg-key])
+        area-percent (-> relative-area
+                            (* 1000)
+                            Math/round
+                            (/ 10))
+        area (Math/round area)]
+
+    [:g
+     [:image {:xlinkHref (cfg/icon-for-nrg nrg-key)
+              :y 10
+              :x 5
+              :height 20}]
+     [:text {; :text-anchor "middle"
+             :zindex 1000
+             :alignment-baseline "central"
+             :font-weight "bold"}
+
+      
+      [:tspan {:x 33
+               :y 15}
+       (if (= 0 area-percent)
+         "<0.1" area-percent) " %"]
+      [:tspan {:x 33
+               :y 35}
+       (str           
+        (h/structure-int
+         area) " km²")]]]))
+
+
+;; (defn energy-on-map
+;;   ""
+;;   [nrg-key] 
+;;   (let [{:keys [props radius area relative-area color darker-color]}
+;;         @(rf/subscribe [:deriv/surface-added nrg-key])
+;;         text-x (:cx props)
+;;         text-y (:cy props)]
+;;     [:<>
+;;      (circle-by-area 
+;;       radius {} props)
+;;      (let [area (Math/round area)
+;;            area-percent (-> relative-area
+;;                             (* 1000)
+;;                             Math/round
+;;                             (/ 10))
+;;            outside? (< radius 55)
+;;            variable-y (if outside?
+;;                       (- text-y radius 19)
+;;                       text-y)]
+       
+
+;;        (when (> area 0)
+         
+;;          [:text {:text-anchor "middle"
+;;                  :zindex 1000
+;;                  :alignment-baseline "central"
+;;                  :font-weight "bold"
+;;                  :fill (if (< radius 5) darker-color)
+;;                  :x text-x
+;;                  :y variable-y}
+          
+;;           [:tspan {:x text-x
+;;                    :y (- variable-y 9)}
+;;            (if (= 0 area-percent)
+;;              "<0.1" area-percent) " %"]
+          
+;;           [:tspan {:x text-x
+;;                    :y (+ variable-y 9)}
+;;            (str           
+;;             (h/structure-int
+;;              area) " km²")]]))]))
  
-(defn circle-energy
+(defn energy-on-map
   ""
   [nrg-key] 
   (let [{:keys [props radius area relative-area color darker-color]}
         @(rf/subscribe [:deriv/surface-added nrg-key])
-        text-x (:cx props)
-        text-y (:cy props)]
+        text-x (- (:cx props) 57)]
     [:<>
+     
      (circle-by-area 
       radius {} props)
      (let [area (Math/round area)
@@ -564,52 +689,58 @@
                             (* 1000)
                             Math/round
                             (/ 10))
-           outside? (< radius 55)
+           outside? (< radius 70)
            variable-y (if outside?
-                      (- text-y radius 19)
-                      text-y)]
+                        (- (:cy props) radius 40)
+                        (- (:cy props) 15))
+           variable-x (if outside?
+                        (- (:cx props) 15)
+                        (- (:cx props) 60))
+           label (energy-label nrg-key)]
+
+       (js/console.log label)
        
 
        (when (> area 0)
-         
-         [:text {:text-anchor "middle"
-                 :zindex 1000
-                 :alignment-baseline "central"
-                 :font-weight "bold"
-                 :fill (if (< radius 5) darker-color)
-                 :x text-x
-                 :y variable-y}
-          
-          [:tspan {:x text-x
-                   :y (- variable-y 9)}
-           (if (= 0 area-percent)
-             "<0.1" area-percent) " %"]
-          
-          [:tspan {:x text-x
-                   :y (+ variable-y 9)}
-           (str           
-            (h/structure-int
-             area) " km²")]]))]))
+
+         [:svg
+          {:x variable-x :y variable-y}
+          label]))]))
+
 
 
 (defn arealess-indicator
   ""
   [nrg-key {:keys [color x y label]}]
-  (let [arealess-indicator  @(rf/subscribe [:nrg/exhausted-arealess nrg-key])]
-    (if (> arealess-indicator 0)
-      [:text {:text-anchor "middle"
-              :zindex 1000
-              :fill color
-              :alignment-baseline "central"
-              :font-weight "bold"              
-              :filter "url(#softGlow)"
-              }
-       [:tspan {:x x
-                :y y}
-        label]
-       [:tspan {:x x
-                :y (+ y 18)}
-        (Math/round @(rf/subscribe [:nrg/exhausted-arealess nrg-key])) " TWh"]])))
+  (let [hovering? (r/atom false)]
+    (fn []
+      (let [arealess-twh  @(rf/subscribe [:nrg/exhausted-arealess nrg-key])
+            special-props {:filter "url(#softGlow)"
+                           :fill color
+                           :font-weight "bold"}
+            common-props {:text-anchor "middle"
+                :zindex 1000
+                :alignment-baseline "central"                
+                :cursor "help"
+                :on-click (h/dispatch-on-x [:ui/scroll-to-explanation nrg-key])
+                :on-mouse-over #(reset! hovering? true)
+                :on-mouse-leave #(reset! hovering? false)
+                }]
+       (if (> arealess-twh 0)  
+        [:g common-props
+         (when @hovering?
+           [:text {:x x
+                    :y (- y 25)
+                    :href "#"}
+            "Wie wird das berechnet?"])
+         [:text (merge special-props
+                  {:x x
+                   :y y})
+          label]
+         [:text (merge special-props
+                  {:x x
+                   :y (+ y 18)})
+          (Math/round @(rf/subscribe [:nrg/exhausted-arealess nrg-key])) " TWh"]])))))
 
 
 (def svg-defs
@@ -663,13 +794,13 @@
             :filter "url(#f1)"}]
           [arealess-indicator :wind {:label "Offshore-Wind"
                                      :x 430
-                                     :y 30
+                                     :y 40
                                      :color "rgba(135, 206, 250)"}]
           [arealess-indicator :solar {:label "Aufdach-PV"
                                      :x 540
                                      :y 600
                                      :color "yellow"}]] 
-         (doall (map circle-energy
+         (doall (map energy-on-map
                      @(rf/subscribe [:global/energy-keys]))))])
 
 
@@ -736,8 +867,8 @@
      :style {:cursor "pointer"}}
     "→ Was ist das? ←"]
    [:div.anwendung.pt-3.pb-3.pl-3.pr-3    
-    [:div.columns
-     [:div.anzeige.column.is-two-thirds-desktop;; .is-one-third-mobile
+    [:div.columns.is-centered.is-vcentered
+     [:div.anzeige.column.is-two-thirds-desktop.has-text-centered
       [mapview]]
      [:div.column      
       [energy-mix]
