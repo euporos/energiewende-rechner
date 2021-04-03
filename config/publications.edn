@@ -187,7 +187,7 @@
  ;;    :solar 5.2 ; ausgehend von 2.25 ha/MW inst.Leistung
  ;;    :bio 0.16 ; ausgehend von 75 ha/GWh*a p.63
  ;;    }}}
- {:id "IPCC (2018)"
+ {:id "IPCC (2014)"
   :link "https://www.ipcc.ch/site/assets/uploads/2018/02/ipcc_wg3_ar5_annex-iii.pdf#page=7"
   :energy-sources
   {:co2
@@ -223,7 +223,7 @@
   {:arealess-capacity
    {:wind 178
     }}}
- {:id "BMVI, (2015)" ; !!!!!
+ {:id "BMVI (2015)" ; !!!!!
   :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
   :energy-sources
   {:arealess-capacity
