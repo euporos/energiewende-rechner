@@ -546,12 +546,24 @@
 (defn energy-mix
   "" 
   []
-  (panel "Strommix"
-         [:div.mb-3.is-hidden-touch
-          "Stelle hier den Strommix der Zukunft zusammen…"]
-         (for [nrg-source @(rf/subscribe [:global/energy-sources])]
-           ^{:key (str (first nrg-source))}
-           [:div [energy-slider nrg-source]])))
+  (let [[bg-color font-color] @(rf/subscribe [:ui/decab-color])]
+    [:div ;; {:style {:background-color bg-color}}
+     [:nav.panel
+      [:div.panel-heading {:style {:background-color bg-color
+                                   :color font-color}} "Strommix"]
+      [:div.pt-3.pb-3.pr-3.pl-3
+       [:div.mb-3;; .is-hidden-touch        
+        "Stelle hier den Strommix der Zukunft zusammen…"]
+       (for [nrg-source @(rf/subscribe [:global/energy-sources])]
+         ^{:key (str (first nrg-source))}
+         [:div [energy-slider nrg-source]])]]
+     ;; (panel "Strommix"
+     ;;        [:div.mb-3.is-hidden-touch {:style {:color font-color}}
+     ;;         "Stelle hier den Strommix der Zukunft zusammen…"]
+     ;;        (for [nrg-source @(rf/subscribe [:global/energy-sources])]
+     ;;          ^{:key (str (first nrg-source))}
+     ;;          [:div [energy-slider nrg-source]]))
+     ]))
 
 ;; #########
 ;; ## Map ##
@@ -697,8 +709,6 @@
                         (- (:cx props) 15)
                         (- (:cx props) 60))
            label (energy-label nrg-key)]
-
-       (js/console.log label)
        
 
        (when (> area 0)

@@ -37,4 +37,4 @@
 (defn icon-for-nrg
   ""
   [nrg-key]
-  (get-in nrgs [nrg-key :icon])) 
+  (get-in nrgs [nrg-key :icon]))

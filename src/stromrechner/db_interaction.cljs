@@ -6,12 +6,14 @@
    [reagent.ratom :as ratom]
    [stromrechner.sources :as sources]
    [clojure.edn :as edn]
+   [stromrechner.color :as color]
    [stromrechner.logic :as logic]
    [stromrechner.constants :as constants]
    [stromrechner.constants :as const]
    [stromrechner.helpers :as h]
    [stromrechner.config :as cfg]
-   [stromrechner.logic :as l]))
+   [stromrechner.logic :as l]
+   [thi.ng.color.core :as col]))
 
 
 ;; ########################
@@ -92,11 +94,10 @@
      twh-share)))
 
 
+
 (comment
   @(rf/subscribe [:nrg/get-param :wind :arealess-capacity])
-  @(rf/subscribe [:nrg/exhausted-arealess :wind])
-
-  )
+  @(rf/subscribe [:nrg/exhausted-arealess :wind]))
 
 ;; ######################
 ;; ##### Parameters #####
@@ -226,6 +227,32 @@
    (-> share
        (/ 100)
        (* energy-needed))))
+
+(reg-sub
+ :share/fossil-share
+ (fn [_ _]
+   (rf/subscribe [:global/energy-sources]))
+ (fn [nrgs _]
+   (reduce
+    (fn [sofar {:keys [share]}]
+      (+ sofar share)) 0
+    (filter :fossil? (vals nrgs)))))
+
+(reg-sub
+ :ui/decab-color
+ (fn [_ _]
+   (rf/subscribe [:share/fossil-share]))
+ (fn [fossil-share _]
+   (let [bg  (color/share-to-color
+              fossil-share color/co2-gradients)]
+     [(:col bg)
+      (color/contrasty-bw bg)])))
+ 
+
+(comment
+  @(rf/subscribe [:global/energy-sources])
+  @(rf/subscribe [:share/fossil-share])
+  @(rf/subscribe [:ui/decab-color]))
 
 (comment
   @(rf/subscribe [:global/energy-needed])

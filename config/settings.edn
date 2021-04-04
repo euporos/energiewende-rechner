@@ -21,14 +21,16 @@
                                :cy 450}}
                  :natural-gas {:name "Erdgas"
                                :icon "symbols/gas.svg"
+                               :fossil? true
                                :color "rgb(170, 120, 70)"
                                :props {:cx 200
                                        :cy 750}}
                  :coal {:name "Kohle"
-                               :icon "symbols/coal.svg"
-                               :color "rgb(140, 140, 140)"
-                               :props {:cx 130
-                                       :cy 430}}
+                        :icon "symbols/coal.svg"
+                        :color "rgb(140, 140, 140)"
+                        :fossil? true
+                        :props {:cx 130
+                                :cy 430}}
                  } 
  :init-mix ;; {:wind {:share 26
  ;;         :locked? false} 
