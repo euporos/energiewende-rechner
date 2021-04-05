@@ -228,25 +228,6 @@
        (/ 100)
        (* energy-needed))))
 
-(reg-sub
- :share/fossil-share
- (fn [_ _]
-   (rf/subscribe [:global/energy-sources]))
- (fn [nrgs _]
-   (reduce
-    (fn [sofar {:keys [share]}]
-      (+ sofar share)) 0
-    (filter :fossil? (vals nrgs)))))
-
-(reg-sub
- :ui/decab-color
- (fn [_ _]
-   (rf/subscribe [:share/fossil-share]))
- (fn [fossil-share _]
-   (let [bg  (color/share-to-color
-              fossil-share color/co2-gradients)]
-     [(:col bg)
-      (color/contrasty-bw bg)])))
  
 
 (comment
@@ -343,8 +324,62 @@
  enrich-data-for-indicator)
 
 
+
+
+
+(reg-sub
+ :deriv/co2-per-kwh-mix
+ (fn [_ _]
+   [(rf/subscribe [:deriv/data-for-indicator :co2])
+    (rf/subscribe [:global/energy-needed])])
+ (fn [[{:keys [param-total]} energy-needed] _] ; param total are the CO2-Emissions in kt
+   (-> param-total ; kt/needed-nrg
+       (/ energy-needed) ; kt/TWh
+       ;; (/ 1000000000) ; kt/kWh
+       ;; (* 1000000000) ; g/kWh
+       )))
+
+
+(reg-sub
+ :deriv/max-co-per-kwh
+ (fn [_ _]
+   (rf/subscribe [:global/energy-sources]))
+ (fn [nrgs _]
+   (apply max (map :co2 (vals nrgs)))))
+
+
+;; (reg-sub
+;;  :share/fossil-share
+;;  (fn [_ _]
+;;    (rf/subscribe [:global/energy-sources]))
+;;  (fn [nrgs _]
+;;    (reduce
+;;     (fn [sofar {:keys [share]}]
+;;       (+ sofar share)) 0
+;;     (filter :fossil? (vals nrgs)))))
+
+
+
+
+(reg-sub
+ :ui/decab-color
+ (fn [_ _]
+   [(rf/subscribe [:deriv/max-co-per-kwh])
+    (rf/subscribe [:deriv/co2-per-kwh-mix])])
+ (fn [[max-co2-intensity actual-co2-intensity]  _]
+   (if (and max-co2-intensity actual-co2-intensity)
+    (let [bg (color/share-to-color
+              max-co2-intensity
+              actual-co2-intensity color/co2-gradients)]
+      [(:col bg)
+       (color/contrasty-bw bg)]
+      ))))
+ 
 (comment
-  @(rf/subscribe [:deriv/data-for-indicator :deaths]))
+  @(rf/subscribe [:deriv/max-co-per-kwh])
+  @(rf/subscribe [:deriv/data-for-indicator :co2])
+  @(rf/subscribe [:deriv/co2-per-kwh-mix])
+  )
 
 
 ;; ##############
@@ -356,12 +391,12 @@
  (fn [db [_ panel-key]]
    (update-in db [:ui :panels panel-key] not)))
 
-(rf/reg-event-db
+(rf/reg-event-db 
  :ui/set-panel-visibility
  (fn [db [_ panel-key open?]]
    (assoc-in db [:ui :panels panel-key] open?)))
 
-
+ 
 (rf/reg-event-db
  :ui/scroll-to-explanation
  (fn [db [_ exp-key]]
@@ -381,7 +416,7 @@
   (rf/dispatch [:ui/toggle-panel :explanations])
   @(rf/subscribe [:ui/toggle-panel :explanations]))
 
-
+ 
 ;; ##############
 ;; ### Legacy ###
 ;; ############## 

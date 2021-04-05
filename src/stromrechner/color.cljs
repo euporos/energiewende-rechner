@@ -40,8 +40,8 @@
 
 (defn share-to-color
   ""
-  [share gradients]
-  (let [normalized-share (-> share (/ 100) (* (- (count gradients) 1)))
+  [maximum share gradients]
+  (let [normalized-share (-> share (/ maximum) (* (- (count gradients) 1)))
         gradient-n (Math/floor normalized-share)
         ratio (- normalized-share gradient-n)
         [color-a color-b] (nth gradients gradient-n)]
@@ -63,23 +63,10 @@
 (comment
 
   (map
-   #(share-to-color % co2-gradients)
-   (range 10 60))
+   #(share-to-color 100 % co2-gradients)
+   (range 10 15))
 
   )
-
-(->>
- (-> 85
-     (/ 100)
-     (* 4))
- (iterate #(- % 1))
- (take 10)
- (drop-while (partial < 1))
- first)
-
-(def test-gradient
-  [[0.5 0.5 0.5] [0.5 0.5 0.5] [1.0 1.0 1.0] [0 0.3333 0.6666]])
-
 
 
 
