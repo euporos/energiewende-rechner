@@ -16,6 +16,14 @@ html {
   input[type=range]::-ms-thumb {
     /*Internet Explorer*/
     pointer-events: auto; } }
+#hauptueberschrift {
+  font-size: 2.5rem;
+  text-align: center;
+  font-weight: bold; }
+  @media (max-width: 768px) {
+    #hauptueberschrift {
+      font-size: 2rem; } }
+
 .anwendung {
   max-width: 120rem;
   margin-left: auto;
@@ -69,7 +77,8 @@ html {
 .mainframe {
   min-height: calc(100vh - 144px);
   padding-left: 0;
-  padding-right: 0; }
+  padding-right: 0;
+  margin-top: 1rem; }
 
 .footer {
   height: 80px !important; }
