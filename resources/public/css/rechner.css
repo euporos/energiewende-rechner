@@ -7,6 +7,14 @@ html {
     pointer-events: none; }
 
   input[type=range]::-webkit-slider-thumb {
+    pointer-events: auto; }
+
+  input[type=range]::-moz-range-thumb {
+    /*Firefox*/
+    pointer-events: auto; }
+
+  input[type=range]::-ms-thumb {
+    /*Internet Explorer*/
     pointer-events: auto; } }
 .anwendung {
   max-width: 120rem;

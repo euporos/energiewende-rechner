@@ -20,6 +20,9 @@
 ;; Panels
 ;;
 
+(def co2
+  [:<> "CO"[:sub "2"]])
+
 (defn panel
   ""
   [heading & comps]
@@ -537,7 +540,7 @@
    [:input {:type "range"  :min 0 :max 100
             :style {:width "100%"}
             :value (str (/ share 1))
-            :on-change #(let [newval (-> % .-target .-value)]
+            :on-change #(let [newval (-> % .-target .-value)] 
                           (.preventDefault %)
                           (rf/dispatch-sync
                            [:nrg-share/remix
@@ -550,7 +553,10 @@
     [:div ;; {:style {:background-color bg-color}}
      [:nav.panel
       [:div.panel-heading {:style {:background-color bg-color
-                                   :color font-color}} "Strommix"]
+                                   :color font-color}}
+       [:div.columns.is-mobile [:div.column "Strommix"] [:div.column.has-text-right
+                                               (Math/round @(rf/subscribe [:deriv/co2-per-kwh-mix]))
+                                               " g" co2 "/kWh"] ]]
       [:div.pt-3.pb-3.pr-3.pl-3
        [:div.mb-3;; .is-hidden-touch        
         "Stelle hier den Strommix der Zukunft zusammen…"]
@@ -877,7 +883,7 @@
      :style {:cursor "pointer"}}
     "→ Was ist das? ←"]
    [:div.anwendung.pt-3.pb-3.pl-3.pr-3    
-    [:div.columns.is-centered.is-vcentered
+    [:div.columns.is-centered ;.is-vcentered
      [:div.anzeige.column.is-two-thirds-desktop.has-text-centered
       [mapview]]
      [:div.column      
@@ -892,3 +898,4 @@
  
  
   
+ 

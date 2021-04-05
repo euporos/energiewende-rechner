@@ -23,13 +23,22 @@ html {
 }
 
 @include respond(tab-port)  {
+    
     input[type=range] {
- pointer-events: none;
-}
+	pointer-events: none;
+    }
 
-input[type=range]::-webkit-slider-thumb {
- pointer-events:auto;
-}
+    input[type=range]::-webkit-slider-thumb {
+	pointer-events:auto;
+    }
+
+    input[type=range]::-moz-range-thumb{/*Firefox*/
+	pointer-events: auto;
+    }
+    input[type=range]::-ms-thumb{/*Internet Explorer*/
+	pointer-events: auto;
+    }
+    
 }
 
 
@@ -81,7 +90,7 @@ input[type=range]::-webkit-slider-thumb {
 //     // opacity: 50%;
 //     img {
 //     	max-height: 60rem;
-//     }
+//     } 
 // }
  
  
