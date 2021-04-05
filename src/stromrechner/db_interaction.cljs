@@ -37,7 +37,8 @@
 (reg-sub
  :global/energy-needed
  (fn [db _]
-   (get db :energy-needed)))
+   (h/nan->nil
+    (get db :energy-needed))))
 
 (reg-sub
  :global/energy-keys
@@ -333,13 +334,13 @@
    [(rf/subscribe [:deriv/data-for-indicator :co2])
     (rf/subscribe [:global/energy-needed])])
  (fn [[{:keys [param-total]} energy-needed] _] ; param total are the CO2-Emissions in kt
-   (if (and param-total energy-needed)
+   (js/console.log "pt: " param-total "en: " energy-needed)
+   (if (and param-total (> energy-needed 0))
     (-> param-total                            ; kt/needed-nrg
         (/ energy-needed)                      ; kt/TWh
         ;; (/ 1000000000) ; kt/kWh
         ;; (* 1000000000) ; g/kWh
-        )
-    )))
+        ))))
 
 
 (reg-sub

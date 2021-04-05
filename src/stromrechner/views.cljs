@@ -95,15 +95,8 @@
        [:p.control.is-expanded ;.has-icons-right
         [:input.input         
          (merge input-attrs
-                {:value @(rf/subscribe [:param/get pre-path param-key])
+                {:value (h/nan->nil @(rf/subscribe [:param/get pre-path param-key]))
                  :on-change (h/dispatch-on-x [:param/set-unparsed pre-path param])
-                 ;; (fn [eventobj]
-                 ;;              (.preventDefault eventobj)
-                 ;;              (rf/dispatch [:param/set-unparsed
-                 ;;                             pre-path param
-                 ;;                            (-> eventobj
-                 ;;                                .-target
-                 ;;                                .-value)]))
                  })] 
         ;; [:span.icon.is-small.is-right
         ;;  {:style {:margin-right "1rem"}}
@@ -881,7 +874,7 @@
 (defn main-panel []
   [:div
    [:p.is-size-5.has-text-centered    
-    "Wieviel Platz braucht unser Strom?"]
+    "Wie viel Platz braucht unser Strom?"]
    [:p.is-size-5.has-text-centered
     [:a {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :general])
             :style {:cursor "pointer"}}"→ Erläuterungen"]
@@ -901,7 +894,7 @@
     [indicators]
     [detailed-settings-tabular]
     [explanations]]])
- 
+  
  
   
  
