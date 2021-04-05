@@ -554,8 +554,10 @@
      [:nav.panel
       [:div.panel-heading {:style {:background-color bg-color
                                    :color font-color}}
-       [:div.columns.is-mobile [:div.column "Strommix"] [:div.column.has-text-right
-                                               (Math/round @(rf/subscribe [:deriv/co2-per-kwh-mix]))
+       [:div.columns.is-mobile [:div.column "Strommix"]
+        [:div.column.has-text-right
+         (if-let [co2-intensity @(rf/subscribe [:deriv/co2-per-kwh-mix])]
+             (Math/round co2-intensity) "???")
                                                " g" co2 "/kWh"] ]]
       [:div.pt-3.pb-3.pr-3.pl-3
        [:div.mb-3;; .is-hidden-touch        
@@ -878,10 +880,14 @@
 
 (defn main-panel []
   [:div
-   [:p.subtitle.has-text-centered
-    {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :general])
-     :style {:cursor "pointer"}}
-    "→ Was ist das? ←"]
+   [:p.is-size-5.has-text-centered    
+    "Wieviel Platz braucht unser Strom?"]
+   [:p.is-size-5.has-text-centered
+    [:a {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :general])
+            :style {:cursor "pointer"}}"→ Erläuterungen"]
+    ;; [:span {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :general])
+    ;;         :style {:cursor "pointer"}}" → Parameter"]
+    ]
    [:div.anwendung.pt-3.pb-3.pl-3.pr-3    
     [:div.columns.is-centered ;.is-vcentered
      [:div.anzeige.column.is-two-thirds-desktop.has-text-centered
@@ -898,4 +904,5 @@
  
  
   
+ 
  

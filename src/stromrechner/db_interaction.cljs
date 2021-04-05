@@ -333,11 +333,13 @@
    [(rf/subscribe [:deriv/data-for-indicator :co2])
     (rf/subscribe [:global/energy-needed])])
  (fn [[{:keys [param-total]} energy-needed] _] ; param total are the CO2-Emissions in kt
-   (-> param-total ; kt/needed-nrg
-       (/ energy-needed) ; kt/TWh
-       ;; (/ 1000000000) ; kt/kWh
-       ;; (* 1000000000) ; g/kWh
-       )))
+   (if (and param-total energy-needed)
+    (-> param-total                            ; kt/needed-nrg
+        (/ energy-needed)                      ; kt/TWh
+        ;; (/ 1000000000) ; kt/kWh
+        ;; (* 1000000000) ; g/kWh
+        )
+    )))
 
 
 (reg-sub
