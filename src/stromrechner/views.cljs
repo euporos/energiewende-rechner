@@ -179,10 +179,17 @@
 (defn energy-needed
   ""
   []
-  (panel [:span "Jährlicher Strombedarf in TWh";; (icons/icon2 "#999999" icons/sun)
-          (if-let [href (:link @(rf/subscribe [:energy-needed/loaded]))]
-            [:a {:target "_blank"
-                 :href href} " → Quelle"])]
+  (panel ;; [:span "Jährlicher Strombedarf in TWh";; (icons/icon2 "#999999" icons/sun)
+         ;;  (if-let [href (:link @(rf/subscribe [:energy-needed/loaded]))]
+         ;;    [:a {:target "_blank"
+         ;;         :href href} " → Quelle"])]
+
+
+   [:div.columns.is-mobile [:div.column "Jährlicher Strombedarf"]
+    [:div.column.has-text-right.is-narrow
+     
+     @(rf/subscribe [:global/energy-needed]) " TWh"] ]
+         
          [:div.block
           [:div.mb-1
            [energy-needed-dropdown]]
@@ -581,37 +588,6 @@
      :stroke-width "0"}
     props)])
 
-;; (defn energy-label
-;;   ""
-;;   [nrg-key]
-;;   (let [{:keys [props radius area relative-area color darker-color]}
-;;         @(rf/subscribe [:deriv/surface-added nrg-key])
-;;         area-percent (-> relative-area
-;;                             (* 1000)
-;;                             Math/round
-;;                             (/ 10))
-;;         area (Math/round area)]
-
-;;     [:g
-;;      [:image {:xlinkHref (cfg/icon-for-nrg nrg-key)
-;;               :y 5
-;;               :height 30}]
-;;      [:text {; :text-anchor "middle"
-;;              :zindex 1000
-;;              :alignment-baseline "central"
-;;              :font-weight "bold"}
-
-      
-;;       [:tspan {:x 37
-;;                :y 15}
-;;        (if (= 0 area-percent)
-;;          "<0.1" area-percent) " %"]
-;;       [:tspan {:x 37
-;;                :y 35}
-;;        (str           
-;;         (h/structure-int
-;;          area) " km²")]]]))
-
 (defn energy-label
   ""
   [nrg-key]
@@ -645,47 +621,6 @@
          area) " km²")]]]))
 
 
-;; (defn energy-on-map
-;;   ""
-;;   [nrg-key] 
-;;   (let [{:keys [props radius area relative-area color darker-color]}
-;;         @(rf/subscribe [:deriv/surface-added nrg-key])
-;;         text-x (:cx props)
-;;         text-y (:cy props)]
-;;     [:<>
-;;      (circle-by-area 
-;;       radius {} props)
-;;      (let [area (Math/round area)
-;;            area-percent (-> relative-area
-;;                             (* 1000)
-;;                             Math/round
-;;                             (/ 10))
-;;            outside? (< radius 55)
-;;            variable-y (if outside?
-;;                       (- text-y radius 19)
-;;                       text-y)]
-       
-
-;;        (when (> area 0)
-         
-;;          [:text {:text-anchor "middle"
-;;                  :zindex 1000
-;;                  :alignment-baseline "central"
-;;                  :font-weight "bold"
-;;                  :fill (if (< radius 5) darker-color)
-;;                  :x text-x
-;;                  :y variable-y}
-          
-;;           [:tspan {:x text-x
-;;                    :y (- variable-y 9)}
-;;            (if (= 0 area-percent)
-;;              "<0.1" area-percent) " %"]
-          
-;;           [:tspan {:x text-x
-;;                    :y (+ variable-y 9)}
-;;            (str           
-;;             (h/structure-int
-;;              area) " km²")]]))]))
  
 (defn energy-on-map
   ""
