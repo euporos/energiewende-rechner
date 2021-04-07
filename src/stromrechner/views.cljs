@@ -643,6 +643,8 @@
 
 
  
+
+
 (defn energy-on-map
   ""
   [nrg-key] 
@@ -659,7 +661,7 @@
                             Math/round
                             (/ 10))
            outside? (< radius 70)
-           variable-y (if outside?
+           variable-y (if outside? 
                         (- (:cy props) radius 40)
                         (- (:cy props) 15))
            variable-x (if outside?

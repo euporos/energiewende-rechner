@@ -331,7 +331,6 @@
    [(rf/subscribe [:deriv/data-for-indicator :co2])
     (rf/subscribe [:global/energy-needed])])
  (fn [[{:keys [param-total]} energy-needed] _] ; param total are the CO2-Emissions in kt
-   (js/console.log "pt: " param-total "en: " energy-needed)
    (if (and param-total (> energy-needed 0))
     (-> param-total                            ; kt/needed-nrg
         (/ energy-needed)                      ; kt/TWh
