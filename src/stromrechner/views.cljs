@@ -83,25 +83,33 @@
 ;;
 ;; Inputs
 ;;
+(defn classes
+  ""
+  [& classstrings]
+  (str/join " " classstrings))
 
 (defn param-input
   ""
-  [pre-path param]
-  (let [[param-key {:keys [unit input-attrs]}] param ]
-    [:div.field.is-horizontal  
-     [:div.field-body 
-      [:div.field
-       {:style {:width "7.5rem"}}
-       [:p.control.is-expanded ;.has-icons-right
-        [:input.input         
-         (merge input-attrs
-                {:value (h/nan->nil @(rf/subscribe [:param/get pre-path param-key]))
-                 :on-change (h/dispatch-on-x [:param/set-unparsed pre-path param])
-                 })] 
-        ;; [:span.icon.is-small.is-right
-        ;;  {:style {:margin-right "1rem"}}
-        ;;  unit]
-        ]]]]))
+  ([pre-path param]
+   (param-input pre-path param "7.5rem" nil))
+  ([pre-path param width show-unit?]
+   (let [[param-key {:keys [unit input-attrs]}] param ]
+     [:div.field.is-horizontal  
+      [:div.field-body 
+       [:div.field
+        {:style {:width width}}
+        [:p {:classes (classes "control" "is-expanded"
+                               (if show-unit? "has-icons-right" ))}         
+         [:input.input
+          (merge input-attrs
+                 {:value (h/nan->nil @(rf/subscribe [:param/get pre-path param-key]))
+                  :on-change (h/dispatch-on-x [:param/set-unparsed pre-path param])
+                  })]
+         (if show-unit?
+          [:span.icon.is-small.is-right
+           {:style {:margin-right "1rem"}}
+           unit])
+         ]]]])))
 
 (defn publication-dropdown
   ""
@@ -141,8 +149,6 @@
   [param-input [:energy-sources :solar] const/arealess-capacity])
 
 
-
-
 ;; ###########################
 ;; ###### Offshore Wind ######
 ;; ###########################
@@ -159,8 +165,6 @@
   ""
   []
   [param-input [:energy-sources :wind] const/arealess-capacity])
-
-
  
 
 ;; ########################
@@ -176,25 +180,41 @@
     :publications (sources/pubs-for-needed-power)}])
 
  
+;; (defn energy-needed
+;;   ""
+;;   []
+;;   (panel [:div.columns.is-vcentered.is-multiline.is-mobile
+;;           [:div.column "Strombedarf in TWh/Jahr"]
+;;           [:div.column.is-narrow [param-input [] const/energy-needed "5.5rem" false]]]
+
+;;          [:div.block
+;;           [:div.columns.is-vcentered.is-multiline 
+;;            [:div.column
+;;             [energy-needed-dropdown]]
+;;            (if-let [href (:link @(rf/subscribe [:energy-needed/loaded]))]
+;;              [:div.column.is-narrow
+;;               [:a {:target "_blank"
+;;                    :href href} " → Quelle"]])]]))
+
 (defn energy-needed
   ""
   []
-  (panel ;; [:span "Jährlicher Strombedarf in TWh";; (icons/icon2 "#999999" icons/sun)
-         ;;  (if-let [href (:link @(rf/subscribe [:energy-needed/loaded]))]
-         ;;    [:a {:target "_blank"
-         ;;         :href href} " → Quelle"])]
-
-
-   [:div.columns.is-mobile [:div.column "Jährlicher Strombedarf"]
-    [:div.column.has-text-right.is-narrow
-     
-     @(rf/subscribe [:global/energy-needed]) " TWh"] ]
-         
-         [:div.block
-          [:div.mb-1
-           [energy-needed-dropdown]]
+  (panel [:span "Jährlicher Strombedarf in TWh";; (icons/icon2 "#999999" icons/sun)
+          ;; (if-let [href (:link @(rf/subscribe [:energy-needed/loaded]))]
+          ;;   [:a {:target "_blank"
+          ;;        :href href} " → Quelle"])
+          ]
+         [:div.block          
+          [:div.columns.is-mobile.is-vcentered.mb-0
+           [:div.column
+            [param-input [] const/energy-needed]]
+           (if-let [href (:link @(rf/subscribe [:energy-needed/loaded]))]
+             [:div.column.is-narrow.has-text-centered
+              [:a {:target "_blank"
+                   :href href} " → Quelle"]])]
           [:div
-           [param-input [] const/energy-needed]]]))
+           [energy-needed-dropdown]]]))
+
 
 
 ;; ####################################################################
@@ -337,6 +357,7 @@
       (for [nrg-source @(rf/subscribe [:global/energy-sources])]
         ^{:key (first nrg-source)}
         [settings-table-row nrg-source])]]
+    
     [:div.has-text-centered
      {:style {:margin-left "auto"
               :margin-right "auto"}}
@@ -351,12 +372,12 @@
       [:div.column]]]
 
 
-    [:div.has-text-centered
+    [:div.has-text-centered.mt-4
      {:style {:margin-left "auto"
               :margin-right "auto"}}
      [:span.has-text-weight-bold
       {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :solar])}
-      (with-tooltip "Kapazität für Offshore Windkraft in TWh")]
+      (with-tooltip "Kapazität für Offshore-Windkraft in TWh")]
      [:div.columns.is-mobile.is-vcentered.mt-1
       [:div.column]
       [:div.column.is-narrow [offshore-wind-capacity-input]]
@@ -770,7 +791,7 @@
                               (keep (fn [{:keys [name absolute]}]
                                      (when (> absolute 0)
                                       [:span 
-                                       name ": " (formatter absolute) unit ]))
+                                       name ": " (formatter absolute) [:nobr] unit]))
                                    (vals energy-sources))))]
     [:div
      (into [:svg

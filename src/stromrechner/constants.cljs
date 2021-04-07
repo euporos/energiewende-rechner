@@ -36,7 +36,7 @@
                                     (* 10)
                                     Math/round
                                     (/ 10))
-          :abs-unit "Mio. t"
+          :abs-unit "Mio. t"
           :parse-fn js/parseInt
           :input-attrs {:type "number"
                         :pattern "0"

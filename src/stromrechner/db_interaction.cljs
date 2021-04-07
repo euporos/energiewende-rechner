@@ -313,7 +313,7 @@
      :factor (get-in const/parameter-map [param-key :indicator-factor] 0)
      :formatter (get-in const/parameter-map
                         [param-key :indicator-formatter] #(Math/round %))
-     :unit (get-in const/parameter-map [param-key :abs-unit])
+     :unit  (get-in const/parameter-map [param-key :abs-unit])
      :energy-sources shares-added}))
 
 
@@ -323,9 +323,6 @@
    [(rf/subscribe [:global/energy-needed])
     (rf/subscribe [:global/energy-sources])])
  enrich-data-for-indicator)
-
-
-
 
 
 (reg-sub

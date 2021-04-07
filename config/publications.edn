@@ -27,14 +27,21 @@
  {:id "2050,  keine Effizienzgewinne (Quaschning 2016)"
   :link "https://www.volker-quaschning.de/publis/studien/sektorkopplung/Sektorkopplungsstudie.pdf"
   :energy-needed 3000}
+ {:id "2019 (Fraunhofer 2020)"
+                                                                                               :link "https://www.ise.fraunhofer.de/de/presse-und-medien/news/2019/oeffentliche-nettostromerzeugung-in-deutschland-2019.html"
+   :energy-needed 516}
  {:id "The Lancet"
-  :link "https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(07)61253-7/fulltext"
-  :energy-sources
+  :link "https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(07)61253-7/fulltext"  :energy-sources
   {:deaths
    {:bio 4.63
     :nuclear 0.08
     :natural-gas 2.82
     :coal 28.67}}}
+
+
+;; ##############
+;; ### Deaths ###
+;; ##############
  
  {:id "Statista"
   :link "https://www.statista.com/statistics/494425/death-rate-worldwide-by-energy-source/"
@@ -65,6 +72,13 @@
     :nuclear 0.09
     :natural-gas 4
     :coal 161}}}
+
+
+;; ###########################
+;; ###### Power Density ######
+;; ###########################
+ 
+
  {:id "BMVI (2015)"
   :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
   :energy-sources
@@ -78,29 +92,24 @@
     :solar 1 ; 0.11
     :bio 1 ; 0.06
     }}}
- ;; {:id "PNAS"
- ;;  :link "https://doi.org/10.1073/pnas.1408251112"
- ;;  {:energy-sources
- ;;   {:power-density
- ;;    {:wind 1.1}}}}
- {:id "PNAS (2015)"
-  :link "https://doi.org/10.1073/pnas.1408251112"
-  :energy-sources
-  {:power-density
-   {:wind 1.1
-    }}}
- {:id "Energy Policy (Nur Generatoren)"
+ 
+ {:id "Energy Policy (inkl. Infrastruktur)"
   :link "https://doi.org/10.1016/j.enpol.2018.08.023"
   :energy-sources
   {:power-density
-   {:wind 18.4 
-    }}}
- {:id "Energy Policy (Nur Generatoren + Infrastruktur)"
-  :link "https://doi.org/10.1016/j.enpol.2018.08.023"
-  :energy-sources
-  {:power-density
-   {:wind 1.84
-    }}}
+   {:bio 0.08
+    :solar 6.63
+    :nuclear 240.8
+    :natural-gas 482.1
+    :coal 135.1}
+   :capacity-factor
+   {:bio 1 ; 0.53
+    :solar 1
+    :wind 1 ; 0.3
+    :nuclear 1 ; 0.93
+    :natural-gas 1}}}
+
+
  {:id "Energy Policy (ohne Infrastruktur)"
   :link "https://doi.org/10.1016/j.enpol.2018.08.023"
   :energy-sources
@@ -111,59 +120,29 @@
     :nuclear 560 ; (/ 240.8 0.43)
     :natural-gas 860.9 ; (/ 482.1 0.56)
     :coal 482.5 ; (/ 135.1 0.28)
-    }   
-   ;; {:bio 0.09 ; (/ 0.08 0.9) 
-   ;;  :solar 8.3 ; (/ 6.63 0.8)
-   ;;  :wind 18.4 ; (/ 1.84 0.1)
-   ;;  :nuclear 560 ; (/ 240.8 0.43)
-   ;;  :natural-gas 860.9 ; (/ 482.1 0.56)
-   ;;  :coal 482.5 ; (/ 135.1 0.28)
-   ;;  }
-   
-   ;; {:bio 0.8; (/ 0.08 0.1) 
-   ;;  :solar 33.15 ; (/ 6.63 0.2)
-   ;;  :wind 2.04; (/ 1.84 0.9) ; 6.37
-   ;;  :nuclear 422.5 ;(/ 240.8 0.57)
-   ;;  :natural-gas 1095 ; (/ 482.1 0.44)
-   ;;  :coal 187.6 ; (/ 135.1 0.72)
-   ;;  }
-   ;; {:bio 0.8 ; (/ 0.08 0.1) 
-   ;;  :solar 33.15 ; (/ 6.63 0.2)
-   ;;  :wind 2.04; (/ 1.84 0.9) ; 6.37
-   ;;  :nuclear 422.5 ;(/ 240.8 0.57)
-   ;;  :natural-gas 1095 ; (/ 482.1 0.44)
-   ;;  :coal 187.6 ; (/ 135.1 0.72)
-   ;;  }
-   ;; {:bio 0.05
-   ;;   ; 0.85 ; checken auf p. 86  steht 0.05, auf 87 0.045!!!
-   ;;  :solar 6.32
-   ;;  :wind 2.02 ; 6.37 ; onshore
-   ;;  :nuclear 240.8
-   ;;  :natural-gas 482.1
-   ;;  :coal 121.5}
-   }}
- {:id "Energy Policy (inkl. Infrastruktur)"
+    }}}
+ 
+ {:id "Energy Policy (Nur Generatoren + Infrastruktur)"
   :link "https://doi.org/10.1016/j.enpol.2018.08.023"
   :energy-sources
   {:power-density
-   {:bio 0.08
-    :solar 6.63
-    :nuclear 240.8
-    :natural-gas 482.1
-    :coal 135.1}
-   ;; {:bio 0.05
-   ;;   ; 0.85 ; checken auf p. 86  steht 0.05, auf 87 0.045!!!
-   ;;  :solar 6.32
-   ;;  :wind 2.02 ; 6.37 ; onshore
-   ;;  :nuclear 240.8
-   ;;  :natural-gas 482.1
-   ;;  :coal 121.5}
-   :capacity-factor
-   {:bio 1 ; 0.53
-    :solar 1
-    :wind 1 ; 0.3
-    :nuclear 1 ; 0.93
-    :natural-gas 1}}}
+   {:wind 1.84
+    }}}
+ 
+ {:id "Energy Policy (Nur Generatoren)"
+  :link "https://doi.org/10.1016/j.enpol.2018.08.023"
+  :energy-sources
+  {:power-density
+   {:wind 18.4 
+    }}}
+ 
+ {:id "PNAS (2015)"
+  :link "https://doi.org/10.1073/pnas.1408251112"
+  :energy-sources
+  {:power-density
+   {:wind 1.1
+    }}}
+ 
  {:id "CB (inkl. Brennstoffgewinnung)"
   :link "https://doi.org/10.1111/cobi.12433"
   :energy-sources
@@ -187,6 +166,28 @@
  ;;    :solar 5.2 ; ausgehend von 2.25 ha/MW inst.Leistung
  ;;    :bio 0.16 ; ausgehend von 75 ha/GWh*a p.63
  ;;    }}}
+
+
+ ;;
+ ;; Einzelanlagen
+ ;; 
+
+ {:id "Windpark Whitelee"
+  :link "https://www.whiteleewindfarm.co.uk/whitelee-windfarm-about-us"
+  :energy-sources
+  {:power-density
+   {:wind 2.6}}} ; Simeon 2,60876 W/m²
+
+ {:id "Solarpark Weesow-Willmersdorf"
+  :link "https://de.wikipedia.org/wiki/Solarpark_Weesow-Willmersdorf"
+  :energy-sources
+  {:power-density
+   {:solar 13.0}}} ; Simeon 13,016 W/m²
+ 
+;; #########
+;; ## CO2 ##
+;; #########
+ 
  {:id "IPCC (2014)"
   :link "https://www.ipcc.ch/site/assets/uploads/2018/02/ipcc_wg3_ar5_annex-iii.pdf#page=7"
   :energy-sources

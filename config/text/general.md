@@ -9,7 +9,7 @@ Um Ergebnisse zu liefern, muss man den Rechner mit Zahlen füttern. Diese kannst
 
 #### Vereinfachungen
 
-Freilich muss der Rechner einige Zusammenhänge vereinfachen.  Das gilt inbesondere für Effekte, die nicht der einzelnen Energiequelle, sondern nur dem Energiesystem als Ganzem zugeordnet werden können: 
+Freilich muss der Rechner einige Zusammenhänge vereinfachen.  Das gilt insbesondere für Effekte, die nicht der einzelnen Energiequelle, sondern nur dem Energiesystem als Ganzem zugeordnet werden können: 
 
 - *Speicherverluste:* Diese betreffen insbesondere Solar- und Windenergie, deren unregelmäßige Leistung durch verlustbehaftete Speicher geglättet werden muss.
 - *Verlust von Stromspitzen:* Bei einem hohen Anteil an Solar- und Windenergie wird manchmal mehr Strom produziert als die Speicher aufnehmen können. Dieser ungenutzte Strom muss eigentlich zum angestrebten jährlichen Strombedarf addiert werden.

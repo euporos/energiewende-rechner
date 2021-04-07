@@ -38,3 +38,4 @@
   ""
   [nrg-key]
   (get-in nrgs [nrg-key :icon]))
+

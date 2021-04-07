@@ -7,6 +7,8 @@
    [stromrechner.config :as config])
   (:require-macros [stromrechner.macros :as m]))
 
+(def root-el
+  (.getElementById js/document "app"))
 
 (m/def-string-from-file version
   "resources/version.txt" str)
@@ -17,15 +19,15 @@
 
 (defn ^:dev/after-load mount-root []
   (re-frame/clear-subscription-cache!)
-  (let [root-el (.getElementById js/document "app")]
-    (rdom/unmount-component-at-node root-el)
-    (rdom/render [views/main-panel] root-el)))
+  (rdom/unmount-component-at-node root-el)
+  (rdom/render [views/main-panel] root-el))
 
 (defn init []
   (re-frame/dispatch-sync [:global/initialize-db])
   (print "Stromrechner version " version)
   (load-default-pubs)
   (dev-setup)
+  ;; (set! (.-innerHTML root-el) nil)
   (mount-root))
  
 
@@ -34,4 +36,5 @@
   
  
    
+ 
  
