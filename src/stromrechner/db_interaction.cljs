@@ -33,7 +33,6 @@
  :global/db
  (fn [db] db))
 
-
 (reg-sub
  :global/energy-needed
  (fn [db _]
@@ -58,14 +57,14 @@
 ;; ### NRGS ###
 ;; ############
 
-(def nrg-consts
+(def nrg-constants
   (get cfg/settings :nrg-constants))
 
 (reg-sub
  :global/energy-sources
  (fn [db]
    (merge-with merge
-               nrg-consts
+               nrg-constants
                (:energy-sources db))))
 
 (reg-sub
@@ -74,8 +73,6 @@
    (rf/subscribe [:global/energy-sources]))
  (fn [nrgs [_ nrg-key]]
    (get nrgs nrg-key)))
-
-
 
 (reg-sub
  :nrg/get-param
@@ -88,12 +85,11 @@
  :nrg/exhausted-arealess
  (fn [[_ nrg-key]]
    [(rf/subscribe [:nrg/get-param nrg-key :arealess-capacity])
-    (rf/subscribe [:nrg-share/get-abs nrg-key])])
+    (rf/subscribe [:nrg-share/get-absolute nrg-key])])
  (fn [[arealess-capacity twh-share] [_ nrg-key]]
    (if (> twh-share arealess-capacity)
      arealess-capacity
      twh-share)))
-
 
 
 (comment
@@ -110,18 +106,16 @@
    (assoc-in db [:energy-sources nrg-key param]
              (get-in pub [:energy-sources nrg-key param]))))
 
-
 (reg-event-db
  :param/set-unparsed
- (fn [db [_ prepath [param-key {:keys [parse-fn]}]
+ (fn [db [_ prepath [param-key {:keys [parse-fn]}] ; we take parse-fn from 
           unparsed-newval]]
    (assoc-in db (conj prepath param-key)
              (parse-fn unparsed-newval))))
 
-
 (reg-sub :param/get
          (fn [db [_ pre-path param-key]]           
-           (get-in db (conj pre-path param-key))))
+           (h/nan->nil (get-in db (conj pre-path param-key)))))
 
 
 ;; ########################
@@ -220,7 +214,7 @@
    (get-in db [:energy-sources nrg-key :share])))
 
 (reg-sub
- :nrg-share/get-abs
+ :nrg-share/get-absolute
  (fn [[_ nrg-key]]
    [(rf/subscribe [:global/energy-needed])
     (rf/subscribe [:nrg-share/get nrg-key])])
@@ -230,21 +224,12 @@
        (* energy-needed))))
 
  
-
-(comment
-  @(rf/subscribe [:global/energy-sources])
-  @(rf/subscribe [:share/fossil-share])
-  @(rf/subscribe [:ui/decab-color]))
-
-(comment
-  @(rf/subscribe [:global/energy-needed])
-  @(rf/subscribe [:nrg-share/get-abs :wind]))
-
 (reg-event-db
  :nrg-share/remix
  (fn [db [_ nrg-key newval]]
    (update db :energy-sources
-           #(logic/attempt-remix nrg-key newval %))))
+           #(logic/attempt-remix
+             nrg-key (* 1 (js/parseInt newval)) %))))
 
 
 ;; ############################
@@ -257,10 +242,7 @@
   @(rf/subscribe [:global/energy-needed]))
 
 
-(defn radius-from-area-circle
-  ""
-  [surface]
-  (Math/sqrt (/ surface Math/PI)))
+
 
 (reg-sub
  :deriv/surface-added
@@ -282,7 +264,7 @@
                      (/ 1000000)) ; needed km²
          radius (if (or (< area 0) ; area < 0 possible with arealess-capacity
                      (js/isNaN area)) 0
-                    (radius-from-area-circle area))]
+                    (h/radius-from-area-circle area))]
      (assoc nrg
             :area area
             :relative-area (/ area const/area-germany)

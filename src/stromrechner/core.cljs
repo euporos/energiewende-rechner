@@ -20,7 +20,7 @@
 (defn ^:dev/after-load mount-root []
   (re-frame/clear-subscription-cache!)
   (rdom/unmount-component-at-node root-el)
-  (rdom/render [views/main-panel] root-el))
+  (rdom/render [views/main-component] root-el))
 
 (defn init []
   (re-frame/dispatch-sync [:global/initialize-db])

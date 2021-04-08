@@ -1,10 +1,12 @@
 {:nrg-constants {:wind {:name "Wind"
+                        :has-arealess? true
                         :icon "symbols/wind2.svg"
                         :color "rgba(135, 206, 250)"
                         :props {:cx 400
                                 :cy 250
                                 }} 
                  :solar {:name "Sonne"
+                         :has-arealess? true
                          :icon "symbols/solar.svg"
                          :color "rgba(255, 255, 0)"
                          :props {:cx 380
@@ -30,47 +32,18 @@
                         :color "rgb(140, 140, 140)"
                         :fossil? true
                         :props {:cx 130
-                                :cy 430}}
-                 } 
- :init-mix ;; {:wind {:share 26
- ;;         :locked? false} 
- ;;  :solar {:share 10
- ;;          :locked? false}
- ;;  :nuclear {:share 14
- ;;            :locked? false}
- ;;  :bio {:share 9
- ;;        :locked? false}
- ;;  :natural-gas {:share 11
- ;;                :locked? false}
- ;;  :coal {:share 30
- ;;         :locked? false}}
- {:wind {:share 28
-         :locked? false} 
-  :solar {:share 12
-          :locked? false}
-  :bio {:share 2
-        :locked? false}
-  :nuclear {:share 15
-            :locked? false}
-  :natural-gas {:share 12
-                :locked? false}
-  :coal {:share 31
-         :locked? false}}}
- 
- 
- 
- 
+                                :cy 430}}} 
+ :init-mix  {:wind {:share 28
+                    :locked? false} 
+             :solar {:share 12
+                     :locked? false}
+             :bio {:share 2
+                   :locked? false}
+             :nuclear {:share 15
+                       :locked? false}
+             :natural-gas {:share 12
+                           :locked? false}
+             :coal {:share 31
+                    :locked? false}}}
 
 
-;; :init-mix {:wind {:share 40
-;;                    :locked? false} 
-;;             :solar {:share 40
-;;                     :locked? false}
-;;             :nuclear {:share 5
-;;                       :locked? false}
-;;             :bio {:share 15
-;;                   :locked? false}
-;;             :natural-gas {:share 0
-;;                           :locked? false}
-;;             :coal {:share 0
-;;                       :locked? false}}

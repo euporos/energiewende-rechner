@@ -3,6 +3,11 @@
    [re-frame.core :as rf :refer [reg-event-db reg-sub]]
    [clojure.string :as str]))
 
+(defn classes
+  ""
+  [& classstrings]
+  (str/join " " classstrings))
+
 (defn map-vals
   ""
   [f coll]
@@ -55,19 +60,30 @@
          reverse
          (apply str)) #"^0*" "")))
 
+
+
+
+
 (defn dispatch-on-x
-  ""
+  "Returns a function that dispatches a Re-Frame event.
+  The event is created by conjing the first argument of
+  the returned function to the event vector.
+  f can be a function the  will be applied to that argument
+  before conjing.
+  Suppresses the default effect."
   ([event]
-   (dispatch-on-x nil event))
+   (dispatch-on-x false  event))
   ([sync? event]
-   (dispatch-on-x sync? event nil))
-  ([sync? event after-fn]
+   (dispatch-on-x sync? identity event))
+  ([sync? f event]
    #(let [newval (-> % .-target .-value)]
       (.preventDefault %)
-      (when after-fn (after-fn))
       ((if sync?
          rf/dispatch-sync
-         rf/dispatch) (conj event newval)))))
+         rf/dispatch) (conj event (f newval))))))
+
+
+
 
 
 (defn dangerous-html
@@ -76,3 +92,10 @@
   [:div {:dangerouslySetInnerHTML
         {:__html
          htmlstring}}])
+
+(defn radius-from-area-circle
+  ""
+  [surface]
+  (Math/sqrt (/ surface Math/PI)))
+
+
