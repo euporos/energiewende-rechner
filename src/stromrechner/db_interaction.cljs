@@ -28,10 +28,6 @@
  :global/initialize-db
  (fn-traced [_ _] 
             default-db))
- 
-(reg-sub
- :global/db
- (fn [db] db))
 
 (reg-sub
  :global/energy-needed
@@ -39,19 +35,6 @@
    (h/nan->nil
     (get db :energy-needed))))
 
-(reg-sub
- :global/energy-keys
- (fn [db]
-   (keys (:energy-sources db))))
-
-(reg-sub
- :global/get-path
- (fn [db [_ path]]
-   (get-in db path)))
-
-(reg-event-db
- :global/set-path
- (fn [db [_ path newval]]))
 
 ;; ############
 ;; ### NRGS ###
@@ -62,6 +45,8 @@
 
 (reg-sub
  :global/energy-sources
+ ;; combines variable values with constant ones
+ ;; this is the main subscription for Energy-Sources
  (fn [db]
    (merge-with merge
                nrg-constants
@@ -76,6 +61,8 @@
 
 (reg-sub
  :nrg/get-param
+ ;; get the value of one parameter
+ ;; for one energy source 
  (fn [_]
    (rf/subscribe [:global/energy-sources]))
  (fn [nrgs [_ nrg-key param]]
@@ -83,6 +70,8 @@
 
 (reg-sub
  :nrg/exhausted-arealess
+ ;; How much of the arealess capacity of the nrg
+ ;; has been exhausted (offshore-wind and rooftop-solar)
  (fn [[_ nrg-key]]
    [(rf/subscribe [:nrg/get-param nrg-key :arealess-capacity])
     (rf/subscribe [:nrg-share/get-absolute nrg-key])])
@@ -91,10 +80,10 @@
      arealess-capacity
      twh-share)))
 
-
 (comment
   @(rf/subscribe [:nrg/get-param :wind :arealess-capacity])
   @(rf/subscribe [:nrg/exhausted-arealess :wind]))
+
 
 ;; ######################
 ;; ##### Parameters #####

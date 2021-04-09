@@ -45,7 +45,6 @@
         gradient-n (Math/floor normalized-share)
         ratio (- normalized-share gradient-n)
         [color-a color-b] (nth gradients gradient-n)]
-    (js/console.log gradient-n)
     (math/mix color-a color-b ratio)))
 
 (col/luminance
@@ -61,16 +60,9 @@
  
 
 (comment
-
   (map
    #(share-to-color 100 % co2-gradients)
-   (range 10 15))
-
-  )
-
-
-
-
+   (range 10 15)))
 
 (comment (make-transparent "#dddddd" 0.5)
          (set-brightness "#dddddd" 0.5))

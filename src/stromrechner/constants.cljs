@@ -20,6 +20,7 @@
    ;;                                  :step "0.01"
    ;;                                  :min 0.01
    ;;                                  :max 1}}]
+   
    [:deaths {:name "Todesfälle/TWh"
              :unit "/TWh"
              :parse-fn js/parseFloat
@@ -89,12 +90,6 @@
 
 (def area-germany 357581)
 
-
-
-;; (def share-granularity 10000) ; 100% ≙ 10000
-
-;; (def deaths-granularity 1000) ; 100% ≙ 1000
- 
 
 
 

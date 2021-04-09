@@ -567,7 +567,7 @@
                                       :color "yellow"}]]
          ;; Circles and labels
          (doall (map energy-on-map
-                     @(rf/subscribe [:global/energy-keys]))))])
+                     cfg/nrg-keys)))])
 
 
 
