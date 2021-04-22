@@ -1,0 +1,17 @@
+{:subtitle "Wie viel Platz braucht unser Strom?"
+ :explanations "→ Erläuterungen"
+ :explanation-headings {:general "Der Rechner zur Energiewende"
+                        :power-density "Bemessungsleistung pro m²"
+                        :deaths "Statistisch erwartbare Todesfälle pro TWh"
+                        :co2 [:span "Spezifische CO" [:sub "2"] "-Emissionen"]
+                        :resources "Ressourcenverbrauch"
+                        :wind "Windenergie"
+                        :solar "Photovoltaik"
+                        :nuclear "Kernenergie"
+                        :bio "Biomasse"
+                        :natural-gas "Erdgas"
+                        :coal "Kohle"}
+ }
+
+
+

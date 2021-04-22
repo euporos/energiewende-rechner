@@ -107,18 +107,13 @@
 ;; ########### Energy Sources and Parameters ###########
 ;; #####################################################
 
-(def nrg-constants
-  ;; stuff about energy-settings that never change
-  ;; but are useful in many subscriptions…
-  (get cfg/settings :nrg-constants))
-
 (reg-sub
  :nrg/get-all
  ;; returns alls energy sources
  ;; combining variable values with constant ones
  (fn [db]
    (merge-with merge
-               nrg-constants
+               cfg/nrgs
                (:energy-sources db))))
 
 (reg-sub

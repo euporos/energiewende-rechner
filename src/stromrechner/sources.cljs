@@ -1,5 +1,6 @@
 (ns stromrechner.sources
-  (:require [stromrechner.helpers :as h])
+  (:require [stromrechner.helpers :as h]
+            [stromrechner.config :as cfg])
   (:require-macros [stromrechner.macros :as m]))
 
 
@@ -15,10 +16,10 @@
                #(h/reverse-paths %))
        pub))
    publications))
- 
-(m/def-from-file publications
-  "config/publications.edn" 
-  transpose-energy-sources)   
+
+
+(def publications (transpose-energy-sources
+                   (:publications cfg/config)))
 
 (defn pubs-for-param
   ""
@@ -71,8 +72,6 @@
   [nrg-key param-key]
   (some #(if (get-in % [:energy-sources nrg-key param-key]) %)
         publications))
-
-
 
 ;; #################
 ;; #### Helpers ####

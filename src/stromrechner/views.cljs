@@ -290,7 +290,7 @@
      [param-input [:energy-sources nrg-key] parameter-dfn]]]])
 
 (defn params-for-nrg-explanations
-  "On mobile "
+  "On mobile " ;TODO: 
   [nrg-key nrg]
   [:div.is-hidden-desktop
    [:h5.title.is-5 "Parameter für " (:name nrg) ":"]
@@ -308,19 +308,20 @@
             [param-settings-pair-explanations nrg-key parameter-dfn])
           params/common-nrg-parameters))])
 
-(defn format-text-snippet
+(defn format-explanation
   ([i exp-key]
-   (format-text-snippet i exp-key nil))
+   (format-explanation i exp-key nil))
   ([i exp-key supplement]
-   (let [{:keys [heading text]}
-         (get text/snippets exp-key)]
+   (let [heading (get text/explanation-headings exp-key)
+         text (get text/texts exp-key)
+         ]
      [:div.block
         {:key i
          :id (str "explanation-" (name exp-key))}
         [:h4.title.is-4 heading]
         [:div.content
          (h/dangerous-html text)]
-        supplement])))
+      supplement])))
 
 (defn explanations
   []
@@ -328,18 +329,18 @@
    [controlled-panel :explanations
     [:<> "Erläuterungen" [:span.is-hidden-desktop " und Parameter" ]]
     [:div.block
-     [:h3.title.is-3 {:id "explanation-general"} "Der Rechner zur Energiewende"]
-     [:div.content (h/dangerous-html (get-in text/snippets [:general :text]))]]
+     [:h3.title.is-3 {:id "explanation-general"} (get text/explanation-headings :general)]
+     [:div.content (h/dangerous-html (get text/texts :general))]]
     [:div.block
      [:h3.title.is-3 "Energiequellen"]
      (map-indexed (fn [i [nrg-key nrg]]
-                    (format-text-snippet
+                    (format-explanation
                      i nrg-key (params-for-nrg-explanations nrg-key nrg))) cfg/nrgs)]
     [:h3.title.is-3 "Parameter"]
     (map-indexed
-     format-text-snippet params/param-keys)]])
+     format-explanation params/param-keys)]])
 
- 
+
 ;; ######################
 ;; ##### Energy-Mix #####
 ;; ######################
