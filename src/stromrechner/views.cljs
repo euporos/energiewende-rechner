@@ -4,9 +4,8 @@
    [re-frame.core :as rf]
    [stromrechner.sources :as sources]
    [clojure.string :as str]
-   [stromrechner.icons :as icons  :refer [icon]]
    [clojure.edn :as edn]
-   [stromrechner.constants :as const]
+   [stromrechner.parameters :as params]
    [stromrechner.helpers :as h]
    [stromrechner.config :as cfg]
    [stromrechner.text :as text]
@@ -58,7 +57,7 @@
      [:div
       [:div
        {:class "panel-heading panel-heading--collapsible"
-        :on-click (h/dispatch-on-x [:ui/toggle-panel key])}
+        :on-click (h/dispatch-on-x [:ui/toggle-panel-visibility key])}
        (panel-toggler open?)
        heading] 
       [:div
@@ -87,7 +86,8 @@
         [:input.input
          (merge input-attrs
                 {:value @(rf/subscribe [:param/get pre-path param-key])
-                 :on-change (h/dispatch-on-x [:param/set-unparsed pre-path parameter-dfn])})]]]]]))
+                 :on-change (h/dispatch-on-x
+                             [:param/parse-and-set pre-path parameter-dfn])})]]]]]))
 
 (defn publication-dropdown
   [{:keys [value-subscription publications partial-event]}]
@@ -108,9 +108,13 @@
           (:id pub)])]]]]])
 
 
-;; #####################################
-;; ######## Solar-Roof-capacity ########
-;; #####################################
+;; ############################
+;; ###### Arealess Power ######
+;; ############################
+
+;; These inputs deal with the arealess power parameter,
+;; which is special insofar as not all energy sources have it defined.
+;; Currently there are only rooftop solar and offshore wind.
 
 (defn arealess-dropdown
   "Dropdown to select a publication for
@@ -118,8 +122,8 @@
   i.e. rooftop solar or offshore wind"
   [nrg-key]
   [publication-dropdown
-   {:value-subscription @(rf/subscribe [:pub/loaded nrg-key :arealess-capacity])
-    :partial-event [:pub/load nrg-key :arealess-capacity]
+   {:value-subscription @(rf/subscribe [:nrg/loaded-pub nrg-key :arealess-capacity])
+    :partial-event [:nrg/load-pub nrg-key :arealess-capacity]
     :publications (sources/pubs-for-param nrg-key :arealess-capacity)}])
 
 (defn arealess-input
@@ -127,7 +131,7 @@
   the arealess capacity,
   i.e. rooftop solar or offshore wind"
   [nrg-key]
-  [param-input [:energy-sources nrg-key] const/arealess-capacity])
+  [param-input [:energy-sources nrg-key] params/arealess-capacity])
 
 
 ;; ########################
@@ -137,8 +141,8 @@
 (defn energy-needed-dropdown
   []
   [publication-dropdown
-   {:value-subscription @(rf/subscribe [:energy-needed/loaded])
-    :partial-event [:energy-needed/load]
+   {:value-subscription @(rf/subscribe [:energy-needed/loaded-pub])
+    :partial-event [:energy-needed/load-pub]
     :publications (sources/pubs-for-needed-power)}])
 
 (defn energy-needed
@@ -147,14 +151,13 @@
          [:div.block          
           [:div.columns.is-mobile.is-vcentered.mb-0
            [:div.column
-            [param-input [] const/energy-needed]]
-           (if-let [href (:link @(rf/subscribe [:energy-needed/loaded]))]
+            [param-input [] params/energy-needed]]
+           (if-let [href (:link @(rf/subscribe [:energy-needed/get]))]
              [:div.column.is-narrow.has-text-centered
               [:a {:target "_blank"
                    :href href} " → Quelle"]])]
           [:div
            [energy-needed-dropdown]]]))
-
 
 
 ;; ####################################################################
@@ -168,8 +171,8 @@
   [nrg-key parameter-dfn]
   (let [[param-key _] parameter-dfn]
     [publication-dropdown
-     {:value-subscription @(rf/subscribe [:pub/loaded nrg-key param-key])
-      :partial-event [:pub/load nrg-key param-key] ; the on-change-val gets conj'd onto this
+     {:value-subscription @(rf/subscribe [:nrg/loaded-pub nrg-key param-key])
+      :partial-event [:nrg/load-pub nrg-key param-key] ; the on-change-val gets conj'd onto this
       :publications (sources/pubs-for-param nrg-key param-key)}]))
 
 (defn param-publication-link
@@ -177,7 +180,7 @@
   [nrg-key param-key]
   (if-let [loaded-pub-link
            (:link @(rf/subscribe
-                    [:pub/loaded nrg-key param-key]))]
+                    [:nrg/loaded-pub nrg-key param-key]))]
     [:a {:href loaded-pub-link
          :target "_blank"
          :rel "noopener noreferrer"} "→ Quelle"]))
@@ -212,7 +215,7 @@
     (fn [i parameter-dfn]
       [:td {:key i} [param-settings-tabular
                      nrg-key parameter-dfn] ])
-    const/parameters)])
+    params/common-nrg-parameters)])
 
 (defn settings-table-top-row
   ""
@@ -226,7 +229,7 @@
             :on-click (h/dispatch-on-x
                        [:ui/scroll-to-explanation param-key])}
            (with-tooltip (:name parameter-dfn))])
-        const/parameters)])
+        params/common-nrg-parameters)])
 
 (defn arealess-settings
   "Dropdown and Input for solar rooftop
@@ -259,12 +262,12 @@
      [:thead
       [settings-table-top-row]]
      [:tbody
-      (for [nrg-source @(rf/subscribe [:global/energy-sources])]
+      (for [nrg-source @(rf/subscribe [:nrg/get-all])]
         ^{:key (first nrg-source)}
         [settings-table-row nrg-source])]]
     
     [arealess-settings :solar "Solarkapazität auf Dächern in TWh"]
-    [arealess-settings :solar "Kapazität für Offshore-Windkraft in TWh"])])
+    [arealess-settings :wind "Kapazität für Offshore-Windkraft in TWh"])])
 
 
 ;; ########################
@@ -295,15 +298,15 @@
                                         
           (when (= nrg-key :solar) ; special case Solar: Inputs for Rooftop capacity
             [param-settings-pair-explanations
-             nrg-key const/arealess-capacity])
+             nrg-key params/arealess-capacity])
           
           (when (= nrg-key :wind) ; special case Wind: Inputs for capacity
             [param-settings-pair-explanations
-             nrg-key const/arealess-capacity-wind])]
+             nrg-key params/arealess-capacity-wind])]
          (map
           (fn [parameter-dfn]
             [param-settings-pair-explanations nrg-key parameter-dfn])
-          const/parameters))])
+          params/common-nrg-parameters))])
 
 (defn format-text-snippet
   ([i exp-key]
@@ -334,21 +337,25 @@
                      i nrg-key (params-for-nrg-explanations nrg-key nrg))) cfg/nrgs)]
     [:h3.title.is-3 "Parameter"]
     (map-indexed
-     format-text-snippet const/param-keys)]])
+     format-text-snippet params/param-keys)]])
 
-
+ 
 ;; ######################
 ;; ##### Energy-Mix #####
 ;; ######################
-
+ 
 (defn lock-button
   ""
   [nrg-key]
-  [:button {:style {:transform "scale(0.75)"}
-               :on-click (h/dispatch-on-x [:nrg/toggle-lock nrg-key])}
-     (icon (if @(rf/subscribe [:nrg/locked? nrg-key])
-             icons/lock-filled
-             icons/lock-open))])
+  [:button {:style {:transform "scale(0.75)"
+                    :padding-top "4px"
+                    :padding-left "4px"}
+            :on-click (h/dispatch-on-x [:nrg-share/toggle-lock nrg-key])}
+   [:img {:width "25px"
+          :height "25px"
+          :src (if @(rf/subscribe [:nrg-share/locked? nrg-key])
+                 "symbols/lock_closed.svg"
+                 "symbols/lock_open.svg")}]])
 
 
 (defn energy-slider
@@ -374,14 +381,14 @@
       [:strong name " "
      (Math/round share)" % | "
             (Math/round 
-             @(rf/subscribe [:nrg-share/get-absolute nrg-key]))" TWh"]]]]   
+             @(rf/subscribe [:nrg-share/get-absolute-share nrg-key]))" TWh"]]]]   
 
    ;; Actual Slider
    [:input {:type "range"  :min 0 :max 100
             :style {:width "100%"}
             :value (str share)
             :on-change (h/dispatch-on-x
-                        [:nrg-share/remix nrg-key])}]])
+                        [:nrg/remix-shares nrg-key])}]])
 
 (defn energy-mix
   "Panel with Sliders to mix Energies" 
@@ -402,7 +409,7 @@
       [:div.pt-3.pb-3.pr-3.pl-3
        [:div.mb-3
         "Stelle hier den Strommix der Zukunft zusammen…"]
-       (for [nrg-source @(rf/subscribe [:global/energy-sources])]
+       (for [nrg-source @(rf/subscribe [:nrg/get-all])]
          ^{:key (first nrg-source)}
          [:div [energy-slider nrg-source]])]]]))
 
@@ -423,11 +430,11 @@
 
 
 (defn energy-label
-  "Label indicating the area occupied by the energy
+  "Label and icon indicating the area occupied by the energy
   source associated with nrg-key"
   [nrg-key]
   (let [{:keys [props radius area relative-area color darker-color]}
-        @(rf/subscribe [:deriv/surface-added nrg-key])
+        @(rf/subscribe [:deriv/data-for-map nrg-key])
         area-percent (-> relative-area
                             (* 1000)
                             Math/round
@@ -457,7 +464,7 @@
   by drawing a circle and label."
   [nrg-key] 
   (let [{:keys [props radius area relative-area color darker-color]}
-        @(rf/subscribe [:deriv/surface-added nrg-key])        
+        @(rf/subscribe [:deriv/data-for-map nrg-key])        
         circle-x (:cx props)
         circle-y (:cy props)]
     (when (> area 0)
@@ -647,13 +654,11 @@
       [mapview]]
      [:div.column      
       [energy-mix]
-      [energy-needed]]]
+      [energy-needed]
+      (when (cfg/feature-active? :bookmark-state)
+          [:a {:href @(rf/subscribe  [:save/url-string])}
+           "Bookmark"])]]
     [indicator [:span "Jährlich anfallendes CO" [:sub "2"] ":"] :co2]
     [indicators]
     [detailed-settings-tabular]
     [explanations]]])
-  
- 
-  
- 
- 

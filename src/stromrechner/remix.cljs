@@ -1,4 +1,4 @@
-(ns stromrechner.logic
+(ns stromrechner.remix
   (:require [stromrechner.helpers :as h]))
 
 
@@ -61,7 +61,8 @@
      reacting-nrgs)))
  
 (defn attempt-remix
-  ""
+  "If remix is blocked, reurns thes energy-sources unchanged.
+  Otherwise performs the remix"
   [changed-nrg-key newval nrg-sources]
   (if (remix-blocked? changed-nrg-key newval nrg-sources)
     nrg-sources
@@ -92,7 +93,7 @@
                                   + reacting-nrgs)]    
     (if (> newval unlocked-share)
       nrgs ; return unchanged
-     (first                          ; extract only the remixed energies
+     (first ; extract only the remixed energies
       (reduce
        (fn [[nrgs
              rem-free-share
@@ -121,7 +122,7 @@
        (keys reacting-nrgs))))))
 
 
-(defn- split-by-boolean ; ultimately unused
+(defn- split-by-boolean
   ""
   [f coll]
   (let [grouped (group-by f coll)

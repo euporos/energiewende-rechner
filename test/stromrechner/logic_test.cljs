@@ -3,9 +3,6 @@
             [cljs.test :as t :include-macros true]))
 
 
-(t/deftest a-failing-test
-  (t/is (= 1 2)))
-
 (t/deftest remix-unblocked?-test
   (t/is (not (logic/remix-blocked?
               :wind 2000
@@ -319,12 +316,5 @@
           :bio
           {:share 4
            :locked? false}}) "raise reacting energies equally from 0"))
-
-
-
-(defn testrunner
-  ""
-  []
-  (t/run-tests))
 
  

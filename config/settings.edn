@@ -1,4 +1,9 @@
-{:nrg-constants {:wind {:name "Wind"
+{:features #{; :bookmark-state
+             }
+ :snippet-directory "config/text/"
+ :co2-colors ["#2AA364", "#F5EB4D", "#9E4229", "#381D02"]
+ :total-landmass 357581
+ :nrg-constants {:wind {:name "Wind"
                         :has-arealess? true
                         :icon "symbols/wind2.svg"
                         :color "rgba(135, 206, 250)"

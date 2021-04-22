@@ -2,8 +2,11 @@
   (:require [stromrechner.helpers :as h])
   (:require-macros [stromrechner.macros :as m]))
 
+
+
 (defn transpose-energy-sources
-  ""
+  "The publication file is more comfortably
+  edited by "
   [publications]
   (map
    (fn [pub]
@@ -69,9 +72,16 @@
   (some #(if (get-in % [:energy-sources nrg-key param-key]) %)
         publications))
 
+
+
 ;; #################
 ;; #### Helpers ####
 ;; #################
+
+;; these come in handy when converting
+;; values from the
+;; to units used in the publications.edn
+;; thes are not used in the program itself
 
 (defn annual-twh-per-km2-to-W-per-m2
   ""

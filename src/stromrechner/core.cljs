@@ -1,6 +1,6 @@
 (ns stromrechner.core
   (:require
-   [stromrechner.db-interaction :refer [load-default-pubs]]
+   [stromrechner.reframing]
    [reagent.dom :as rdom]
    [re-frame.core :as re-frame]
    [stromrechner.views :as views]
@@ -13,28 +13,17 @@
 (m/def-string-from-file version
   "resources/version.txt" str)
 
-(defn dev-setup []
-  (when config/debug?
-    (println "dev mode")))
-
 (defn ^:dev/after-load mount-root []
   (re-frame/clear-subscription-cache!)
   (rdom/unmount-component-at-node root-el)
   (rdom/render [views/main-component] root-el))
 
 (defn init []
-  (re-frame/dispatch-sync [:global/initialize-db])
+  (re-frame/dispatch-sync [:global/initialize])
+  ;; (re-frame/dispatch [:save/load-savestate-from-url])
   (print "Stromrechner version " version)
-  (load-default-pubs)
-  (dev-setup)
+  ;; (re-frame/dispatch [:nrg/load-pub-defaults])  
   ;; (set! (.-innerHTML root-el) nil)
   (mount-root))
  
-
-   
-
   
- 
-   
- 
- 

@@ -1,12 +1,16 @@
 (ns stromrechner.config
   (:require [stromrechner.helpers :as h]
-            [stromrechner.color :as color])
-  (:require-macros [stromrechner.macros :as m]
-                   ))
+            [stromrechner.color :as color]
+            [clojure.string :as str]
+            [stromrechner.google-defines :as gf])
+  (:require-macros [stromrechner.macros :as m]))
 
-(def debug?
-  ^boolean goog.DEBUG)
+;; ##########################################
+;; ######### Enrichment of Settings #########
+;; ##########################################
 
+;; some constants can be derived from the settings right away
+;; to avoid recalculation
 
 (defn enrich-nrg-constants
   ""
@@ -25,18 +29,39 @@
   (update settings :nrg-constants enrich-nrg-constants))
 
 
-(m/def-from-file settings 
+;; ####################################################################
+;; ############## Load the Settings from the config file ##############
+;; ####################################################################
+
+(m/def-from-file settings
   "config/settings.edn"
   enrich-settings)
+  
+;; (m/def-config config gf/config-dir
+;;   )
+  
+ 
+
+;; ##############################################################
+;; ############# Extraction of Configuration Values #############
+;; ##############################################################
 
 (def nrgs (get settings :nrg-constants))
 
 (def nrg-keys (map first (get settings :init-mix)))
 
+(def total-landmass (:total-landmass settings))
+
+(def co2-colors (:co2-colors settings))
+
+(def snippet-directory (:snippet-directory settings))
+
+(defn feature-active?
+  ""
+  [feature-key]
+  ((:features settings) feature-key))
 
 (defn icon-for-nrg
   ""
   [nrg-key]
   (get-in nrgs [nrg-key :icon]))
-
- 

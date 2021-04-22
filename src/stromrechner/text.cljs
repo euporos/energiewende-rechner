@@ -1,8 +1,11 @@
 (ns stromrechner.text
+  (:require [stromrechner.config :as cfg])
   (:require-macros [stromrechner.macros :as m]))
 
-(def snippets 
-  (m/build-text-map
+(def snippets
+  ;; md-texts from the directory
+  ;; are added to the submaps under :text
+  (m/build-snippet-map
    {:general {:heading "Allgemeines"}
     :power-density {:heading "Bemessungsleistung pro m²"}
     :deaths {:heading "Statistisch erwartbare Todesfälle pro TWh"}
@@ -13,5 +16,4 @@
     :nuclear {:heading "Kernenergie"}
     :bio {:heading "Biomasse"}
     :natural-gas {:heading "Erdgas"}
-    :coal {:heading "Kohle"}
-    }))
+    :coal {:heading "Kohle"}}))
