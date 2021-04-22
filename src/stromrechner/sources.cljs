@@ -46,15 +46,13 @@
    #(get % :energy-needed)   
    publications))
 
-
-
 (defn reverse-paths
   ""
   [indata]
   (let [first-level-keys (keys indata)
         second-level-keys (keys (reduce merge (map second indata)))
         paths (for [flk first-level-keys 
-                    slk second-level-keys]
+                    slk second-level-keys] 
                 [flk slk])]
     
     (reduce

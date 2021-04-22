@@ -264,7 +264,7 @@
         [settings-table-row nrg-source])]]
     
     [arealess-settings :solar "Solarkapazität auf Dächern in TWh"]
-    [arealess-settings :solar "Kapazität für Offshore-Windkraft in TWh"])])
+    [arealess-settings :wind "Kapazität für Offshore-Windkraft in TWh"])])
 
 
 ;; ########################

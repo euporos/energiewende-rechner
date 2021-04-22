@@ -218,11 +218,18 @@
     :bio 0
     :coal 941
     :natural-gas 428}}}
- {:id "Fraunhofer (2019)"
-  :link "https://www.bmwi.de/Redaktion/DE/Publikationen/Studien/wissenschaftliche-fundierung-der-beratungen-zu-abstandsregelungen-bei-windenergie-an-land.pdf?__blob=publicationFile&v=4"
+ ;; {:id "Fraunhofer (2019)"
+ ;;  :link "https://www.bmwi.de/Redaktion/DE/Publikationen/Studien/wissenschaftliche-fundierung-der-beratungen-zu-abstandsregelungen-bei-windenergie-an-land.pdf?__blob=publicationFile&v=4"
+ ;;  :energy-sources 
+ ;;  {:arealess-capacity
+ ;;   {:wind 178
+ ;;    }}}
+
+ {:id "Agora Energiewende"
+  :link "https://www.agora-energiewende.de/presse/neuigkeiten-archiv/windenergie-auf-see-braucht-platz-um-sie-optimal-zu-nutzen/"
   :energy-sources 
   {:arealess-capacity
-   {:wind 178
+   {:wind 240 ; Mittelwert aus 200 und 280
     }}}
  {:id "BMVI (2015)" ; !!!!!
   :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
