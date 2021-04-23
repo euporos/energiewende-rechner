@@ -21,7 +21,7 @@
   (rdom/render [views/main-component] root-el))
 
 (defn init []
-  (print "Ewr.version " version)
+  (print "EWR version " version)
   (re-frame/dispatch-sync [:global/initialize])
   (mount-root))
  
