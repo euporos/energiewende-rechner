@@ -1,8 +1,7 @@
 (ns stromrechner.config
   (:require [stromrechner.helpers :as h]
             [stromrechner.color :as color]
-            [clojure.string :as str]
-            [stromrechner.google-defines :as gf])
+            [clojure.string :as str])
   (:require-macros [stromrechner.macros :as m]))
 
 ;; ##########################################
@@ -12,7 +11,8 @@
 ;; some constants can be derived from the settings right away
 ;; to avoid recalculation
 
-;; TODO: We could do this at compile time
+;; TODO: We could do this at compile time to save some CPU cycles on startup
+;; same goes for transposing of publications
 
 (defn enrich-nrg-constants
   ""
@@ -47,17 +47,13 @@
   "Extracts the snippet at PATH. If at any point
   of the path a string should be encountered it is returned."
   [& path]
-  (reduce
-   (fn [structure next-path-elem]
-     (if (string? structure)
-       (reduced structure)
-       (get structure next-path-elem)))
-   snippets
-   path))
+  (apply h/snippet-on-path snippets path))
 
 ;; ##############################################################
 ;; ############# Extraction of Configuration Values #############
 ;; ##############################################################
+
+(def explanation-headings (:explanation-headings snippets))
 
 (def nrgs (enrich-nrg-constants
                     (:nrg-constants settings)))
@@ -76,4 +72,5 @@
 (defn icon-for-nrg
   ""
   [nrg-key]
-  (get-in nrgs [nrg-key :icon])) 
+  (get-in nrgs [nrg-key :icon]))
+

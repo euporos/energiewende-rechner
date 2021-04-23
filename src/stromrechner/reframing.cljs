@@ -4,7 +4,7 @@
    [day8.re-frame.tracing :refer-macros [fn-traced]]
    [reagent.core :as r]
    [reagent.ratom :as ratom]
-   [stromrechner.sources :as sources]
+   [stromrechner.publications :as pubs]
    [clojure.edn :as edn]
    [stromrechner.color :as color]
    [stromrechner.constants :as constants]
@@ -172,7 +172,7 @@
  ;; Returns the whole map, not just the id
  (fn [db _]
    (let [curval (get db :energy-needed)
-         matching-pubs (sources/matching-pubs-for-path [:energy-needed] curval)
+         matching-pubs (pubs/matching-pubs-for-path [:energy-needed] curval)
          last-loaded (get-in db [:ui :loaded-pubs :energy-needed])]
      (return-loaded-pub matching-pubs last-loaded))))
 
@@ -183,7 +183,7 @@
  ;; returns the entire map
  (fn [db [_ nrg-key param-key]]
    (let [curval (get-in db [:energy-sources nrg-key param-key])
-         matching-pubs (sources/matching-pubs nrg-key param-key curval)
+         matching-pubs (pubs/matching-pubs nrg-key param-key curval)
          last-loaded (get-in db [:ui :loaded-pubs nrg-key param-key])]
      (return-loaded-pub matching-pubs last-loaded))))
 
@@ -228,16 +228,16 @@
  (fn [_ _]
    {:tech/dispatches (into
                       [[:energy-needed/load-pub ; …for power needed
-                        (first (sources/pubs-for-needed-power))]
+                        (first (pubs/pubs-for-needed-power))]
                        [:nrg/load-pub :solar :arealess-capacity ; …for rooftop solar
-                        (sources/default-pub :solar :arealess-capacity)]
+                        (pubs/default-pub :solar :arealess-capacity)]
                        [:nrg/load-pub :wind :arealess-capacity ; …for offshore wind
-                        (sources/default-pub :wind :arealess-capacity)]]
+                        (pubs/default-pub :wind :arealess-capacity)]]
                       
-                      (for [nrg-key (map first (:energy-sources default-db)) ; … for alle combinations
-                            param-key (map first params/common-nrg-parameters)] ; of energy-sources and parameters
+                      (for [nrg-key cfg/nrg-keys ; … for alle combinations
+                            param-key params/common-param-keys] ; of energy-sources and parameters
                         [:nrg/load-pub nrg-key param-key
-                         (sources/default-pub nrg-key param-key)]))}))
+                         (pubs/default-pub nrg-key param-key)]))}))
 
 ;; ###########################
 ;; ###### Energy shares ######
@@ -342,10 +342,10 @@
                                    (h/nan->0))) ;TODO: from const
                        abs-added)]
     {:param-total total
-     :factor (get-in params/parameter-map [param-key :indicator-factor] 0)
-     :formatter (get-in params/parameter-map
+     :factor (get-in params/common-parameter-map [param-key :indicator-factor] 0)
+     :formatter (get-in params/common-parameter-map
                         [param-key :indicator-formatter] #(Math/round %))
-     :unit  (get-in params/parameter-map [param-key :abs-unit])
+     :unit  (get-in params/common-parameter-map [param-key :abs-unit])
      :energy-sources shares-added}))
 
 (reg-sub ; param-key should be :co2 or :deaths

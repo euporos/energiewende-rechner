@@ -2,7 +2,7 @@
   (:require
    [stromrechner.constants :as constants]
    [re-frame.core :as rf]
-   [stromrechner.sources :as sources]
+   [stromrechner.publications :as pubs]
    [clojure.string :as str]
    [clojure.edn :as edn]
    [stromrechner.parameters :as params]
@@ -74,10 +74,10 @@
   "Input Element for a Parameter.
   PARAM has the form defined in  stromrechner.constants.
   Pre-path indicates where in the DB the parameter-dfn can be found."
-  ;; MFT I have tried to avoid this tight coupling with the DB
+  ;; I have tried to avoid this tight coupling with the DB
   ;; but solutions were unsatisfactory
   [pre-path parameter-dfn width show-unit?]
-  (let [[param-key {:keys [unit input-attrs]}] parameter-dfn ]
+  (let [[param-key {:keys [unit input-attrs]}] parameter-dfn]
     [:div.field.is-horizontal  
      [:div.field-body 
       [:div.field
@@ -124,14 +124,15 @@
   [publication-dropdown
    {:value-subscription @(rf/subscribe [:nrg/loaded-pub nrg-key :arealess-capacity])
     :partial-event [:nrg/load-pub nrg-key :arealess-capacity]
-    :publications (sources/pubs-for-param nrg-key :arealess-capacity)}])
+    :publications (pubs/pubs-for-param nrg-key :arealess-capacity)}])
 
 (defn arealess-input
   "Input to enter a value for
   the arealess capacity,
   i.e. rooftop solar or offshore wind"
   [nrg-key]
-  [param-input [:energy-sources nrg-key] params/arealess-capacity-solar])
+  [param-input [:energy-sources nrg-key]
+   params/arealess-capacity]) 
 
 
 ;; ########################
@@ -143,7 +144,7 @@
   [publication-dropdown
    {:value-subscription @(rf/subscribe [:energy-needed/loaded-pub])
     :partial-event [:energy-needed/load-pub]
-    :publications (sources/pubs-for-needed-power)}])
+    :publications (pubs/pubs-for-needed-power)}])
 
 (defn energy-needed
   []
@@ -173,7 +174,7 @@
     [publication-dropdown
      {:value-subscription @(rf/subscribe [:nrg/loaded-pub nrg-key param-key])
       :partial-event [:nrg/load-pub nrg-key param-key] ; the on-change-val gets conj'd onto this
-      :publications (sources/pubs-for-param nrg-key param-key)}]))
+      :publications (pubs/pubs-for-param nrg-key param-key)}]))
 
 (defn param-publication-link
   ""
@@ -234,13 +235,15 @@
 (defn arealess-settings
   "Dropdown and Input for solar rooftop
   or onshore wind"
-  [nrg-key label]
+  [nrg-key]
   [:div.has-text-centered.mt-3
      {:style {:margin-left "auto"
               :margin-right "auto"}}
      [:span.has-text-weight-bold
       {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation nrg-key])}
-      (with-tooltip label)]
+      (with-tooltip (cfg/snippet :common-parameter-inputs
+                                 :arealess-capacity :name nrg-key))]
+   
      [:div.columns.is-mobile.is-vcentered.mt-1
       [:div.column]
       [:div.column.is-narrow [arealess-input nrg-key]]
@@ -266,8 +269,8 @@
         ^{:key (first nrg-source)}
         [settings-table-row nrg-source])]]
     
-    [arealess-settings :solar "Solarkapazität auf Dächern in TWh"]
-    [arealess-settings :wind "Kapazität für Offshore-Windkraft in TWh"])])
+    [arealess-settings :solar]
+    [arealess-settings :wind])])
 
 
 ;; ########################
@@ -312,8 +315,8 @@
   ([i exp-key]
    (format-explanation i exp-key nil))
   ([i exp-key supplement]
-   (let [heading (get text/explanation-headings exp-key)
-         text (get text/texts exp-key)
+   (let [heading (get cfg/explanation-headings exp-key)
+         text (get cfg/texts exp-key)
          ]
      [:div.block
         {:key i
@@ -329,8 +332,8 @@
    [controlled-panel :explanations
     [:<> "Erläuterungen" [:span.is-hidden-desktop " und Parameter" ]]
     [:div.block
-     [:h3.title.is-3 {:id "explanation-general"} (get text/explanation-headings :general)]
-     [:div.content (h/dangerous-html (get text/texts :general))]]
+     [:h3.title.is-3 {:id "explanation-general"} (get cfg/explanation-headings :general)]
+     [:div.content (h/dangerous-html (get cfg/texts :general))]]
     [:div.block
      [:h3.title.is-3 "Energiequellen"]
      (map-indexed (fn [i [nrg-key nrg]]
@@ -338,7 +341,7 @@
                      i nrg-key (params-for-nrg-explanations nrg-key nrg))) cfg/nrgs)]
     [:h3.title.is-3 "Parameter"]
     (map-indexed
-     format-explanation params/param-keys)]])
+     format-explanation params/common-param-keys)]])
 
 
 ;; ######################

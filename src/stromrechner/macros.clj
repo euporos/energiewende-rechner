@@ -3,12 +3,14 @@
             [markdown.core :as md]))
 
 (defn config-dir []
+  "Extracts the closure define “config-dir” at compile time."
   (if cljs.env/*compiler*
     (get-in @cljs.env/*compiler* [:options :closure-defines :config-dir])
     "config"))
 
 (defn in-config-dir
-  ""
+  "prepends a path with the config directors
+  preventing missing or double slashes."
   [subpath]
   (str
    (str/replace (config-dir) #"/$" "") "/"
@@ -16,6 +18,8 @@
 
 
 (defn read-config-files []
+  "Reads the contents of alle config-files
+and sticks them into a map with the filenames as keys."
   (reduce
      (fn [sofar nextpath]
        (let [key (keyword
@@ -26,10 +30,8 @@
                       (slurp                         
                        (str
                         (str/replace (config-dir) #"/$" "") "/"
-                        (str/replace nextpath #"^/" ""))))
-             ]
-         (assoc sofar key content
-                )))
+                        (str/replace nextpath #"^/" ""))))]
+         (assoc sofar key content)))
      {}
      ["publications.edn"
       "settings.edn"
@@ -39,7 +41,9 @@
 (read-config-files)
  
 (defn read-texts []  
-  ""
+  "reads all MD-Files in under <config-dir>/text
+and sticks them into a map with the names
+of the MD-files as keys."
   (let [grammar-matcher (.getPathMatcher 
                          (java.nio.file.FileSystems/getDefault)
                          "glob:*.{g4,md}")
@@ -61,6 +65,7 @@
     texts))
 
 (defmacro def-config [var]
+  "Constructs the configuration as it wille be available at runtime"
   `(def ~var 
      ~(-> 
        (read-config-files)

@@ -2,10 +2,18 @@
   (:require [stromrechner.helpers :as h]
             [stromrechner.config :as cfg]))
 
+;; ###########################
+;; ###### Energy Needed ######
+;; ###########################
 
-
-(cfg/snippet :common-parameter-inputs)
-
+(def energy-needed
+  [:energy-needed {:name "Strombedarf"
+                   :unit "TWh"
+                   :parse-fn js/parseFloat
+                   :input-attrs {:type "number"
+                                 :pattern "1"
+                                 :step "1"
+                                 :min 0}}])
 
 
 ;; ##############################################
@@ -75,9 +83,11 @@
                                :step "0.01"
                                :min 0.01}}]]))
 
-(def parameter-map (into {} common-nrg-parameters))
 
-(def param-keys (map first common-nrg-parameters))
+
+(def common-parameter-map (into {} common-nrg-parameters))
+
+(def common-param-keys (map first common-nrg-parameters))
 
 ;; ###############################################
 ;; ########## Special Energy Parameters ##########
@@ -85,33 +95,28 @@
 
 ;; Parameters that follow the general pattern,
 ;; but are not defined for all Energy-sources
+;; currently there's only one
 
-(def arealess-capacity-solar
-  [:arealess-capacity {:name "Solarkapazität auf Dächern in TWh"
-                       :unit "TWh"
+(def arealess-capacity
+  [:arealess-capacity {:unit "TWh"
                        :parse-fn js/parseFloat
                        :input-attrs {:type "number"
-                                       :pattern "1"
-                                       :step "1"
-                                       :min 0}}])
+                                     :pattern "1"
+                                     :step "1"
+                                     :min 0}}])
+
+(def arealess-capacity-solar
+  (assoc-in arealess-capacity
+            [1 :name] (or
+                       (cfg/snippet :common-parameter-inputs
+                                    :arealess-capacity :name :solar)
+                       "Solarkapazität auf Dächern in TWh"))) 
 
 (def arealess-capacity-wind
-  (assoc-in arealess-capacity-solar
-            [1 :name] "Kapazität für Offshore Windkraft in TWh"))
+  (assoc-in arealess-capacity
+            [1 :name] (or
+                       (cfg/snippet :common-parameter-inputs
+                                    :arealess-capacity :name :wind)
+                       "Kapazität für Offshore Windkraft in TWh")))
 
-
-
-
-;; ###########################
-;; ###### Energy Needed ######
-;; ###########################
-
-(def energy-needed
-  [:energy-needed {:name "Strombedarf"
-                   :unit "TWh"
-                   :parse-fn js/parseFloat
-                   :input-attrs {:type "number"
-                                 :pattern "1"
-                                 :step "1"
-                                 :min 0}}])
 

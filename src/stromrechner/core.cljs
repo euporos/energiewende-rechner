@@ -7,6 +7,8 @@
    [stromrechner.config :as config])
   (:require-macros [stromrechner.macros :as m]))
 
+(goog-define config-dir "config")
+
 (def root-el
   (.getElementById js/document "app"))
 
@@ -19,11 +21,8 @@
   (rdom/render [views/main-component] root-el))
 
 (defn init []
-  (re-frame/dispatch-sync [:global/initialize])
-  ;; (re-frame/dispatch [:save/load-savestate-from-url])
   (print "Stromrechner version " version)
-  ;; (re-frame/dispatch [:nrg/load-pub-defaults])  
-  ;; (set! (.-innerHTML root-el) nil)
+  (re-frame/dispatch-sync [:global/initialize])
   (mount-root))
  
   
