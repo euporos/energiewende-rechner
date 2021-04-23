@@ -1,11 +1,11 @@
-(ns stromrechner.core
+(ns ewr.core
   (:require
-   [stromrechner.reframing]
+   [ewr.reframing]
    [reagent.dom :as rdom]
    [re-frame.core :as re-frame]
-   [stromrechner.views :as views]
-   [stromrechner.config :as config])
-  (:require-macros [stromrechner.macros :as m]))
+   [ewr.views :as views]
+   [ewr.config :as config])
+  (:require-macros [ewr.macros :as m]))
 
 (goog-define config-dir "config")
 
@@ -21,7 +21,7 @@
   (rdom/render [views/main-component] root-el))
 
 (defn init []
-  (print "Stromrechner version " version)
+  (print "Ewr.version " version)
   (re-frame/dispatch-sync [:global/initialize])
   (mount-root))
  

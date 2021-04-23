@@ -1,5 +1,5 @@
-(ns stromrechner.remix
-  (:require [stromrechner.helpers :as h]))
+(ns ewr.remix
+  (:require [ewr.helpers :as h]))
 
 
 ;; ######################

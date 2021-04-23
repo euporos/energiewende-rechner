@@ -1,14 +1,13 @@
-(ns stromrechner.views
+(ns ewr.views
   (:require
-   [stromrechner.constants :as constants]
+   [ewr.constants :as constants]
    [re-frame.core :as rf]
-   [stromrechner.publications :as pubs]
+   [ewr.publications :as pubs]
    [clojure.string :as str]
    [clojure.edn :as edn]
-   [stromrechner.parameters :as params]
-   [stromrechner.helpers :as h]
-   [stromrechner.config :as cfg :refer [snippet]]
-   [stromrechner.text :as text]
+   [ewr.parameters :as params]
+   [ewr.helpers :as h]
+   [ewr.config :as cfg :refer [snippet]]
    [reagent.core :as r]))
 
 ;; ########################
@@ -72,7 +71,7 @@
 
 (defn param-input
   "Input Element for a Parameter.
-  PARAM has the form defined in  stromrechner.constants.
+  PARAM has the form defined in  ewr.constants.
   Pre-path indicates where in the DB the parameter-dfn can be found."
   ;; I have tried to avoid this tight coupling with the DB
   ;; but solutions were unsatisfactory
@@ -165,7 +164,7 @@
 ;; ############## Parameter-Inputs »Profi-Einstellungen« ##############
 ;; ####################################################################
 
-;; These are for parameters as defined in stromrechner.constants
+;; These are for parameters as defined in ewr.constants
 
 (defn param-dropdown
   ""

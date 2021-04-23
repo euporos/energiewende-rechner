@@ -1,18 +1,18 @@
-(ns stromrechner.reframing
+(ns ewr.reframing
   (:require
    [re-frame.core :as rf :refer [reg-event-db reg-sub]]
    [day8.re-frame.tracing :refer-macros [fn-traced]]
    [reagent.core :as r]
    [reagent.ratom :as ratom]
-   [stromrechner.publications :as pubs]
+   [ewr.publications :as pubs]
    [clojure.edn :as edn]
-   [stromrechner.color :as color]
-   [stromrechner.constants :as constants]
-   [stromrechner.constants :as const]
-   [stromrechner.parameters :as params]
-   [stromrechner.helpers :as h]
-   [stromrechner.config :as cfg]
-   [stromrechner.remix :as remix]
+   [ewr.color :as color]
+   [ewr.constants :as constants]
+   [ewr.constants :as const]
+   [ewr.parameters :as params]
+   [ewr.helpers :as h]
+   [ewr.config :as cfg]
+   [ewr.remix :as remix]
    [thi.ng.color.core :as col]
    [wrap.compress :as compress]
    [cemerick.url :as url :refer (url url-encode)]
@@ -70,7 +70,7 @@
 ;; ############################  
 
 ;; These are used for the direct Inputs of Parameters
-;; as defined in the stromrechner.parameters namespace 
+;; as defined in the ewr.parameters namespace 
 
 (reg-event-db
  :param/parse-and-set
