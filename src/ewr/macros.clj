@@ -1,12 +1,29 @@
 (ns ewr.macros
   (:require [clojure.string :as str]
-            [markdown.core :as md]))
+            [markdown.core :as md]
+            [clojure.set :as set]))
+
+(defn get-closure-define
+  ""
+  [key default]
+  (if cljs.env/*compiler*
+    (get-in @cljs.env/*compiler* [:options :closure-defines key])
+    default))
 
 (defn config-dir []
   "Extracts the closure define “config-dir” at compile time."
-  (if cljs.env/*compiler*
-    (get-in @cljs.env/*compiler* [:options :closure-defines :config-dir])
-    "config"))
+  (get-closure-define :config-dir "config"))
+
+(defn disabled-features
+  ""
+  []
+  (let [defined (get-closure-define :disabled-features "")]
+    (if (empty? defined) #{}
+     (set
+      (map keyword
+           (str/split
+            defined
+            #" +"))))))
 
 (defn in-config-dir
   "prepends a path with the config directors
@@ -38,7 +55,16 @@ and sticks them into a map with the filenames as keys."
       "snippets.edn"
       ]))
 
-(read-config-files)
+(defn disable-features
+  ""
+  [configuration]
+  (update-in configuration
+             [:settings :features]
+             
+   #(set/difference %
+            (disabled-features))))
+
+
  
 (defn read-texts []  
   "reads all MD-Files in under <config-dir>/text
@@ -69,7 +95,9 @@ of the MD-files as keys."
   `(def ~var 
      ~(-> 
        (read-config-files)
-       (assoc :texts (read-texts)))))
+       (assoc :texts (read-texts))
+       (disable-features)
+       )))
 
 
 ;; ##############

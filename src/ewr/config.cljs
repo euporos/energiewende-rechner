@@ -36,8 +36,8 @@
 ;; ####################################################################
 
 (m/def-config config)
-
-(def settings (:settings config))
+ 
+(def settings  (:settings config))
 
 (def texts (:texts config))
 
@@ -73,4 +73,3 @@
   ""
   [nrg-key]
   (get-in nrgs [nrg-key :icon]))
-
