@@ -21,6 +21,3 @@
 (def texts (:texts cfg/config))
 
 (def explanation-headings (:explanation-headings cfg/snippets))
-
-
-

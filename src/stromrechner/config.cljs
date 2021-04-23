@@ -43,6 +43,18 @@
 
 (def snippets (:snippets config))
 
+(defn snippet
+  "Extracts the snippet at PATH. If at any point
+  of the path a string should be encountered it is returned."
+  [& path]
+  (reduce
+   (fn [structure next-path-elem]
+     (if (string? structure)
+       (reduced structure)
+       (get structure next-path-elem)))
+   snippets
+   path))
+
 ;; ##############################################################
 ;; ############# Extraction of Configuration Values #############
 ;; ##############################################################
@@ -64,4 +76,4 @@
 (defn icon-for-nrg
   ""
   [nrg-key]
-  (get-in nrgs [nrg-key :icon]))
+  (get-in nrgs [nrg-key :icon])) 

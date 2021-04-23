@@ -7,7 +7,7 @@
    [clojure.edn :as edn]
    [stromrechner.parameters :as params]
    [stromrechner.helpers :as h]
-   [stromrechner.config :as cfg]
+   [stromrechner.config :as cfg :refer [snippet]]
    [stromrechner.text :as text]
    [reagent.core :as r]))
 
@@ -131,7 +131,7 @@
   the arealess capacity,
   i.e. rooftop solar or offshore wind"
   [nrg-key]
-  [param-input [:energy-sources nrg-key] params/arealess-capacity])
+  [param-input [:energy-sources nrg-key] params/arealess-capacity-solar])
 
 
 ;; ########################
@@ -298,7 +298,7 @@
                                         
           (when (= nrg-key :solar) ; special case Solar: Inputs for Rooftop capacity
             [param-settings-pair-explanations
-             nrg-key params/arealess-capacity])
+             nrg-key params/arealess-capacity-solar])
           
           (when (= nrg-key :wind) ; special case Wind: Inputs for capacity
             [param-settings-pair-explanations
@@ -644,10 +644,10 @@
 (defn main-component []
   [:div
    [:p.is-size-5.has-text-centered    
-    "Wie viel Platz braucht unser Strom?"]
+    (snippet :subtitle)]
    [:p.is-size-5.has-text-centered
     [:a {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :general])
-            :style {:cursor "pointer"}}"→ Erläuterungen"]
+            :style {:cursor "pointer"}} (snippet :explanations)]
     ]
    [:div.anwendung.pt-3.pb-3.pl-3.pr-3    
     [:div.columns.is-centered ;.is-vcentered
@@ -663,3 +663,5 @@
     [indicators]
     [detailed-settings-tabular]
     [explanations]]])
+
+
