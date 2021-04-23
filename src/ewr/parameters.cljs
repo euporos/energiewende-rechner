@@ -1,6 +1,6 @@
-(ns stromrechner.parameters
-  (:require [stromrechner.helpers :as h]
-            [stromrechner.config :as cfg]))
+(ns ewr.parameters
+  (:require [ewr.helpers :as h]
+            [ewr.config :as cfg]))
 
 ;; ###########################
 ;; ###### Energy Needed ######

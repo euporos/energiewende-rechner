@@ -1,4 +1,4 @@
-(ns stromrechner.macros
+(ns ewr.macros
   (:require [clojure.string :as str]
             [markdown.core :as md]))
 

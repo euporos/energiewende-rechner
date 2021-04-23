@@ -1,4 +1,4 @@
-(ns stromrechner.color
+(ns ewr.color
   (:require
    [thi.ng.color.core :as col]
    [thi.ng.color.gradients :as grad]

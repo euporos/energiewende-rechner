@@ -1,7 +1,7 @@
-(ns stromrechner.publications
-  (:require [stromrechner.helpers :as h]
-            [stromrechner.config :as cfg])
-  (:require-macros [stromrechner.macros :as m]))
+(ns ewr.publications
+  (:require [ewr.helpers :as h]
+            [ewr.config :as cfg])
+  (:require-macros [ewr.macros :as m]))
 
 (defn transpose-energy-sources
   "The publication file is more comfortably

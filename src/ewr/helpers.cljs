@@ -1,4 +1,4 @@
-(ns stromrechner.helpers
+(ns ewr.helpers
   (:require
    [re-frame.core :as rf :refer [reg-event-db reg-sub]]
    [clojure.string :as str]))

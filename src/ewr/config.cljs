@@ -1,8 +1,8 @@
-(ns stromrechner.config
-  (:require [stromrechner.helpers :as h]
-            [stromrechner.color :as color]
+(ns ewr.config
+  (:require [ewr.helpers :as h]
+            [ewr.color :as color]
             [clojure.string :as str])
-  (:require-macros [stromrechner.macros :as m]))
+  (:require-macros [ewr.macros :as m]))
 
 ;; ##########################################
 ;; ######### Enrichment of Settings #########
