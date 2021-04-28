@@ -4,7 +4,8 @@
    ;; ["protobufjs" :as protobuf]
    ["huffman-url-compressor" :as huff :refer [createEncoder encodeConfig decodeConfig]] [wrap.compress :as compress]
    [clojure.edn :as edn]
-   [malli.core :as m]))
+   [malli.core :as m]
+   [clojure.string :as str]))
 
 ;; ######################################
 ;; ######## Huffmann-Compression ########
@@ -63,6 +64,30 @@
     (map
      (partial zipmap param-order)
      nrgs))})
+
+;; #################################
+;; ####### CSV-serialization #######
+;; #################################
+
+(defn savestate-to-csv
+  ""
+  [savestate]
+  (str
+   ":energy-needed," (get savestate :energy-needed) "\n"
+   "energy-source\\Parameter," (str/join "," param-order)"\n"
+   (str/join "\n"
+             (map
+              (fn [nrg-key]
+                (str nrg-key ","
+                     (str/join ","
+                               (map
+                                (fn [param-key]
+                                  (get-in savestate
+                                          [:energy-sources nrg-key param-key]))
+                                param-order))
+                     ))
+              nrg-order))))
+
 
 ;; ###############################################
 ;; ########## Application to savestates ##########

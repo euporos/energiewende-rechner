@@ -13,6 +13,7 @@
                 [pjstadig/humane-test-output "0.10.0"]
                 [re-frame-utils "0.1.0"]
                 [metosin/malli "0.4.0"]
+                [thedavidmeister/cljc-md5 "0.0.2"]
                 ]
  
  :builds {:app {:target :browser

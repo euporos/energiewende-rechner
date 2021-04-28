@@ -8,7 +8,8 @@
    [ewr.parameters :as params]
    [ewr.helpers :as h]
    [ewr.config :as cfg :refer [snippet]]
-   [reagent.core :as r]))
+   [reagent.core :as r]
+   [md5.core :as md5]))
 
 ;; ########################
 ;; ##### Common Stuff #####
@@ -637,6 +638,20 @@
    [indicator "Statistisch erwartbare Todesfälle pro Jahr:" :deaths]
    [indicator "Jährlicher Ressourcenverbrauch:" :resources]))  
 
+(defn savelinks
+  ""
+  []
+  [:div
+   [:div
+    [:a {:href @(rf/subscribe  [:save/url-string])}
+     "→ Link, um diesen Strommix zu teilen"]]
+   [:div
+    [:a {:href (js/encodeURI
+                @(rf/subscribe  [:save/csv-string]))
+         :download (str "strommix_"
+                        (md5/string->md5-hex
+                         (str @(rf/subscribe [:save/savestate])))
+                        ".csv")} "→ Konfiguration als CSV herunterladen"]]])
 
 ;; ############################   
 ;; ###### Main Component ######
@@ -657,11 +672,7 @@
       [energy-mix]
       [energy-needed]
       (when (cfg/feature-active? :bookmark-state)
-        [:div
-         ;; (when @(rf/subscribe [:save/savestate-load-failed?])
-         ;;   [:div "Leider konnte die gewünschte Einstellung nicht geladen werden"])
-         [:a {:href @(rf/subscribe  [:save/url-string])}
-          "→ Link, um diesen Strommix zu teilen"]])]]
+        [savelinks])]]
     [indicator [:span "Jährlich anfallendes CO" [:sub "2"] ":"] :co2]
     [indicators]
     [detailed-settings-tabular]

@@ -511,6 +511,16 @@
          savestate-string)))))
 
 
+(reg-sub
+ :save/csv-string
+ (fn []
+   (rf/subscribe [:save/savestate]))
+ (fn [savestate _]
+   (str
+    "data:application/octet-stream,"
+    (serialize/savestate-to-csv savestate))))
+
+
 (rf/reg-event-fx
  :save/load-savestate-from-url
  [(rf/inject-cofx :global/url)]
