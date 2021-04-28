@@ -16,3 +16,4 @@
    lzutf8
    (str input)
    (clj->js {:inputEncoding "Base64"})))
+

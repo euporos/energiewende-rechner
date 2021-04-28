@@ -13,10 +13,13 @@
    [ewr.helpers :as h]
    [ewr.config :as cfg]
    [ewr.remix :as remix]
+   [ewr.serialization :as serialize]
    [thi.ng.color.core :as col]
    [wrap.compress :as compress]
    [cemerick.url :as url :refer (url url-encode)]
-   [vimsical.re-frame.cofx.inject :as inject]))
+   [vimsical.re-frame.cofx.inject :as inject]
+   ))
+
 
 
 ;; ###################
@@ -29,6 +32,12 @@
  (fn [events]
    (doseq [event (remove nil? events)]     
      (rf/dispatch event))))
+
+(rf/reg-fx
+ :tech/alert
+ (fn [message]
+   (when message
+     (js/alert (str message)))))
 
 (rf/reg-event-fx
  :tech/log
@@ -443,9 +452,6 @@
 ;; ### Saving ###
 ;; ##############
 
-;; Functions related to storing the current state
-;; in the URL ; still experimental
-
 (rf/reg-cofx
  :global/url
  (fn [coeffects _]
@@ -470,14 +476,24 @@
 (reg-sub
  :save/savestate
  (fn [db _]
-   (select-keys db [:energy-sources :energy-needed])))
+   (update
+    (select-keys db [:energy-sources :energy-needed])
+ :energy-sources
+ (fn [nrgs]
+   (into {}
+    (map (fn [[key vals]]
+           [key (dissoc vals :locked?)])
+         nrgs))))))
 
 (reg-sub
  :save/savestate-string
  (fn []
    (rf/subscribe [:save/savestate]))
  (fn [savestate _]
-   (compress/compress-b64(str savestate))))
+   (-> savestate
+       serialize/serialize
+       str
+       serialize/encode-savestate-huff)))
 
 (reg-sub
  :save/url-string
@@ -486,9 +502,13 @@
     (rf/subscribe [:save/savestate-string])])
  (fn [[analysed-url savestate-string]]
    (str
-    (assoc-in analysed-url
-              [:query "savestate"]
-              savestate-string))))
+    (-> analysed-url
+        (assoc-in
+         [:query "sv"]
+         serialize/serializer-version)
+        (assoc-in
+         [:query "savestate"]
+         savestate-string)))))
 
 
 (rf/reg-event-fx
@@ -497,9 +517,19 @@
  (fn [{:keys [url db]:as cofx} []]
    (if-let [url-savestate-string
             (get-in url [:query "savestate"])]
-     (let [savestate (edn/read-string
-                      (compress/decompress-b64
-                       url-savestate-string))]
-       (js/console.log savestate)
-       {:db (merge db savestate)})
+     (let [savestate (serialize/deserialize-savestate-string
+                      url-savestate-string)]
+       {:db (if savestate
+              (merge db savestate)
+              (assoc-in db [:ui :savestate-load-failed?] true))
+        :tech/alert (when (empty? savestate)
+                        "Leider konnte der gespeicherte Energiemix nicht geladen werden\n\nRechner startet mit Standardmix")})
      {})))
+
+(reg-sub
+ :save/savestate-load-failed?
+ (fn [db _]
+   (get-in db [:ui :savestate-load-failed?])))
+
+
+

@@ -64,10 +64,10 @@
                      :max-height (if (not open?) 0)}}
        (into [:div.block.pt-3.pb-3.pr-3.pl-3 ] comps)]]]))
 
+
 ;;
 ;; Inputs
 ;;
-
 
 (defn param-input
   "Input Element for a Parameter.
@@ -152,7 +152,7 @@
           [:div.columns.is-mobile.is-vcentered.mb-0
            [:div.column
             [param-input [] params/energy-needed]]
-           (if-let [href (:link @(rf/subscribe [:energy-needed/get]))]
+           (if-let [href (:link @(rf/subscribe [:energy-needed/loaded-pub]))]
              [:div.column.is-narrow.has-text-centered
               [:a {:target "_blank"
                    :href href} " → Quelle"]])]
@@ -184,6 +184,7 @@
     [:a {:href loaded-pub-link
          :target "_blank"
          :rel "noopener noreferrer"} "→ Quelle"]))
+
 
 ;; ################################
 ;; ####### Tabular Settings #######
@@ -275,7 +276,6 @@
 ;; ########################
 ;; ##### Explanations #####
 ;; ########################
-
 
 (defn param-settings-pair-explanations
   "Publication Dropdown and Input for nrg-parameter"
@@ -416,10 +416,10 @@
          ^{:key (first nrg-source)}
          [:div [energy-slider nrg-source]])]]]))
 
+
 ;; #########
 ;; ## Map ##
 ;; #########
-
 
 (defn circle-by-radius
   ""
@@ -630,7 +630,6 @@
              [0 []]
              (vals energy-sources))))]]))
 
-
 (defn indicators
   []
   (controlled-panel
@@ -649,8 +648,7 @@
     (snippet :subtitle)]
    [:p.is-size-5.has-text-centered
     [:a {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :general])
-            :style {:cursor "pointer"}} (snippet :explanations)]
-    ]
+            :style {:cursor "pointer"}} (snippet :explanations)]]
    [:div.anwendung.pt-3.pb-3.pl-3.pr-3    
     [:div.columns.is-centered ;.is-vcentered
      [:div.anzeige.column.is-two-thirds-desktop.has-text-centered
@@ -659,11 +657,12 @@
       [energy-mix]
       [energy-needed]
       (when (cfg/feature-active? :bookmark-state)
-          [:a {:href @(rf/subscribe  [:save/url-string])}
-           "Bookmark"])]]
+        [:div
+         ;; (when @(rf/subscribe [:save/savestate-load-failed?])
+         ;;   [:div "Leider konnte die gewünschte Einstellung nicht geladen werden"])
+         [:a {:href @(rf/subscribe  [:save/url-string])}
+          "→ Link, um diesen Strommix zu teilen"]])]]
     [indicator [:span "Jährlich anfallendes CO" [:sub "2"] ":"] :co2]
     [indicators]
     [detailed-settings-tabular]
     [explanations]]])
-
-

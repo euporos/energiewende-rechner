@@ -2,7 +2,9 @@
 	"name": "stromrechner",
 	"dependencies": {
 		"highlight.js": "9.18.1",
+		"huffman-url-compressor": "^1.0.2",
 		"lzutf8": "^0.6.0",
+		"protobufjs": "^6.10.2",
 		"react": "16.14.0",
 		"react-dom": "16.14.0",
 		"react-highlight.js": "1.0.7",

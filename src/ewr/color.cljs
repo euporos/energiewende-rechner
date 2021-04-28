@@ -82,6 +82,3 @@
 
 (comment (make-transparent "#dddddd" 0.5)
          (set-brightness "#dddddd" 0.5))
-
-
-

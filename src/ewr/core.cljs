@@ -8,7 +8,7 @@
   (:require-macros [ewr.macros :as m]))
 
 (goog-define config-dir "config")
-(goog-define disabled-features "bookmark-state baloo")
+(goog-define disabled-features "")
 
 (def root-el
   (.getElementById js/document "app"))
@@ -26,5 +26,4 @@
   (re-frame/dispatch-sync [:global/initialize])
   (mount-root))
  
-  
-
+ 
