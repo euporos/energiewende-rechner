@@ -7,7 +7,7 @@
   ""
   [key default]
   (if cljs.env/*compiler*
-    (get-in @cljs.env/*compiler* [:options :closure-defines key])
+    (get-in @cljs.env/*compiler* [:options :closure-defines key] default)
     default))
 
 (defn config-dir []
@@ -18,12 +18,15 @@
   ""
   []
   (let [defined (get-closure-define :disabled-features "")]
+    
     (if (empty? defined) #{}
      (set
       (map keyword
            (str/split
             defined
             #" +"))))))
+
+(println "the following features will be disabled: " (disabled-features))
 
 (defn in-config-dir
   "prepends a path with the config directors
@@ -59,8 +62,7 @@ and sticks them into a map with the filenames as keys."
   ""
   [configuration]
   (update-in configuration
-             [:settings :features]
-             
+             [:settings :features]             
    #(set/difference %
             (disabled-features))))
 
@@ -97,6 +99,7 @@ of the MD-files as keys."
        (read-config-files)
        (assoc :texts (read-texts))
        (disable-features)
+       ;;(assoc :features #{})
        )))
 
 

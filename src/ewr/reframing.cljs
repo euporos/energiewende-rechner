@@ -20,8 +20,6 @@
    [vimsical.re-frame.cofx.inject :as inject]
    ))
 
-
-
 ;; ###################
 ;; #### Technical ####
 ;; ###################

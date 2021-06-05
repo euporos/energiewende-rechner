@@ -3,7 +3,6 @@
  :source-paths ["src" "test"]
  :dependencies [[madvas/cemerick-url "0.1.2"]
                 [thi.ng/color "1.4.0"]
-                [thheller/shadow-cljs "2.11.7"]
                 [reagent "0.10.0"]
                 [re-frame "1.1.2"]
                 [markdown-clj "1.10.5"]
@@ -14,6 +13,7 @@
                 [re-frame-utils "0.1.0"]
                 [metosin/malli "0.4.0"]
                 [thedavidmeister/cljc-md5 "0.0.2"]
+                ;; [org.clojure/core.async "1.3.618"]
                 ]
  
  :builds {:app {:target :browser
@@ -23,7 +23,7 @@
                                 :preloads [devtools.preload
                                            day8.re-frame-10x.preload]}}
                 :closure-defines {:config-dir "config"
-                                  :disabled-features "bookmark-state"}
+                                  :disabled-features ""}
                 :dev {:compiler-options {:closure-defines {re-frame.trace.trace-enabled? true
                                                            :config-dir "config"
                                                            :disabled-features ""
@@ -35,7 +35,15 @@
                 :devtools {:http-root "resources/public"
                            :http-port 3000
                            }}
-           :node-test
+          :prerender {:target :node-script
+                      :output-to "target/out/prerender.js"
+                      :output-dir "target/out"
+                      :main prerender.main/prerender                      
+                      :compiler-options
+                      {:optimizations :simple
+                       :output-feature-set :es5
+                       :infer-externs false}}
+          :node-test
            {:target    :node-test
             :output-to "out/node-tests.js"
             ;; :ns-regexp "-test$"

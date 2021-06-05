@@ -4,7 +4,8 @@
    [reagent.dom :as rdom]
    [re-frame.core :as re-frame]
    [ewr.views :as views]
-   [ewr.config :as config])
+   [ewr.config :as config]
+   [clojure.string :as str])
   (:require-macros [ewr.macros :as m]))
 
 (goog-define config-dir "config")
@@ -23,7 +24,6 @@
 
 (defn init []
   (print "EWR version " version)
+  (js/console.log "Compiled with the following features: " (str/join ", " (:features config/settings)))
   (re-frame/dispatch-sync [:global/initialize])
   (mount-root))
- 
- 
