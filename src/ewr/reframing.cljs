@@ -494,19 +494,41 @@
        serialize/encode-savestate-huff)))
 
 (reg-sub
- :save/url-string
+ :save/analysed-url
  (fn []
    [(rf/subscribe [:global/url])
     (rf/subscribe [:save/savestate-string])])
  (fn [[analysed-url savestate-string]]
+   (-> analysed-url
+       (assoc-in
+        [:query "sv"]
+        serialize/serializer-version)
+       (assoc-in
+        [:query "savestate"]
+        savestate-string))))
+
+(reg-sub
+ :save/url-string
+ (fn []
+   (rf/subscribe [:save/analysed-url]))
+ (fn [analysed-url]
    (str
-    (-> analysed-url
-        (assoc-in
-         [:query "sv"]
-         serialize/serializer-version)
-        (assoc-in
-         [:query "savestate"]
-         savestate-string)))))
+    analysed-url)))
+
+(reg-sub
+ :save/preview-query-string
+ (fn []
+   (rf/subscribe [:save/savestate-string]))
+ (fn [savestate-string]
+   (str "?savestate=" savestate-string "&sv=" serialize/serializer-version)))
+
+
+(reg-sub
+ :save/querystring
+ (fn []
+   (rf/subscribe [:save/url-string]))
+ (fn []
+   ))
 
 
 (reg-sub
