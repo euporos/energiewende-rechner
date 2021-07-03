@@ -28,7 +28,7 @@
  :tech/dispatches
  ;; Dispatches Events passed
  (fn [events]
-   (doseq [event (remove nil? events)]     
+   (doseq [event (remove nil? events)]
      (rf/dispatch event))))
 
 (rf/reg-fx
@@ -42,7 +42,7 @@
  (fn [_ [_ & prstrs]]
    (apply js/console.log prstrs)))
 
-(comment  
+(comment
 (rf/reg-event-fx
  :test/dsp
  (fn [{:keys [db]} [_]]
@@ -66,7 +66,7 @@
  :global/initialize
  ;; initializes the db
  ;; loads the default publications
- (fn-traced [_ _] 
+ (fn-traced [_ _]
             {:db default-db
              :tech/dispatches [[:global/load-default-pubs]
                                (when (cfg/feature-active? :bookmark-state)
@@ -74,15 +74,15 @@
 
 ;; ############################
 ;; ###### Input handling ######
-;; ############################  
+;; ############################
 
 ;; These are used for the direct Inputs of Parameters
-;; as defined in the ewr.parameters namespace 
+;; as defined in the ewr.parameters namespace
 
 (reg-event-db
  :param/parse-and-set
- 
- (fn [db [_ prepath param 
+
+ (fn [db [_ prepath param
           unparsed-newval]]
    (let ; we take parse-fn from the parameter-definition
        [[param-key {:keys [parse-fn]}] param]
@@ -90,7 +90,7 @@
                (parse-fn unparsed-newval)))))
 
 (reg-sub :param/get
-         (fn [db [_ pre-path param-key]]           
+         (fn [db [_ pre-path param-key]]
            (h/nan->nil (get-in db (conj pre-path param-key)))))
 
 
@@ -124,18 +124,18 @@
                (:energy-sources db))))
 
 (reg-sub
- :nrg/get 
+ :nrg/get
  ;; get the current data for energy source
  ;; identified by nrg-key
  (fn [_]
-   (rf/subscribe [:nrg/get-all])) 
+   (rf/subscribe [:nrg/get-all]))
  (fn [nrgs [_ nrg-key]]
    (get nrgs nrg-key)))
 
 (reg-sub
  :nrg/get-param
  ;; get the value of one parameter
- ;; for one energy source 
+ ;; for one energy source
  (fn [_]
    (rf/subscribe [:nrg/get-all]))
  (fn [nrgs [_ nrg-key param]]
@@ -161,7 +161,7 @@
 ;;;;; Return currently loaded publication
 ;;;;;
 
-(defn- return-loaded-pub 
+(defn- return-loaded-pub
   "Multiple pubs can provide identical values for
   the same parameter – they all match.
   We still want to find the one loaded by the user"
@@ -198,7 +198,7 @@
 ;;;;; Load a publication
 ;;;;;
 
-(defn param-pub-into-db  
+(defn param-pub-into-db
   "Adds the data from a publication
   for a regular parameter into the db."
   ;; this can be useful in many handlers,
@@ -240,7 +240,7 @@
                         (pubs/default-pub :solar :arealess-capacity)]
                        [:nrg/load-pub :wind :arealess-capacity ; …for offshore wind
                         (pubs/default-pub :wind :arealess-capacity)]]
-                      
+
                       (for [nrg-key cfg/nrg-keys ; … for alle combinations
                             param-key params/common-param-keys] ; of energy-sources and parameters
                         [:nrg/load-pub nrg-key param-key
@@ -274,7 +274,7 @@
  ;; in the total energy needed (in TWh)
  (fn [[_ nrg-key]]
    [(rf/subscribe [:energy-needed/get])
-    (rf/subscribe [:nrg-share/get-relative-share nrg-key])]) 
+    (rf/subscribe [:nrg-share/get-relative-share nrg-key])])
  (fn [[energy-needed share] [_ nrg-key]]
    (-> share
        (/ 100)
@@ -314,7 +314,7 @@
                      (- (:arealess-capacity nrg 0))
                      (* 1000000000000) ; share in Wh
                      (/ const/hours-per-year) ; needed W
-                     ;; (/ capacity-factor) ; needed brute W                                        
+                     ;; (/ capacity-factor) ; needed brute W
                      (/ power-density) ; needed m²
                      (/ 1000000)) ; needed km²
          radius (if (or (< area 0) ; area < 0 possible with arealess-capacity
@@ -336,7 +336,7 @@
                     #(assoc % :absolute
                             (-> (:share %)
                                 (/ 100)            ;TODO: from const
-                                (* energy-needed)  ; TWh of this nrg                                
+                                (* energy-needed)  ; TWh of this nrg
                                 (* (param-key %))))
                     energy-sources)
          total (reduce #(+ %1 (:absolute (second %2)))
@@ -402,7 +402,7 @@
               max-co2-intensity
               actual-co2-intensity cfg/co2-colors)]
       [(:col bg)
-       (color/contrasty-bw bg)])))) 
+       (color/contrasty-bw bg)]))))
 
 
 ;; ############################
@@ -417,7 +417,7 @@
  (fn [db [_ panel-key]]
    (update-in db [:ui :panels panel-key] not)))
 
-(rf/reg-event-db 
+(rf/reg-event-db
  :ui/set-panel-visibility
  ;; sets the “open” status of a collapsible panel
  (fn [db [_ panel-key open?]]
@@ -538,6 +538,3 @@
  :save/savestate-load-failed?
  (fn [db _]
    (get-in db [:ui :savestate-load-failed?])))
-
-
-

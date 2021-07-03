@@ -34,7 +34,7 @@
   [heading & comps]
   [:nav.panel
    [:div.panel-heading heading]
-   (into [:div.pt-3.pb-3.pr-3.pl-3] 
+   (into [:div.pt-3.pb-3.pr-3.pl-3]
            comps)])
 
 (defn panel-toggler
@@ -59,7 +59,7 @@
        {:class "panel-heading panel-heading--collapsible"
         :on-click (h/dispatch-on-x [:ui/toggle-panel-visibility key])}
        (panel-toggler open?)
-       heading] 
+       heading]
       [:div
             {:style {:overflow (if open? "visible" "hidden")
                      :max-height (if (not open?) 0)}}
@@ -78,11 +78,11 @@
   ;; but solutions were unsatisfactory
   [pre-path parameter-dfn width show-unit?]
   (let [[param-key {:keys [unit input-attrs]}] parameter-dfn]
-    [:div.field.is-horizontal  
-     [:div.field-body 
+    [:div.field.is-horizontal
+     [:div.field-body
       [:div.field
        {:style {:width width}}
-       [:p.control.is-expanded         
+       [:p.control.is-expanded
         [:input.input
          (merge input-attrs
                 {:value @(rf/subscribe [:param/get pre-path param-key])
@@ -93,7 +93,7 @@
   [{:keys [value-subscription publications partial-event]}]
   [:div.field.is-horizontal
    [:div.field-body
-    [:div.field 
+    [:div.field
      [:p.control.is-expanded
       [:select.input
        {:value (str value-subscription)
@@ -103,7 +103,7 @@
                     partial-event)} ; before dispatch
        [:option {:value nil}  "Benutzerdefiniert"]
        (for [pub publications ]
-         ^{:key (:id pub)}           
+         ^{:key (:id pub)}
          [:option {:value (str pub)} ; only strings can be values ;(
           (:id pub)])]]]]])
 
@@ -132,12 +132,12 @@
   i.e. rooftop solar or offshore wind"
   [nrg-key]
   [param-input [:energy-sources nrg-key]
-   params/arealess-capacity]) 
+   params/arealess-capacity])
 
 
 ;; ########################
 ;; ##### Energy Needed ####
-;; ######################## 
+;; ########################
 
 (defn energy-needed-dropdown
   []
@@ -149,7 +149,7 @@
 (defn energy-needed
   []
   (panel [:span "Jährlicher Strombedarf in TWh"]
-         [:div.block          
+         [:div.block
           [:div.columns.is-mobile.is-vcentered.mb-0
            [:div.column
             [param-input [] params/energy-needed]]
@@ -244,7 +244,7 @@
       {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation nrg-key])}
       (with-tooltip (cfg/snippet :common-parameter-inputs
                                  :arealess-capacity :name nrg-key))]
-   
+
      [:div.columns.is-mobile.is-vcentered.mt-1
       [:div.column]
       [:div.column.is-narrow [arealess-input nrg-key]]
@@ -259,7 +259,7 @@
   []
   [:div#detailed-settings.is-hidden-touch
    (controlled-panel :details
-    "Parameter"          
+    "Parameter"
     [:table.table
      {:style {:margin-left "auto"
               :margin-right "auto"}}
@@ -269,7 +269,7 @@
       (for [nrg-source @(rf/subscribe [:nrg/get-all])]
         ^{:key (first nrg-source)}
         [settings-table-row nrg-source])]]
-    
+
     [arealess-settings :solar]
     [arealess-settings :wind])])
 
@@ -289,20 +289,20 @@
    [:div.columns.is-mobile
     [:div.column
      [param-dropdown nrg-key parameter-dfn]]
-    [:div.column.is-narrow    
+    [:div.column.is-narrow
      [param-input [:energy-sources nrg-key] parameter-dfn]]]])
 
 (defn params-for-nrg-explanations
-  "On mobile " ;TODO: 
+  "On mobile " ;TODO:
   [nrg-key nrg]
   [:div.is-hidden-desktop
    [:h5.title.is-5 "Parameter für " (:name nrg) ":"]
-   (into [:div ;TODO: make specials  generic          
-                                        
+   (into [:div ;TODO: make specials  generic
+
           (when (= nrg-key :solar) ; special case Solar: Inputs for Rooftop capacity
             [param-settings-pair-explanations
              nrg-key params/arealess-capacity-solar])
-          
+
           (when (= nrg-key :wind) ; special case Wind: Inputs for capacity
             [param-settings-pair-explanations
              nrg-key params/arealess-capacity-wind])]
@@ -347,7 +347,7 @@
 ;; ######################
 ;; ##### Energy-Mix #####
 ;; ######################
- 
+
 (defn lock-button
   ""
   [nrg-key]
@@ -380,12 +380,12 @@
      [:img {:src  (cfg/icon-for-nrg nrg-key)
             :style {:height "1.5rem"}}]]
     ;; Text
-    [:div.column.is-narrow  
+    [:div.column.is-narrow
      [:label
       [:strong name " "
      (Math/round share)" % | "
-            (Math/round 
-             @(rf/subscribe [:nrg-share/get-absolute-share nrg-key]))" TWh"]]]]   
+            (Math/round
+             @(rf/subscribe [:nrg-share/get-absolute-share nrg-key]))" TWh"]]]]
 
    ;; Actual Slider
    [:input {:type "range"  :min 0 :max 100
@@ -395,10 +395,10 @@
                         [:nrg/remix-shares nrg-key])}]])
 
 (defn energy-mix
-  "Panel with Sliders to mix Energies" 
+  "Panel with Sliders to mix Energies"
   []
   (let [[bg-color font-color] @(rf/subscribe [:ui/decab-color])]
-    [:div 
+    [:div
      [:nav.panel
       ;; Headings with CO2-Indicator
       [:div.panel-heading {:style {:background-color bg-color
@@ -425,10 +425,10 @@
 (defn circle-by-radius
   ""
   [radius props]
-  [:circle 
+  [:circle
    (merge
     {:r (str radius) ; str avoids a NaN error
-     :stroke "black" 
+     :stroke "black"
      :stroke-width "0"}
     props)])
 
@@ -451,14 +451,14 @@
               :height 20}]
      [:text {:zindex 1000
              :alignment-baseline "central"
-             :font-weight "bold"}      
+             :font-weight "bold"}
       [:tspan {:x 33
                :y 15}
        (if (= 0 area-percent)
          "<0.1" area-percent) " %"]
       [:tspan {:x 33
                :y 35}
-       (str           
+       (str
         (h/structure-int
          area) " km²")]]]))
 
@@ -466,15 +466,15 @@
 (defn energy-on-map
   "Represents the Energy source associated with nrg-key
   by drawing a circle and label."
-  [nrg-key] 
+  [nrg-key]
   (let [{:keys [props radius area relative-area color darker-color]}
-        @(rf/subscribe [:deriv/data-for-map nrg-key])        
+        @(rf/subscribe [:deriv/data-for-map nrg-key])
         circle-x (:cx props)
         circle-y (:cy props)]
     (when (> area 0)
      [:<>
       ;; Circle
-      (circle-by-radius 
+      (circle-by-radius
        radius props)
       ;; Label
       (let [area (Math/round area)
@@ -483,7 +483,7 @@
                              Math/round
                              (/ 10))
             label-outside? (< radius 70)
-            label-y (if label-outside? 
+            label-y (if label-outside?
                       (- circle-y radius 40)
                       (- circle-y 15))
             label-x (if label-outside?
@@ -506,12 +506,12 @@
                            :font-weight "bold"}
             common-props {:text-anchor "middle"
                           :zindex 1000
-                          :alignment-baseline "central"                
+                          :alignment-baseline "central"
                           :cursor "help"
                           :on-click (h/dispatch-on-x [:ui/scroll-to-explanation nrg-key])
                           :on-mouse-over #(reset! hovering? true)
                           :on-mouse-leave #(reset! hovering? false)}]
-       (when (> exhausted-arealess 0)  
+       (when (> exhausted-arealess 0)
         [:g common-props
          (when @hovering?
            [:text {:x x
@@ -530,33 +530,33 @@
 
 (def svg-defs
   "Filters for use in the SVG MapView"
-  [:defs           
-   [:filter#softGlow 
-    {:height "300%" 
-     :width "300%" 
-     :x "-75%" 
-     :y "-75%"} 
-    [:feMorphology 
-     {:operator "dilate" 
-      :radius "4" 
-      :in "SourceAlpha" 
-      :result "thicken"}] 
-    [:feGaussianBlur 
-     {:in "thicken" 
-      :stdDeviation "3" 
-      :result "blurred"}]              
-    [:feFlood 
-     {:flood-color "#555" 
-      :result "glowColor"}] 
-    [:feComposite 
-     {:in "glowColor" 
-      :in2 "blurred" 
-      :operator "in" 
+  [:defs
+   [:filter#softGlow
+    {:height "300%"
+     :width "300%"
+     :x "-75%"
+     :y "-75%"}
+    [:feMorphology
+     {:operator "dilate"
+      :radius "4"
+      :in "SourceAlpha"
+      :result "thicken"}]
+    [:feGaussianBlur
+     {:in "thicken"
+      :stdDeviation "3"
+      :result "blurred"}]
+    [:feFlood
+     {:flood-color "#555"
+      :result "glowColor"}]
+    [:feComposite
+     {:in "glowColor"
+      :in2 "blurred"
+      :operator "in"
       :result "softGlow_colored"}]
-    [:feMerge 
-     [:feMergeNode 
-      {:in "softGlow_colored"}] 
-     [:feMergeNode 
+    [:feMerge
+     [:feMergeNode
+      {:in "softGlow_colored"}]
+     [:feMergeNode
       {:in "SourceGraphic"}]]]])
 
 
@@ -567,7 +567,7 @@
   [:div.mapview
    (into [:svg.karte
           {:viewBox "0 0 640 876"}
-          svg-defs          
+          svg-defs
           [arealess-indicator :wind {:label "Offshore-Wind"
                                      :x 430
                                      :y 40
@@ -607,24 +607,24 @@
      (into [:div ] (interpose " | "
                               (keep (fn [{:keys [name absolute]}]
                                      (when (> absolute 0)
-                                      [:span 
+                                      [:span
                                        name ": " (formatter absolute) [:nobr] unit]))
                                     (vals energy-sources))))]
      ;; Graphical Representation
     [:div
      (into [:svg
-            {:width "100%" 
+            {:width "100%"
              :height "2em"}]
            (second
             (reduce
              (fn [[left-marg sofar] {:keys [name param-share color]}]
                [(+ left-marg
                    param-share) (conj sofar
-                                      [:rect 
+                                      [:rect
                                        {:key name
                                         :x (str left-marg "%")
-                                        :width (str param-share "%") 
-                                        :height "2em" 
+                                        :width (str param-share "%")
+                                        :height "2em"
                                         :style {:fill color
                                                 :stroke-width "0"
                                                 :stroke "black"}}])])
@@ -636,7 +636,7 @@
   (controlled-panel
    :indicators "Weitere Ergebnisse"
    [indicator "Statistisch erwartbare Todesfälle pro Jahr:" :deaths]
-   [indicator "Jährlicher Ressourcenverbrauch:" :resources]))  
+   [indicator "Jährlicher Ressourcenverbrauch:" :resources]))
 
 (defn savelinks
   ""
@@ -646,6 +646,11 @@
     [:a {:href @(rf/subscribe  [:save/url-string])}
      "→ Link, um diesen Strommix zu teilen"]]
    [:div
+    [:a {:href (str ;; "http://localhost:3000/api/savestate-img"
+                    "http://api.euporia.net/api/savestate-img"
+                    @(rf/subscribe [:save/preview-query-string]))}
+     "→ Link to preview"]]
+   [:div
     [:a {:href (js/encodeURI
                 @(rf/subscribe  [:save/csv-string]))
          :download (str "strommix_"
@@ -653,22 +658,22 @@
                          (str @(rf/subscribe [:save/savestate])))
                         ".csv")} "→ Konfiguration als CSV herunterladen"]]])
 
-;; ############################   
+;; ############################
 ;; ###### Main Component ######
 ;; ############################
 
 (defn main-component []
   [:div
-   [:p.is-size-5.has-text-centered    
+   [:p.is-size-5.has-text-centered
     (snippet :subtitle)]
    [:p.is-size-5.has-text-centered
     [:a {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :general])
             :style {:cursor "pointer"}} (snippet :explanations)]]
-   [:div.anwendung.pt-3.pb-3.pl-3.pr-3    
+   [:div.anwendung.pt-3.pb-3.pl-3.pr-3
     [:div.columns.is-centered ;.is-vcentered
      [:div.anzeige.column.is-two-thirds-desktop.has-text-centered
       [mapview]]
-     [:div.column      
+     [:div.column
       [energy-mix]
       [energy-needed]
       (when (cfg/feature-active? :bookmark-state)
