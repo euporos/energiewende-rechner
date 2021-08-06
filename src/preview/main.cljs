@@ -3,6 +3,7 @@
    ["fs" :as fs]
    ["nodejs-base64-converter" :as nodeBase64]
    ["sharp" :as sharp]
+   [ewr.helpers :as h]
    [ewr.reframing :refer [default-db]]
    [ewr.serialization :as serialize]
    [ewr.views :as views]
@@ -38,24 +39,35 @@
    (merge default-db savestate)))
 
 (defn energy-text
-  [offset i  [_key {:keys [name color share] :as nrg}]]
+  [offset i  [nrg-key {:keys [name color share] :as nrg}]]
   (let [y-text (+ 30 (* i offset))]
     [:<>
      [:text {:zindex    1000
              :font-size "3em"}
-      [:tspan {:x 3 :y y-text} (str name ": " (Math/round share) "%")]]
+      [:tspan {:x 3 :y y-text}
+       (str name ": "
+            (Math/round (* 100 @(rf/subscribe [:nrg-share/of-needed nrg-key]))) "%")]]
      [:rect {:x            2  :y     (+ 15 y-text)
              :stroke       "black"
              :stroke-width 2
              :fill         color
-             :height       30 :width (* share 5)}]]))
+             :height       25 :width (* share 5)}]]))
+
+(defn minor-energies
+  ""
+  [offset]
+  [:text {:zindex    1000
+          :font-size "3em"}
+   [:tspan {:x 3 :y (+ 40 (* offset (count @(rf/subscribe [:nrg/get-all]))))}
+    (str "Sonstige" ": "
+         (h/round-to-decimals (* 100 @(rf/subscribe [:energy/minors-share])) 0) "%")]])
 
 (defn energy-needed
   []
-  (let [energy-needed @(rf/subscribe [:energy-needed/get])]
+  (let [energy-needed @(rf/subscribe [:energy/needed])]
     [:text {:zindex    1000
             :font-size "3em"}
-     [:tspan {:x 3 :y 540} energy-needed " TWh"]]))
+     [:tspan {:x 3 :y 560} energy-needed " TWh"]]))
 
 (defn co2
   []
@@ -63,7 +75,7 @@
         [bg-color font-color] @(rf/subscribe [:ui/decab-color])]
 
     [:g
-     [:rect {:x            200 :y     505
+     [:rect {:x            200 :y     525
              :stroke       "black"
              :stroke-width 2
              :fill         bg-color
@@ -71,14 +83,15 @@
      [:text {:zindex    1000
              :font-size "3em"
              :fill      font-color}
-      [:tspan {:x 220 :y 540}
+      [:tspan {:x 220 :y 560}
        (Math/round co2-intensity) " g" views/co2 "/kWh"]]]))
 
 (defn energy-list
   []
-  (let [offset (/ 630 (+ 2 (count @(rf/subscribe [:nrg/get-all]))))]
+  (let [offset (/ 670 (+ 3 (count @(rf/subscribe [:nrg/get-all]))))]
     (into [:svg {:viewBox "0 0 1200 630"
-                 :x       680 :y (/ offset 2)}
+                 :x       680 :y (/ offset 4)}
+           [minor-energies offset]
            [energy-needed]
            [co2]]
           (map-indexed (partial energy-text offset)

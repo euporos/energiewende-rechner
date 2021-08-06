@@ -39,6 +39,12 @@
                                 :props   {:cx 130
                                           :cy 430}}}
 
+ :minor-nrgs {:name                 "Nachrangige Energien"
+              :icon                 "symbols/wind2.svg"
+              :color                "rgba(135, 206, 250)"
+              :arealess-coordinates {:cx 400
+                                     :cy 250}}
+
  :init-mix {:wind        {:share   28
                           :locked? false}
             :solar       {:share   12

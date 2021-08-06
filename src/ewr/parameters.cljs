@@ -15,6 +15,15 @@
                                  :step    "1"
                                  :min     0}}])
 
+(def minor-energies-cap
+  [:minor-energies-cap  {:name        "Potential für Sonstige Energien"
+                         :unit        "TWh"
+                         :parse-fn    js/parseFloat
+                         :input-attrs {:type    "number"
+                                       :pattern "1"
+                                       :step    "1"
+                                       :min     0}}])
+
 ;; ##############################################
 ;; ########## Common Energy-parameters ##########
 ;; ##############################################

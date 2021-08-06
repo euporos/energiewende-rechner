@@ -4,7 +4,7 @@
             [ewr.serialization :as serialize]))
 
 (def teststate
-  {:energy-needed 3000
+  {:energy-needed 1200
    :energy-sources
    {:wind
     {:share             28
@@ -52,8 +52,6 @@
   (serialize/encode-savestate-huff
    (str
     (serialize/serialize teststate))))
-
-"AX9AD9WRpeTFJp4TsLvoGKOYvKrVWlFV2lYfQI7C8tedqYrgt9CLyUqygrAunbfQMVWiTYloqudG7D6AjSIcmw0o7WjpLDe94"
 
 (def test-request
   (clj->js

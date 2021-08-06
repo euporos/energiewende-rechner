@@ -3,6 +3,14 @@
    [clojure.string :as str]
    [re-frame.core :as rf :refer [reg-event-db reg-sub]]))
 
+(defn round-to-decimals
+  [val decimals]
+  (let [factor (Math/pow 10 decimals)]
+    (-> val
+        (* factor)
+        Math/round
+        (/ factor))))
+
 (defn classes
   ""
   [& classstrings]

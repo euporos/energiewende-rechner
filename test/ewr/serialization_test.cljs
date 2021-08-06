@@ -1,48 +1,49 @@
 (ns ewr.serialization-test
-  (:require [ewr.serialization :as sut]
-            [cljs.test :as t :include-macros true]))
+  (:require [cljs.test :as t :include-macros true]
+            [ewr.serialization :as sut]))
 
 (def teststate-badfloats
   {:energy-sources
    {:wind
-    {:share             10.799999999999997
+    {:share             19.99305899851265
      :power-density     4.56
      :deaths            0.12
      :co2               11
      :resources         10260
      :arealess-capacity 240}
     :solar
-    {:share             46
+    {:share             3.411403073872083
      :power-density     5.2
      :deaths            0.44
      :co2               44
      :resources         16447
      :arealess-capacity 142}
     :nuclear
-    {:share         10.799999999999997
+    {:share         53
      :power-density 240.8
      :deaths        0.08
      :co2           12
      :resources     930}
     :bio
-    {:share         10.799999999999997
+    {:share         0.5685671789786817
      :power-density 0.16
      :deaths        4.63
      :co2           230
      :resources     1080}
     :natural-gas
-    {:share         10.799999999999997
+    {:share         3.411403073872083
      :power-density 482.1
      :deaths        2.82
      :co2           490
      :resources     572}
     :coal
-    {:share 10.799999999999997
+    {:share         19.615567674764495
      :power-density 135.1
-     :deaths 28.67
-     :co2 820
-     :resources 1185}}
-   :energy-needed 1300})
+     :deaths        28.67
+     :co2           820
+     :resources     1185}}
+   :energy-needed      1300
+   :minor-energies-cap 40})
 
 (def teststate-goodfloats
   {:energy-sources
@@ -84,7 +85,8 @@
      :deaths        28.67
      :co2           820
      :resources     1185}}
-   :energy-needed 1300})
+   :energy-needed      1300
+   :minor-energies-cap 40})
 
 127
 

@@ -24,10 +24,6 @@
 ;; #### Technical ####
 ;; ###################
 
-(rf/reg-cofx :tech/now
-             (fn [cofx _]
-               (assoc cofx :now (.now js/Date))))
-
 (rf/reg-fx
  :tech/dispatches
  ;; Dispatches Events passed
@@ -45,6 +41,14 @@
  :tech/log
  (fn [_ [_ & prstrs]]
    (apply js/console.log prstrs)))
+
+(comment
+  (rf/reg-event-fx
+   :test/dsp
+   (fn [{:keys [db]} [_]]
+     {:tech/dispatches [[:tech/log "1"]
+                        [:tech/log "2"]
+                        [:tech/log "3"]]})))
 
 (reg-sub :tech/db
          (fn [db _] db))
@@ -86,7 +90,7 @@
 ;; ###########################
 
 (reg-sub
- :energy-needed/get
+ :energy/needed
  (fn [db _]
    (h/nan->nil
     (get db :energy-needed))))
@@ -95,6 +99,36 @@
  :energy-needed/set
  (fn [db [_ newval]]
    (assoc db :energy-needed newval)))
+
+(reg-sub
+ :energy/minors-cap
+ (fn [db _]
+   (get db :minor-energies-cap)))
+
+(reg-sub
+ :energy/minors
+ (fn [_]
+   [(rf/subscribe [:energy/needed])
+    (rf/subscribe [:energy/minors-cap])])
+ (fn [[energy-needed minors-cap] _]
+   (if (> energy-needed minors-cap)
+     minors-cap energy-needed)))
+
+(reg-sub
+ :energy/minors-share
+ (fn [_]
+   [(rf/subscribe [:energy/needed])
+    (rf/subscribe [:energy/minors])])
+ (fn [[energy-needed minors]]
+   (/ minors energy-needed)))
+
+(reg-sub
+ :energy/distributable
+ (fn [_]
+   [(rf/subscribe [:energy/needed])
+    (rf/subscribe [:energy/minors])])
+ (fn [[energy-needed minors] _]
+   (- energy-needed minors)))
 
 ;; #####################################################
 ;; ########### Energy Sources and Parameters ###########
@@ -227,6 +261,7 @@
        (for [nrg-key   cfg/nrg-keys ; … for alle combinations
              param-key params/common-param-keys] ; of energy-sources and parameters
          [nil nrg-key param-key]))
+      (load-global-pub :minor-energies-cap (first (pubs/pubs-for-global-value :minor-energies-cap)))
       (load-global-pub :energy-needed (first (pubs/pubs-for-global-value :energy-needed)))
       (load-nrg-pub :solar :arealess-capacity ; …for rooftop solar
                     (pubs/default-pub :solar :arealess-capacity))
@@ -256,7 +291,7 @@
 (reg-sub
  :nrg-share/get-relative-share
  ;; Returns the relative share of an Energy Source
- ;; in the total energy needed (in percent)
+ ;; in the distributable energy (in percent)
  (fn [db [_ nrg-key]]
    (get-in db [:energy-sources nrg-key :share])))
 
@@ -265,12 +300,20 @@
  ;; Returns the absolute share of an Energy Source
  ;; in the total energy needed (in TWh)
  (fn [[_ nrg-key]]
-   [(rf/subscribe [:energy-needed/get])
+   [(rf/subscribe [:energy/distributable])
     (rf/subscribe [:nrg-share/get-relative-share nrg-key])])
  (fn [[energy-needed share] [_ nrg-key]]
    (-> share
        (/ 100)
        (* energy-needed))))
+
+(reg-sub
+ :nrg-share/of-needed
+ (fn [[_ nrg-key]]
+   [(rf/subscribe [:nrg-share/get-absolute-share nrg-key])
+    (rf/subscribe [:energy/needed])])
+ (fn [[absolute-share energy-needed]]
+   (/ absolute-share energy-needed)))
 
 (reg-event-db
  :nrg/remix-shares
@@ -294,13 +337,13 @@
  ;; Subscription for the map view
  ;; Adds everything needed to draw the circles
  (fn [[_ nrg-key]]
-   [(rf/subscribe [:energy-needed/get])
+   [(rf/subscribe [:energy/distributable])
     (rf/subscribe [:nrg/get nrg-key])])
- (fn [[energy-needed nrg] [_ _nrg-key]]
+ (fn [[distributable-energy nrg] [_ _nrg-key]]
    (let [{:keys [share power-density] :as nrg}
          nrg
          area
-         (-> energy-needed
+         (-> distributable-energy
              (* share)
              (/ 100) ; share in TWh ;TODO: from constant
              (- (:arealess-capacity nrg 0))
@@ -322,12 +365,12 @@
 ;;;;;
 
 (defn enrich-data-for-indicator
-  [[energy-needed energy-sources] [_ param-key]]
+  [[distributable-energy energy-sources] [_ param-key]]
   (let [abs-added    (h/map-vals
                       #(assoc % :absolute
                               (-> (:share %)
                                   (/ 100)            ;TODO: from const
-                                  (* energy-needed)  ; TWh of this nrg
+                                  (* distributable-energy)  ; TWh of this nrg
                                   (* (param-key %))))
                       energy-sources)
         total        (reduce #(+ %1 (:absolute (second %2)))
@@ -349,7 +392,7 @@
 (reg-sub ; param-key should be :co2 or :deaths
  :deriv/data-for-indicator
  (fn [[_ param-key]]
-   [(rf/subscribe [:energy-needed/get])
+   [(rf/subscribe [:energy/distributable])
     (rf/subscribe [:nrg/get-all])])
  enrich-data-for-indicator)
 
@@ -362,11 +405,11 @@
  ;; returns the current co2-intensity in g/kWh
  (fn [_ _]
    [(rf/subscribe [:deriv/data-for-indicator :co2])
-    (rf/subscribe [:energy-needed/get])])
- (fn [[{:keys [param-total]} energy-needed] _] ; param total are the CO2-Emissions in kt
-   (if (and param-total (> energy-needed 0))
+    (rf/subscribe [:energy/distributable])])
+ (fn [[{:keys [param-total]} distributable-energy] _] ; param total are the CO2-Emissions in kt
+   (if (and param-total (> distributable-energy 0))
      (-> param-total                            ; kt/needed-nrg
-         (/ energy-needed)))))  ; g/kWh
+         (/ distributable-energy)))))  ; g/kWh
 
 (reg-sub
  :deriv/max-co-per-kwh
@@ -460,7 +503,7 @@
 
 (defn db->savestate [db]
   (update
-   (select-keys db [:energy-sources :energy-needed])
+   (select-keys db [:energy-sources :energy-needed :minor-energies-cap])
    :energy-sources
    (fn [nrgs]
      (into {}
@@ -594,16 +637,6 @@
  :save/savestate-load-failed?
  (fn [db _]
    (get-in db [:ui :savestate-load-failed?])))
-
-(reg-event-db
- :clipboard/show-message
- (fn [db [_ key]]
-   (assoc-in db [:ui :clipboard] key)))
-
-(rf/reg-event-fx
- :clipboard/show-message-temporarily
- (fn [{:keys [db]} [_ key]]
-   {:dispatch [:clipboard/show-message key]}))
 
 (rf/reg-event-db
   :ui/hide-alert

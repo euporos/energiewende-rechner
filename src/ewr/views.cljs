@@ -138,12 +138,19 @@
 ;; ##### Energy Needed ####
 ;; ########################
 
-(defn energy-needed-dropdown
-  []
+(defn global-pub-dropdown
+  [key]
   [publication-dropdown
-   {:value-subscription @(rf/subscribe [:pub/global-loaded :energy-needed])
-    :partial-event      [:pub/load-global :energy-needed]
-    :publications       (pubs/pubs-for-global-value :energy-needed)}])
+   {:value-subscription @(rf/subscribe [:pub/global-loaded key])
+    :partial-event      [:pub/load-global key]
+    :publications       (pubs/pubs-for-global-value key)}])
+
+(defn global-publication-link
+  [key]
+  (if-let [href (:link @(rf/subscribe [:pub/global-loaded  key]))]
+    [:div.column.is-narrow.has-text-centered
+     [:a {:target "_blank"
+          :href   href} " → Quelle"]]))
 
 (defn energy-needed
   []
@@ -152,12 +159,9 @@
           [:div.columns.is-mobile.is-vcentered.mb-0
            [:div.column
             [param-input [] params/energy-needed]]
-           (if-let [href (:link @(rf/subscribe [:pub/global-loaded  :energy-needed]))]
-             [:div.column.is-narrow.has-text-centered
-              [:a {:target "_blank"
-                   :href   href} " → Quelle"]])]
+           [global-publication-link :energy-needed]]
           [:div
-           [energy-needed-dropdown]]]))
+           [global-pub-dropdown :energy-needed]]]))
 
 ;; ####################################################################
 ;; ############## Parameter-Inputs »Profi-Einstellungen« ##############
@@ -249,6 +253,24 @@
     [:div.column.is-narrow [param-publication-link nrg-key :arealess-capacity]]
     [:div.column]]])
 
+(defn minor-energies-settings
+  "Dropdown and Input for minor- energies"
+  []
+  [:div.has-text-centered.mt-3
+   {:style {:margin-left  "auto"
+            :margin-right "auto"}}
+   [:span.has-text-weight-bold
+    ;; {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation nrg-key])}
+    (with-tooltip "Potential für Sonstige Energien (Wasser, Geothermie,…)"
+      )]
+
+   [:div.columns.is-mobile.is-vcentered.mt-1
+    [:div.column]
+    [param-input [] params/minor-energies-cap]
+    [:div.column.is-narrow [global-pub-dropdown :minor-energies-cap]]
+    [:div.column.is-narrow [global-publication-link :minor-energies-cap]]
+    [:div.column]]])
+
 (defn detailed-settings-tabular
   "The table of Parameters settings.
   Shown only on larger Screens."
@@ -267,7 +289,8 @@
                          [settings-table-row nrg-source])]]
 
                      [arealess-settings :solar]
-                     [arealess-settings :wind])])
+                     [arealess-settings :wind]
+                     [minor-energies-settings])])
 
 ;; ########################
 ;; ##### Explanations #####
@@ -357,7 +380,7 @@
 (defn energy-slider
   "Single Slider to adjust the share of an Energy.
   Also renders: Lock Button, Icon and Text."
-  [[nrg-key {:keys [name props share color]}]]
+  [[nrg-key {:keys [name _props share color]}]]
   [:div.eslider.pt-1 {:style {:background-color color
                               :width            "100%"}}
 
@@ -375,7 +398,7 @@
     [:div.column.is-narrow
      [:label
       [:strong name " "
-       (Math/round share) " % | "
+       (Math/round (* 100 @(rf/subscribe [:nrg-share/of-needed nrg-key]))) " % | "
        (Math/round
         @(rf/subscribe [:nrg-share/get-absolute-share nrg-key])) " TWh"]]]]
 
@@ -416,7 +439,13 @@
 
        (for [nrg-source @(rf/subscribe [:nrg/get-all])]
          ^{:key (first nrg-source)}
-         [:div [energy-slider nrg-source]])]]]))
+         [:div [energy-slider nrg-source]])]
+      [:div.pt-3.pb-3.pr-3.pl-3
+       [:div.mb-3
+        [:strong
+         "Sonstige: "
+         (h/round-to-decimals (* 100 @(rf/subscribe [:energy/minors-share])) 2)
+         " % | " @(rf/subscribe [:energy/minors]) " TWh"]]]]]))
 
 ;; #########
 ;; ## Map ##
@@ -438,10 +467,7 @@
   [opts nrg-key]
   (let [{:keys [props radius area relative-area color darker-color]}
         @(rf/subscribe [:deriv/data-for-map nrg-key])
-        area-percent (-> relative-area
-                         (* 1000)
-                         Math/round
-                         (/ 10))
+        area-percent (h/round-to-decimals (* 100 relative-area) 1)
         area         (Math/round area)]
     [:g
      [:image {:xlinkHref (cfg/icon-for-nrg nrg-key)
@@ -650,15 +676,15 @@
 (defn share-icon
   [{:keys [href download icon height event label]}]
   [:div.column.share-icon
-   [:a {:href href}
+   [:a {:href     href
+        :on-click (when event (h/dispatch-on-x event))}
     [:div{:style    {:display     "block"
                      :height      "5rem"
                      :padding-top (when height
                                     (str (/ (- 5 height) 2) "rem"))}
           :download download}
-     [:img {:src      icon
-            :on-click (when event (h/dispatch-on-x event))
-            :style    {:height (str (or height 5) "rem")}}]]
+     [:img {:src   icon
+            :style {:height (str (or height 5) "rem")}}]]
     label]])
 
 (defn savelinks

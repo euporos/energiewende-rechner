@@ -18,8 +18,9 @@
 (defn serialize
   ""
   [savestate]
-  (let [{:keys [energy-needed energy-sources]} savestate]
+  (let [{:keys [energy-needed minor-energies-cap energy-sources]} savestate]
     [energy-needed
+     minor-energies-cap
      (mapv
       (fn [nrg-key]
         (vec
@@ -30,8 +31,9 @@
 
 (defn deserialize
   ""
-  [[energy-needed nrgs]]
-  {:energy-needed energy-needed
+  [[energy-needed minor-energies-cap  nrgs]]
+  {:energy-needed      energy-needed
+   :minor-energies-cap minor-energies-cap
    :energy-sources
    (zipmap
     nrg-order
@@ -72,7 +74,7 @@
 
 (def code-savestate-huff
   (let [encoder (createEncoder
-                 (str alphabet "[1300 [[28 4.56 0.12 11 10260 240] [12 5.2 0.44 44 16447 142] [15 240.8 0.08 12 930] [2 0.16 4.63 230 1080] [12 482.1 2.82 490 572] [31 135.1 28.67 820 1185]]]"))]
+                 (str alphabet "[1300 40 [[28 4.56 0.12 11 10260 240] [12 5.2 0.44 44 16447 142] [15 240.8 0.08 12 930] [2 0.16 4.63 230 1080] [12 482.1 2.82 490 572] [31 135.1 28.67 820 1185]]]"))]
     (fn [string decode?]
       (if decode?
         (decodeConfig string encoder)
