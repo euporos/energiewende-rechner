@@ -56,7 +56,7 @@
 (def explanation-headings (:explanation-headings snippets))
 
 (def nrgs (enrich-nrg-constants
-                    (:nrg-constants settings)))
+           (:nrg-constants settings)))
 
 (def nrg-keys (map first (get settings :init-mix)))
 

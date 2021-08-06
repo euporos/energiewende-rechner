@@ -29,10 +29,10 @@
    :y {:a 2
       :b 4}}"
   [indata]
-  (let [first-level-keys (keys indata)
+  (let [first-level-keys  (keys indata)
         second-level-keys (keys (reduce merge (map second indata)))
-        paths (for [flk first-level-keys
-                    slk second-level-keys]
+        paths             (for [flk first-level-keys
+                                slk second-level-keys]
                 [flk slk])]
 
     (reduce
@@ -59,15 +59,15 @@
   [integer]
   (if (= 0 integer)
     "0"
-   (str/replace
-    (->> integer
-         str
-         reverse
-         (partition 3 3 (repeat "0"))
-         (interpose " ")
-         flatten
-         reverse
-         (apply str)) #"^0*" "")))
+    (str/replace
+     (->> integer
+          str
+          reverse
+          (partition 3 3 (repeat "0"))
+          (interpose " ")
+          flatten
+          reverse
+          (apply str)) #"^0*" "")))
 
 (defn dispatch-on-x
   "Returns a function that dispatches a Re-Frame event.
@@ -91,8 +91,8 @@
   "Insert an HTML String directly into the DOM"
   [htmlstring]
   [:div {:dangerouslySetInnerHTML
-        {:__html
-         htmlstring}}])
+         {:__html
+          htmlstring}}])
 
 (defn radius-from-area-circle
   "Given a circle's area

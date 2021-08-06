@@ -27,12 +27,12 @@
   and returns a new CSS color string."
   [css-color target-brightness]
   (-> css-color
-       (str/replace #" +" "")
-       col/css
-       col/as-hsla
-       (assoc :l target-brightness)
-       (col/as-css)
-       deref))
+      (str/replace #" +" "")
+      col/css
+      col/as-hsla
+      (assoc :l target-brightness)
+      (col/as-css)
+      deref))
 
 ;; ###############################################################
 ;; ############# Colors indicating the CO2-intensity #############
@@ -56,12 +56,12 @@
   the beginnning of the first gradient.
   Share will be mapped to wherever it lands in between."
   [maximum share color-edges]
-  (let [gradients (color-edges-to-gradients color-edges)
-        normalized-share (-> share
+  (let [gradients         (color-edges-to-gradients color-edges)
+        normalized-share  (-> share
                              (/ maximum)
                              (* (- (count gradients) 1)))
-        gradient-n (Math/floor normalized-share) ; share falls in to gradient with this index
-        ratio (- normalized-share gradient-n) ; it falls here within this gradient
+        gradient-n        (Math/floor normalized-share)   ; share falls in to gradient with this index
+        ratio             (- normalized-share gradient-n) ; it falls here within this gradient
         [color-a color-b] (nth gradients gradient-n)] ; pick the gradient
     (math/mix color-a color-b ratio))) ; and return the appropriate color
 

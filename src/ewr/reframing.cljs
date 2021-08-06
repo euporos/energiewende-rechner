@@ -43,12 +43,12 @@
    (apply js/console.log prstrs)))
 
 (comment
-(rf/reg-event-fx
- :test/dsp
- (fn [{:keys [db]} [_]]
-   {:tech/dispatches [[:tech/log "1"]
-                      [:tech/log "2"]
-                      [:tech/log "3"]]})))
+  (rf/reg-event-fx
+   :test/dsp
+   (fn [{:keys [db]} [_]]
+     {:tech/dispatches [[:tech/log "1"]
+                        [:tech/log "2"]
+                        [:tech/log "3"]]})))
 
 (reg-sub :tech/db
          (fn [db _] db))
@@ -67,7 +67,7 @@
  ;; initializes the db
  ;; loads the default publications
  (fn-traced [_ _]
-            {:db default-db
+            {:db              default-db
              :tech/dispatches [[:global/load-default-pubs]
                                (when (cfg/feature-active? :bookmark-state)
                                  [:save/load-savestate-from-url])]}))
@@ -167,20 +167,20 @@
   We still want to find the one loaded by the user"
   [matching-pubs last-loaded]
   (case (count matching-pubs)
-       0 nil
-       1 (first matching-pubs)
-        ; in case there is more than one pub with identical values
-       (first (filter #(= (:id %) last-loaded)
-                      matching-pubs))))
+    0 nil
+    1 (first matching-pubs)
+                                        ; in case there is more than one pub with identical values
+    (first (filter #(= (:id %) last-loaded)
+                   matching-pubs))))
 
 (reg-sub
  :energy-needed/loaded-pub
  ;; the publication currently loaded for :energy-needed
  ;; Returns the whole map, not just the id
  (fn [db _]
-   (let [curval (get db :energy-needed)
+   (let [curval        (get db :energy-needed)
          matching-pubs (pubs/matching-pubs-for-path [:energy-needed] curval)
-         last-loaded (get-in db [:ui :loaded-pubs :energy-needed])]
+         last-loaded   (get-in db [:ui :loaded-pubs :energy-needed])]
      (return-loaded-pub matching-pubs last-loaded))))
 
 (reg-sub
@@ -189,9 +189,9 @@
  ;; a combination of Energy-source and Parameter
  ;; returns the entire map
  (fn [db [_ nrg-key param-key]]
-   (let [curval (get-in db [:energy-sources nrg-key param-key])
+   (let [curval        (get-in db [:energy-sources nrg-key param-key])
          matching-pubs (pubs/matching-pubs nrg-key param-key curval)
-         last-loaded (get-in db [:ui :loaded-pubs nrg-key param-key])]
+         last-loaded   (get-in db [:ui :loaded-pubs nrg-key param-key])]
      (return-loaded-pub matching-pubs last-loaded))))
 
 ;;;;;
@@ -241,7 +241,7 @@
                        [:nrg/load-pub :wind :arealess-capacity ; …for offshore wind
                         (pubs/default-pub :wind :arealess-capacity)]]
 
-                      (for [nrg-key cfg/nrg-keys ; … for alle combinations
+                      (for [nrg-key   cfg/nrg-keys ; … for alle combinations
                             param-key params/common-param-keys] ; of energy-sources and parameters
                         [:nrg/load-pub nrg-key param-key
                          (pubs/default-pub nrg-key param-key)]))}))
@@ -306,19 +306,19 @@
    [(rf/subscribe [:energy-needed/get])
     (rf/subscribe [:nrg/get nrg-key])])
  (fn [[energy-needed nrg] [_ nrg-key]]
-   (let [{:keys [share power-density props
+   (let [{:keys                          [share power-density props
                  capacity-factor deaths] :as nrg} nrg
-         area (-> energy-needed
-                     (* share)
-                     (/ 100) ; share in TWh ;TODO: from constant
-                     (- (:arealess-capacity nrg 0))
-                     (* 1000000000000) ; share in Wh
-                     (/ const/hours-per-year) ; needed W
-                     ;; (/ capacity-factor) ; needed brute W
-                     (/ power-density) ; needed m²
-                     (/ 1000000)) ; needed km²
-         radius (if (or (< area 0) ; area < 0 possible with arealess-capacity
-                     (js/isNaN area)) 0
+         area                                     (-> energy-needed
+                  (* share)
+                  (/ 100) ; share in TWh ;TODO: from constant
+                  (- (:arealess-capacity nrg 0))
+                  (* 1000000000000) ; share in Wh
+                  (/ const/hours-per-year) ; needed W
+                  ;; (/ capacity-factor) ; needed brute W
+                  (/ power-density) ; needed m²
+                  (/ 1000000))                    ; needed km²
+         radius                                   (if (or (< area 0) ; area < 0 possible with arealess-capacity
+                        (js/isNaN area)) 0
                     (h/radius-from-area-circle area))]
      (assoc nrg
             :area area
@@ -332,27 +332,27 @@
 
 (defn enrich-data-for-indicator
   [[energy-needed energy-sources] [_ param-key]]
-  (let [abs-added (h/map-vals
-                    #(assoc % :absolute
-                            (-> (:share %)
-                                (/ 100)            ;TODO: from const
-                                (* energy-needed)  ; TWh of this nrg
-                                (* (param-key %))))
-                    energy-sources)
-         total (reduce #(+ %1 (:absolute (second %2)))
-                       0 abs-added)
-         shares-added (h/map-vals
-                       #(assoc % :param-share
-                               (-> (:absolute %)
-                                   (/ total)
-                                   (* 100)
-                                   (h/nan->0))) ;TODO: from const
-                       abs-added)]
-    {:param-total total
-     :factor (get-in params/common-parameter-map [param-key :indicator-factor] 0)
-     :formatter (get-in params/common-parameter-map
+  (let [abs-added    (h/map-vals
+                   #(assoc % :absolute
+                           (-> (:share %)
+                               (/ 100)            ;TODO: from const
+                               (* energy-needed)  ; TWh of this nrg
+                               (* (param-key %))))
+                   energy-sources)
+        total        (reduce #(+ %1 (:absolute (second %2)))
+                      0 abs-added)
+        shares-added (h/map-vals
+                      #(assoc % :param-share
+                              (-> (:absolute %)
+                                  (/ total)
+                                  (* 100)
+                                  (h/nan->0))) ;TODO: from const
+                      abs-added)]
+    {:param-total    total
+     :factor         (get-in params/common-parameter-map [param-key :indicator-factor] 0)
+     :formatter      (get-in params/common-parameter-map
                         [param-key :indicator-formatter] #(Math/round %))
-     :unit  (get-in params/common-parameter-map [param-key :abs-unit])
+     :unit           (get-in params/common-parameter-map [param-key :abs-unit])
      :energy-sources shares-added}))
 
 (reg-sub ; param-key should be :co2 or :deaths
@@ -374,8 +374,8 @@
     (rf/subscribe [:energy-needed/get])])
  (fn [[{:keys [param-total]} energy-needed] _] ; param total are the CO2-Emissions in kt
    (if (and param-total (> energy-needed 0))
-    (-> param-total                            ; kt/needed-nrg
-        (/ energy-needed)))))  ; g/kWh
+     (-> param-total                            ; kt/needed-nrg
+         (/ energy-needed)))))  ; g/kWh
 
 
 (reg-sub
@@ -398,11 +398,11 @@
     (rf/subscribe [:deriv/co2-per-kwh-mix])])
  (fn [[max-co2-intensity actual-co2-intensity]  _]
    (if (and max-co2-intensity actual-co2-intensity)
-    (let [bg (color/share-to-color
-              max-co2-intensity
-              actual-co2-intensity cfg/co2-colors)]
-      [(:col bg)
-       (color/contrasty-bw bg)]))))
+     (let [bg (color/share-to-color
+               max-co2-intensity
+               actual-co2-intensity cfg/co2-colors)]
+       [(:col bg)
+        (color/contrasty-bw bg)]))))
 
 
 ;; ############################
@@ -428,8 +428,8 @@
  ;; Scrolls to the DOM element with a particular id
  (fn [[id timeout]]
    (.setTimeout js/window
-    #(.scrollIntoView
-      (.getElementById js/document id)) timeout)))
+                #(.scrollIntoView
+                  (.getElementById js/document id)) timeout)))
 
 (rf/reg-event-fx
  :ui/scroll-to-explanation
@@ -438,7 +438,7 @@
  (fn [db [_ exp-key]]
    {:tech/dispatches [[:ui/set-panel-visibility :explanations true]]
     :ui/scroll-to-id [(str "explanation-" (name exp-key))
-                               50]})) ;; ← too hacky. How can I properly wait vor visibility
+                      50]})) ;; ← too hacky. How can I properly wait vor visibility
 
 (reg-sub
  :ui/panel-open?
@@ -476,12 +476,12 @@
  (fn [db _]
    (update
     (select-keys db [:energy-sources :energy-needed])
- :energy-sources
- (fn [nrgs]
-   (into {}
-    (map (fn [[key vals]]
-           [key (dissoc vals :locked?)])
-         nrgs))))))
+    :energy-sources
+    (fn [nrgs]
+      (into {}
+            (map (fn [[key vals]]
+                   [key (dissoc vals :locked?)])
+                 nrgs))))))
 
 (reg-sub
  :save/savestate-string
@@ -544,16 +544,16 @@
 (rf/reg-event-fx
  :save/load-savestate-from-url
  [(rf/inject-cofx :global/url)]
- (fn [{:keys [url db]:as cofx} []]
+ (fn [{:keys [url db] :as cofx} []]
    (if-let [url-savestate-string
             (get-in url [:query "savestate"])]
      (let [savestate (serialize/deserialize-savestate-string
                       url-savestate-string)]
-       {:db (if savestate
+       {:db         (if savestate
               (merge db savestate)
               (assoc-in db [:ui :savestate-load-failed?] true))
         :tech/alert (when (empty? savestate)
-                        "Leider konnte der gespeicherte Energiemix nicht geladen werden\n\nRechner startet mit Standardmix")})
+                      "Leider konnte der gespeicherte Energiemix nicht geladen werden\n\nRechner startet mit Standardmix")})
      {})))
 
 (reg-sub

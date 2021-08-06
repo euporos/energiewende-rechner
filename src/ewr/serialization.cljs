@@ -12,13 +12,13 @@
 ;; ######################################
 
 (def code-savestate-huff
-  (let [encoder  (createEncoder
+  (let [encoder (createEncoder
                   "[1300 [[57 4.56 0.12 11 10260 240] [8.600000000000001 5.2 0.44 44 16447 142] [8.600000000000001 240.8 0.08 12 930] [8.600000000000001 0.16 4.63 230 1080] [8.600000000000001 482.1 2.82 490 572] [8.600000000000001 135.1 28.67 820 1185]]]")]
     (fn [string decode?]
       (if decode?
-          (decodeConfig string encoder)
-          (encodeConfig string encoder)
-          ))))
+        (decodeConfig string encoder)
+        (encodeConfig string encoder)
+        ))))
 
 (defn encode-savestate-huff
   ""
@@ -124,8 +124,8 @@
   "work around bug in Huffman-Library
   see https://stackoverflow.com/questions/67273883/information-lost-in-huffman-encoding"
   [savestate-string]
-  (let [decoded  (decode-savestate-huff savestate-string)
-        parsed (try (deserialize
+  (let [decoded (decode-savestate-huff savestate-string)
+        parsed  (try (deserialize
                      (edn/read-string (str decoded "]")))
                     (catch js/Object e
                       (js/console.log "Error reading savestate… not loading")
@@ -156,110 +156,110 @@
       ))
 
 
-  ;; ########################################################
-  ;; ############ Legacy: Protobuf Serialization ############
-  ;; ########################################################
+;; ########################################################
+;; ############ Legacy: Protobuf Serialization ############
+;; ########################################################
 
 
 
-  ;; (def savestate-proto
-  ;;   ((.. protobuf -Root -fromJSON)
-  ;;    (clj->js
-  ;;     {:nested
-  ;;      {:EnergySource
-  ;;       {:fields
-  ;;        {:share {:type "float"
-  ;;                 :id 1}
-  ;;         :arealessCapacity {:type "float"
-  ;;                             :id 2}
-  ;;         :powerDensity {:type "float"
-  ;;                         :id 3}
-  ;;         :deaths {:type "float"
-  ;;                  :id 4}
-  ;;         :co2 {:type "float"
-  ;;               :id 5}
-  ;;         :resources {:type "float"
-  ;;                     :id 6}}}
-  ;;       :EnergySources
-  ;;       {:fields
-  ;;        {:wind {:id 1
-  ;;                :type :EnergySource}
-  ;;         :solar {:id 2
-  ;;                 :type :EnergySource}
-  ;;         :bio {:id 3
-  ;;               :type :EnergySource}
-  ;;         :nuclear {:id 4
-  ;;                   :type :EnergySource}
-  ;;         :naturalGas {:id 5
-  ;;                       :type :EnergySource}
-  ;;         :coal {:id 6
-  ;;                :type :EnergySource}}}
-  ;;       :Savestate
-  ;;       {:fields
-  ;;        {:energyNeeded {:type "float"
-  ;;                         :id 1}
-  ;;         :energySources {:type :EnergySources
-  ;;                          :id 2}}}}})))
+;; (def savestate-proto
+;;   ((.. protobuf -Root -fromJSON)
+;;    (clj->js
+;;     {:nested
+;;      {:EnergySource
+;;       {:fields
+;;        {:share {:type "float"
+;;                 :id 1}
+;;         :arealessCapacity {:type "float"
+;;                             :id 2}
+;;         :powerDensity {:type "float"
+;;                         :id 3}
+;;         :deaths {:type "float"
+;;                  :id 4}
+;;         :co2 {:type "float"
+;;               :id 5}
+;;         :resources {:type "float"
+;;                     :id 6}}}
+;;       :EnergySources
+;;       {:fields
+;;        {:wind {:id 1
+;;                :type :EnergySource}
+;;         :solar {:id 2
+;;                 :type :EnergySource}
+;;         :bio {:id 3
+;;               :type :EnergySource}
+;;         :nuclear {:id 4
+;;                   :type :EnergySource}
+;;         :naturalGas {:id 5
+;;                       :type :EnergySource}
+;;         :coal {:id 6
+;;                :type :EnergySource}}}
+;;       :Savestate
+;;       {:fields
+;;        {:energyNeeded {:type "float"
+;;                         :id 1}
+;;         :energySources {:type :EnergySources
+;;                          :id 2}}}}})))
 
 
-  ;; (def testload
-  ;;   {:energySources
-  ;;    {:wind
-  ;;     {:share 28
-  ;;      :arealessCapacity 240
-  ;;      :powerDensity 4.56
-  ;;      :deaths 0.12
-  ;;      :co2 11
-  ;;      :resources 10260}
-  ;;     :solar
-  ;;     {:share 12
-  ;;      :arealessCapacity 142
-  ;;      :powerDensity 5.2
-  ;;      :deaths 0.44
-  ;;      :co2 44
-  ;;      :resources 16447}
-  ;;     :bio
-  ;;     {:share 2
-  ;;      :powerDensity 0.16
-  ;;      :deaths 4.63
-  ;;      :co2 230
-  ;;      :resources 1080}
-  ;;     :nuclear
-  ;;     {:share 15
-  ;;      :powerDensity 240.8
-  ;;      :deaths 0.08
-  ;;      :co2 12
-  ;;      :resources 930}
-  ;;     :naturalGas
-  ;;     {:share 12
-  ;;      :powerDensity 482.1
-  ;;      :deaths 2.82
-  ;;      :co2 490
-  ;;      :resources 572}
-  ;;     :coal
-  ;;     {:share 31
-  ;;      :powerDensity 135.1
-  ;;      :deaths 28.67
-  ;;      :co2 820
-  ;;      :resources 1185}}
-  ;;    :energyNeeded 1300})
+;; (def testload
+;;   {:energySources
+;;    {:wind
+;;     {:share 28
+;;      :arealessCapacity 240
+;;      :powerDensity 4.56
+;;      :deaths 0.12
+;;      :co2 11
+;;      :resources 10260}
+;;     :solar
+;;     {:share 12
+;;      :arealessCapacity 142
+;;      :powerDensity 5.2
+;;      :deaths 0.44
+;;      :co2 44
+;;      :resources 16447}
+;;     :bio
+;;     {:share 2
+;;      :powerDensity 0.16
+;;      :deaths 4.63
+;;      :co2 230
+;;      :resources 1080}
+;;     :nuclear
+;;     {:share 15
+;;      :powerDensity 240.8
+;;      :deaths 0.08
+;;      :co2 12
+;;      :resources 930}
+;;     :naturalGas
+;;     {:share 12
+;;      :powerDensity 482.1
+;;      :deaths 2.82
+;;      :co2 490
+;;      :resources 572}
+;;     :coal
+;;     {:share 31
+;;      :powerDensity 135.1
+;;      :deaths 28.67
+;;      :co2 820
+;;      :resources 1185}}
+;;    :energyNeeded 1300})
 
 
-  ;; (let [savestate (.lookupType savestate-proto
-  ;;                              "Savestate")
-  ;;       payload (clj->js testload)
-  ;;       errMsg (.verify savestate payload)]
+;; (let [savestate (.lookupType savestate-proto
+;;                              "Savestate")
+;;       payload (clj->js testload)
+;;       errMsg (.verify savestate payload)]
 
 
-  ;;   (if errMsg
-  ;;     (throw errMsg)
-  ;;     (let [message (.create savestate payload)
-  ;;           encode (.. protobuf -util -base64 -encode)
-  ;;           finished (.finish (.encode savestate message))]
+;;   (if errMsg
+;;     (throw errMsg)
+;;     (let [message (.create savestate payload)
+;;           encode (.. protobuf -util -base64 -encode)
+;;           finished (.finish (.encode savestate message))]
 
-  ;;       ;; (.toObject savestate message
-  ;;       ;;            {:longs })
-  ;;       (-> finished
-  ;;           (encode 0 (.-length finished))
-  ;;           count)
-  ;;       )))
+;;       ;; (.toObject savestate message
+;;       ;;            {:longs })
+;;       (-> finished
+;;           (encode 0 (.-length finished))
+;;           count)
+;;       )))

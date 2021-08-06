@@ -20,11 +20,11 @@
   (let [defined (get-closure-define :disabled-features "")]
 
     (if (empty? defined) #{}
-     (set
-      (map keyword
-           (str/split
-            defined
-            #" +"))))))
+        (set
+         (map keyword
+              (str/split
+               defined
+               #" +"))))))
 
 (println "the following features will be disabled: " (disabled-features))
 
@@ -41,30 +41,30 @@
   "Reads the contents of alle config-files
 and sticks them into a map with the filenames as keys."
   (reduce
-     (fn [sofar nextpath]
-       (let [key (keyword
-                  (str/join
-                   "." (drop-last
-                        (str/split nextpath #"\."))))
-             content (read-string
-                      (slurp
-                       (str
-                        (str/replace (config-dir) #"/$" "") "/"
-                        (str/replace nextpath #"^/" ""))))]
-         (assoc sofar key content)))
-     {}
-     ["publications.edn"
-      "settings.edn"
-      "snippets.edn"
-      ]))
+   (fn [sofar nextpath]
+     (let [key     (keyword
+                (str/join
+                 "." (drop-last
+                      (str/split nextpath #"\."))))
+           content (read-string
+                    (slurp
+                     (str
+                      (str/replace (config-dir) #"/$" "") "/"
+                      (str/replace nextpath #"^/" ""))))]
+       (assoc sofar key content)))
+   {}
+   ["publications.edn"
+    "settings.edn"
+    "snippets.edn"
+    ]))
 
 (defn disable-features
   ""
   [configuration]
   (update-in configuration
              [:settings :features]
-   #(set/difference %
-            (disabled-features))))
+             #(set/difference %
+                              (disabled-features))))
 
 
 
@@ -75,21 +75,21 @@ of the MD-files as keys."
   (let [grammar-matcher (.getPathMatcher
                          (java.nio.file.FileSystems/getDefault)
                          "glob:*.{g4,md}")
-        text-dir (in-config-dir "text")
-        texts (->> text-dir
-         clojure.java.io/file
-         file-seq
-         (filter #(.isFile %))
-         (filter #(.matches grammar-matcher (.getFileName (.toPath %))))
-         (mapv #(vector
-                 (-> %
-                     .getName
-                     (str/replace #"\.md$" "")
-                     keyword)
-                 (md/md-to-html-string
-                  (slurp
-                   (.getAbsolutePath %)))))
-         (into {}))]
+        text-dir        (in-config-dir "text")
+        texts           (->> text-dir
+                   clojure.java.io/file
+                   file-seq
+                   (filter #(.isFile %))
+                   (filter #(.matches grammar-matcher (.getFileName (.toPath %))))
+                   (mapv #(vector
+                           (-> %
+                               .getName
+                               (str/replace #"\.md$" "")
+                               keyword)
+                           (md/md-to-html-string
+                            (slurp
+                             (.getAbsolutePath %)))))
+                   (into {}))]
     texts))
 
 (defmacro def-config [var]
@@ -120,22 +120,22 @@ of the MD-files as keys."
   (let [grammar-matcher (.getPathMatcher
                          (java.nio.file.FileSystems/getDefault)
                          "glob:*.{g4,md}")
-        text-dir "config/text"
-        snippets (->> text-dir
-         clojure.java.io/file
-         file-seq
-         (filter #(.isFile %))
-         (filter #(.matches grammar-matcher (.getFileName (.toPath %))))
-         (mapv #(vector
-                 (-> %
-                     .getName
-                     (str/replace #"\.md$" "")
-                     keyword
-                     )
-                 (md/md-to-html-string
-                  (slurp
-                   (.getAbsolutePath %)))))
-         (into {}))]
+        text-dir        "config/text"
+        snippets        (->> text-dir
+                      clojure.java.io/file
+                      file-seq
+                      (filter #(.isFile %))
+                      (filter #(.matches grammar-matcher (.getFileName (.toPath %))))
+                      (mapv #(vector
+                              (-> %
+                                  .getName
+                                  (str/replace #"\.md$" "")
+                                  keyword
+                                  )
+                              (md/md-to-html-string
+                               (slurp
+                                (.getAbsolutePath %)))))
+                      (into {}))]
     (reduce-kv
      (fn [sofar nkey nval]
        (assoc sofar nkey (assoc nval :text

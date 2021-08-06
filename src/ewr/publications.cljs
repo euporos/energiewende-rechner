@@ -93,14 +93,14 @@
 
 (comment
   (h/map-vals
-  #(-> %
-       annual-twh-per-km2-to-W-per-m2
-       (* 100)
-       Math/round
-       (/ 100.0))
-  {:solar 5.7
-   :wind 46
-   :bio 95
-   :nuclear 0.1
-   :natural-gas 1.1
-   :coal 2.2}))
+   #(-> %
+        annual-twh-per-km2-to-W-per-m2
+        (* 100)
+        Math/round
+        (/ 100.0))
+   {:solar       5.7
+    :wind        46
+    :bio         95
+    :nuclear     0.1
+    :natural-gas 1.1
+    :coal        2.2}))

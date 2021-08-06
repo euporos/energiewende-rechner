@@ -1,23 +1,23 @@
-{:subtitle "Wie viel Platz braucht unser Strom?"
+{:subtitle     "Wie viel Platz braucht unser Strom?"
  :explanations "→ Erläuterungen"
 
- :explanation-headings {:general "Der Rechner zur Energiewende"
+ :explanation-headings {:general       "Der Rechner zur Energiewende"
                         :power-density "Bemessungsleistung pro m²"
-                        :deaths "Statistisch erwartbare Todesfälle pro TWh"
-                        :co2 [:span "Spezifische CO" [:sub "2"] "-Emissionen"]
-                        :resources "Ressourcenverbrauch"
-                        :wind "Windenergie"
-                        :solar "Photovoltaik"
-                        :nuclear "Kernenergie"
-                        :bio "Biomasse"
-                        :natural-gas "Erdgas"
-                        :coal "Kohle"}
+                        :deaths        "Statistisch erwartbare Todesfälle pro TWh"
+                        :co2           [:span "Spezifische CO" [:sub "2"] "-Emissionen"]
+                        :resources     "Ressourcenverbrauch"
+                        :wind          "Windenergie"
+                        :solar         "Photovoltaik"
+                        :nuclear       "Kernenergie"
+                        :bio           "Biomasse"
+                        :natural-gas   "Erdgas"
+                        :coal          "Kohle"}
 
- :common-parameter-inputs {:power-density {:name "Bemessungsleistung pro m² in W"}
+ :common-parameter-inputs {:power-density     {:name "Bemessungsleistung pro m² in W"}
                            ;; :capacity-factor {:name "Kapazitätsfaktor"}
-                           :deaths {:name "Todesfälle/TWh"}
-                           :co2 {:name [:span "Spezifische CO" [:sub "2"] "-Emiss. in g/kWh" ]}
-                           :resources {:name "Ressourcenverbrauch in t/TWh"}
+                           :deaths            {:name "Todesfälle/TWh"}
+                           :co2               {:name [:span "Spezifische CO" [:sub "2"] "-Emiss. in g/kWh" ]}
+                           :resources         {:name "Ressourcenverbrauch in t/TWh"}
                            :arealess-capacity {:name {:solar "Solarkapazität auf Dächern in TWh"
-                                               :wind "Kapazität für Offshore Windkraft in TWh"}}
-                    }}
+                                                      :wind  "Kapazität für Offshore Windkraft in TWh"}}
+                           }}

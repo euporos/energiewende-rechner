@@ -17,7 +17,7 @@
   []
   (go
     (let [browser (<p! (.launch puppeteer))
-          page (<p! (.newPage browser))]
+          page    (<p! (.newPage browser))]
       (try
         (<p! (.goto page app-page))
         (catch js/Error err (js/console.log (ex-cause err))))
