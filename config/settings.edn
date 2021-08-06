@@ -1,50 +1,50 @@
-{:features #{:bookmark-state}
- :co2-colors ["#2AA364", "#F5EB4D", "#9E4229", "#381D02"]
+{:features       #{:bookmark-state}
+ :co2-colors     ["#2AA364", "#F5EB4D", "#9E4229", "#381D02"]
  :total-landmass 357581
- :nrg-constants {:wind {:name "Wind"
-                        :has-arealess? true
-                        :icon "symbols/wind2.svg"
-                        :color "rgba(135, 206, 250)"
-                        :props {:cx 400
-                                :cy 250
-                                }} 
-                 :solar {:name "Sonne"
-                         :has-arealess? true
-                         :icon "symbols/solar.svg"
-                         :color "rgba(255, 255, 0)"
-                         :props {:cx 380
-                                 :cy 700}}
-                 :nuclear {:name "Kernenergie"
-                           :icon "symbols/nuclear.svg"
-                           :color "rgba(250, 147, 38)"
-                           :props {:cx 130
-                                   :cy 630}}
-                 :bio {:name "Biomasse"
-                       :icon "symbols/bio.svg"
-                       :color "rgba(50, 205, 50)"
-                       :props {:cx 320
-                               :cy 450}}
-                 :natural-gas {:name "Erdgas"
-                               :icon "symbols/gas.svg"
-                               :fossil? true
-                               :color "rgb(170, 120, 70)"
-                               :props {:cx 200
-                                       :cy 750}}
-                 :coal {:name "Kohle"
-                        :icon "symbols/coal.svg"
-                        :color "rgb(140, 140, 140)"
-                        :fossil? true
-                        :props {:cx 130
-                                :cy 430}}} 
- :init-mix  {:wind {:share 28
-                    :locked? false} 
-             :solar {:share 12
-                     :locked? false}
-             :bio {:share 2
-                   :locked? false}
-             :nuclear {:share 15
-                       :locked? false}
-             :natural-gas {:share 12
-                           :locked? false}
-             :coal {:share 31
-                    :locked? false}}}
+ :nrg-constants  {:wind        {:name          "Wind"
+                                :has-arealess? true
+                                :icon          "symbols/wind2.svg"
+                                :color         "rgba(135, 206, 250)"
+                                :props         {:cx 400
+                                                :cy 250
+                                                }}
+                  :solar       {:name          "Sonne"
+                                :has-arealess? true
+                                :icon          "symbols/solar.svg"
+                                :color         "rgba(255, 255, 0)"
+                                :props         {:cx 380
+                                                :cy 700}}
+                  :nuclear     {:name  "Kernenergie"
+                                :icon  "symbols/nuclear.svg"
+                                :color "rgba(250, 147, 38)"
+                                :props {:cx 130
+                                        :cy 630}}
+                  :bio         {:name  "Biomasse"
+                                :icon  "symbols/bio.svg"
+                                :color "rgba(50, 205, 50)"
+                                :props {:cx 320
+                                        :cy 450}}
+                  :natural-gas {:name    "Erdgas"
+                                :icon    "symbols/gas.svg"
+                                :fossil? true
+                                :color   "rgb(170, 120, 70)"
+                                :props   {:cx 200
+                                          :cy 750}}
+                  :coal        {:name    "Kohle"
+                                :icon    "symbols/coal.svg"
+                                :color   "rgb(140, 140, 140)"
+                                :fossil? true
+                                :props   {:cx 130
+                                          :cy 430}}}
+ :init-mix       {:wind        {:share   28
+                                :locked? false}
+                  :solar       {:share   12
+                                :locked? false}
+                  :bio         {:share   2
+                                :locked? false}
+                  :nuclear     {:share   15
+                                :locked? false}
+                  :natural-gas {:share   12
+                                :locked? false}
+                  :coal        {:share   31
+                                :locked? false}}}

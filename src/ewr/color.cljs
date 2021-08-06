@@ -57,7 +57,7 @@
   Share will be mapped to wherever it lands in between."
   [maximum share color-edges]
   (let [gradients (color-edges-to-gradients color-edges)
-        normalized-share (-> share 
+        normalized-share (-> share
                              (/ maximum)
                              (* (- (count gradients) 1)))
         gradient-n (Math/floor normalized-share) ; share falls in to gradient with this index

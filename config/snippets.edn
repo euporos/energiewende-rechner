@@ -1,6 +1,6 @@
 {:subtitle "Wie viel Platz braucht unser Strom?"
  :explanations "→ Erläuterungen"
- 
+
  :explanation-headings {:general "Der Rechner zur Energiewende"
                         :power-density "Bemessungsleistung pro m²"
                         :deaths "Statistisch erwartbare Todesfälle pro TWh"
@@ -12,7 +12,7 @@
                         :bio "Biomasse"
                         :natural-gas "Erdgas"
                         :coal "Kohle"}
- 
+
  :common-parameter-inputs {:power-density {:name "Bemessungsleistung pro m² in W"}
                            ;; :capacity-factor {:name "Kapazitätsfaktor"}
                            :deaths {:name "Todesfälle/TWh"}

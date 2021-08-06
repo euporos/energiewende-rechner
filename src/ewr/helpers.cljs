@@ -34,7 +34,7 @@
         paths (for [flk first-level-keys
                     slk second-level-keys]
                 [flk slk])]
-    
+
     (reduce
      (fn [sofar nextpath]
        (assoc-in sofar (vec (reverse nextpath))
@@ -59,7 +59,7 @@
   [integer]
   (if (= 0 integer)
     "0"
-   (str/replace 
+   (str/replace
     (->> integer
          str
          reverse
@@ -111,7 +111,3 @@
        (get structure next-path-elem)))
    structure
    path))
-
-
-
-

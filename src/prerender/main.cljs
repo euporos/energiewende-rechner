@@ -26,6 +26,6 @@
         (print
          (some
           #(if (re-find #"id=\"app\"" %) %)
-          (str/split 
+          (str/split
            html "\n"))))
       (.close browser))))

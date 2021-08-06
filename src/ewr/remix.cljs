@@ -41,25 +41,25 @@
         ;; avoid extremely small values for reactions
         reacted-share (if (< reacted-share 0.1) 0 reacted-share)]
 
-    ;; (js/console.log "unlocked share is " unlocked-share)    
+    ;; (js/console.log "unlocked share is " unlocked-share)
     (reduce
      (fn [nrgs [reacting-nrg-key reacting-nrg]]
        (let [scalefactor
              (cond
                (= reacted-share 0) ; account for test case #3
-               0 
+               0
                (= reacting-share 0) ; account for test case #4
-               (/ 1 (count reacting-nrgs)) 
+               (/ 1 (count reacting-nrgs))
                :else
                (/ (:share reacting-nrg)
                 reacting-share))]
          (assoc-in nrgs
-                   [reacting-nrg-key :share]  
+                   [reacting-nrg-key :share]
                    (* reacted-share
                       scalefactor))))
      (assoc-in nrgs [changed-nrg-key :share] newval) ; update the nrg changed by user
      reacting-nrgs)))
- 
+
 (defn attempt-remix
   "If remix is blocked, reurns thes energy-sources unchanged.
   Otherwise performs the remix"
@@ -87,10 +87,10 @@
         unlocked-share (transduce (map (comp :share second))
                                   + unlocked-nrgs)
         reacting-nrgs (dissoc unlocked-nrgs changed-nrg-key)
-        freed-share (- (get-in nrgs [changed-nrg-key :share]) ; if negative 
+        freed-share (- (get-in nrgs [changed-nrg-key :share]) ; if negative
                        newval) ; would more adequately be called "grabbed share"
         reacting-share (transduce (map (comp :share second))
-                                  + reacting-nrgs)]    
+                                  + reacting-nrgs)]
     (if (> newval unlocked-share)
       nrgs ; return unchanged
      (first ; extract only the remixed energies
@@ -135,4 +135,3 @@
   [f coll]
   (reduce (fn [sofar [key val]]
             (assoc sofar key (f val))) {} coll))
- 

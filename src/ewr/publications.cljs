@@ -26,7 +26,7 @@
   [publications]
   (map
    (fn [pub]
-     (if (:energy-sources pub) 
+     (if (:energy-sources pub)
        (update pub :energy-sources
                #(h/reverse-paths %))
        pub))
@@ -40,16 +40,16 @@
   for :energy-needed"
   []
   (filter
-   #(get % :energy-needed)   
+   #(get % :energy-needed)
    publications))
 
 (defn pubs-for-param
   "Returns all publications
   that provide a value for a given
   combination of energy-source and parameter"
-  [nrg-key param-key]  
+  [nrg-key param-key]
   (filter
-   #(get-in % [:energy-sources nrg-key param-key])    
+   #(get-in % [:energy-sources nrg-key param-key])
    publications))
 
 (defn matching-pubs-for-path
@@ -63,7 +63,7 @@
 (defn matching-pubs
   "Given a value for a certain combination of
   energy-source and parameter, returns
-  all publications providing the same value" 
+  all publications providing the same value"
   [nrg-key param-key value]
   (matching-pubs-for-path [:energy-sources nrg-key param-key] value))
 
@@ -84,7 +84,7 @@
 
 (defn annual-twh-per-km2-to-W-per-m2
   ""
-  [input]  
+  [input]
   (-> (/ 1 input) ; km² / TWh → TWh/km²
       (/ 1000000) ; TWh/m²
       (* 1000000000000) ; Wh/m² (per year)
@@ -99,10 +99,8 @@
        Math/round
        (/ 100.0))
   {:solar 5.7
-   :wind 46    
-   :bio 95 
+   :wind 46
+   :bio 95
    :nuclear 0.1
    :natural-gas 1.1
    :coal 2.2}))
- 
-

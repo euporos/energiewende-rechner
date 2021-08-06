@@ -42,7 +42,7 @@
 ;; ##############
 ;; ### Deaths ###
 ;; ##############
- 
+
  {:id "Statista"
   :link "https://www.statista.com/statistics/494425/death-rate-worldwide-by-energy-source/"
   :energy-sources
@@ -61,7 +61,7 @@
     :wind 0.15
     :nuclear 0.09
     :natural-gas 4
-    :coal 100}}}  
+    :coal 100}}}
  {:id "Forbes"
   :link "https://web.archive.org/web/20150724024259/http://nextbigfuture.com/2011/03/deaths-per-twh-by-energy-source.html"
   :energy-sources
@@ -77,7 +77,7 @@
 ;; ###########################
 ;; ###### Power Density ######
 ;; ###########################
- 
+
 
  {:id "BMVI (2015)"
   :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
@@ -92,7 +92,7 @@
     :solar 1 ; 0.11
     :bio 1 ; 0.06
     }}}
- 
+
  {:id "Energy Policy (inkl. Infrastruktur)"
   :link "https://doi.org/10.1016/j.enpol.2018.08.023"
   :energy-sources
@@ -116,33 +116,33 @@
   {:power-density
    {:bio 0.8
     :solar 8.3 ;(/ 6.63 0.8)
-    ; :wind 18.4  ; (/ 1.84 0.1) 
+    ; :wind 18.4  ; (/ 1.84 0.1)
     :nuclear 560 ; (/ 240.8 0.43)
     :natural-gas 860.9 ; (/ 482.1 0.56)
     :coal 482.5 ; (/ 135.1 0.28)
     }}}
- 
+
  {:id "Energy Policy (Nur Generatoren + Infrastruktur)"
   :link "https://doi.org/10.1016/j.enpol.2018.08.023"
   :energy-sources
   {:power-density
    {:wind 1.84
     }}}
- 
+
  {:id "Energy Policy (Nur Generatoren)"
   :link "https://doi.org/10.1016/j.enpol.2018.08.023"
   :energy-sources
   {:power-density
-   {:wind 18.4 
+   {:wind 18.4
     }}}
- 
+
  {:id "PNAS (2015)"
   :link "https://doi.org/10.1073/pnas.1408251112"
   :energy-sources
   {:power-density
    {:wind 1.1
     }}}
- 
+
  {:id "CB (inkl. Brennstoffgewinnung)"
   :link "https://doi.org/10.1111/cobi.12433"
   :energy-sources
@@ -170,7 +170,7 @@
 
  ;;
  ;; Einzelanlagen
- ;; 
+ ;;
 
  {:id "Windpark Whitelee"
   :link "https://www.whiteleewindfarm.co.uk/whitelee-windfarm-about-us"
@@ -183,11 +183,11 @@
   :energy-sources
   {:power-density
    {:solar 13.0}}} ; Simeon 13,016 W/m²
- 
+
 ;; #########
 ;; ## CO2 ##
 ;; #########
- 
+
  {:id "IPCC (2014)"
   :link "https://www.ipcc.ch/site/assets/uploads/2018/02/ipcc_wg3_ar5_annex-iii.pdf#page=7"
   :energy-sources
@@ -218,10 +218,10 @@
     :bio 0
     :coal 941
     :natural-gas 428}}}
- 
+
 {:id "Agora Energiewende"
   :link "https://www.agora-energiewende.de/presse/neuigkeiten-archiv/windenergie-auf-see-braucht-platz-um-sie-optimal-zu-nutzen/"
-  :energy-sources 
+  :energy-sources
   {:arealess-capacity
    {:wind 240
     }}}

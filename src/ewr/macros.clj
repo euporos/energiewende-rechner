@@ -18,7 +18,7 @@
   ""
   []
   (let [defined (get-closure-define :disabled-features "")]
-    
+
     (if (empty? defined) #{}
      (set
       (map keyword
@@ -47,7 +47,7 @@ and sticks them into a map with the filenames as keys."
                    "." (drop-last
                         (str/split nextpath #"\."))))
              content (read-string
-                      (slurp                         
+                      (slurp
                        (str
                         (str/replace (config-dir) #"/$" "") "/"
                         (str/replace nextpath #"^/" ""))))]
@@ -62,20 +62,20 @@ and sticks them into a map with the filenames as keys."
   ""
   [configuration]
   (update-in configuration
-             [:settings :features]             
+             [:settings :features]
    #(set/difference %
             (disabled-features))))
 
 
- 
-(defn read-texts []  
+
+(defn read-texts []
   "reads all MD-Files in under <config-dir>/text
 and sticks them into a map with the names
 of the MD-files as keys."
-  (let [grammar-matcher (.getPathMatcher 
+  (let [grammar-matcher (.getPathMatcher
                          (java.nio.file.FileSystems/getDefault)
                          "glob:*.{g4,md}")
-        text-dir (in-config-dir "text")        
+        text-dir (in-config-dir "text")
         texts (->> text-dir
          clojure.java.io/file
          file-seq
@@ -94,8 +94,8 @@ of the MD-files as keys."
 
 (defmacro def-config [var]
   "Constructs the configuration as it wille be available at runtime"
-  `(def ~var 
-     ~(-> 
+  `(def ~var
+     ~(->
        (read-config-files)
        (assoc :texts (read-texts))
        (disable-features)
@@ -112,15 +112,15 @@ of the MD-files as keys."
      (~f ~(read-string (slurp path-to-file)))))
 
 (defmacro def-string-from-file [var file f]
-  `(def ~var 
+  `(def ~var
      (~f ~(slurp file))))
- 
-(defmacro build-snippet-map [textmap]  
+
+(defmacro build-snippet-map [textmap]
   ""
-  (let [grammar-matcher (.getPathMatcher 
+  (let [grammar-matcher (.getPathMatcher
                          (java.nio.file.FileSystems/getDefault)
                          "glob:*.{g4,md}")
-        text-dir "config/text"        
+        text-dir "config/text"
         snippets (->> text-dir
          clojure.java.io/file
          file-seq
@@ -137,9 +137,7 @@ of the MD-files as keys."
                    (.getAbsolutePath %)))))
          (into {}))]
     (reduce-kv
-     (fn [sofar nkey nval] 
+     (fn [sofar nkey nval]
        (assoc sofar nkey (assoc nval :text
                                 (get snippets nkey))))
      {} textmap)))
- 
- 

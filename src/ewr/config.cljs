@@ -22,7 +22,7 @@
                           (color/make-transparent (:color %)))
                    (assoc :darker-color
                           (color/set-brightness (:color %) 0.42))
-                   (assoc-in [:props :fill] (color/make-transparent (:color %) 0.65)))              
+                   (assoc-in [:props :fill] (color/make-transparent (:color %) 0.65)))
               nrg-constants))
 
 (defn enrich-settings
@@ -36,7 +36,7 @@
 ;; ####################################################################
 
 (m/def-config config)
- 
+
 (def settings  (:settings config))
 
 (def texts (:texts config))
