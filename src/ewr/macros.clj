@@ -3,6 +3,10 @@
             [clojure.string :as str]
             [markdown.core :as md]))
 
+(defmacro slurp-file
+  [path]
+  (slurp path))
+
 (defn get-closure-define
   ""
   [key default]

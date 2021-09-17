@@ -9,7 +9,8 @@
    [ewr.helpers :as h]
    [ewr.config :as cfg :refer [snippet]]
    [reagent.core :as r]
-   [md5.core :as md5]))
+   [md5.core :as md5])
+  (:require-macros [ewr.macros :as m]))
 
 ;; ########################
 ;; ##### Common Stuff #####
@@ -436,7 +437,7 @@
 (defn energy-label
   "Label and icon indicating the area occupied by the energy
   source associated with nrg-key"
-  [nrg-key]
+  [opts nrg-key]
   (let [{:keys [props radius area relative-area color darker-color]}
         @(rf/subscribe [:deriv/data-for-map nrg-key])
         area-percent (-> relative-area
@@ -449,9 +450,10 @@
               :y         10
               :x         5
               :height    20}]
-     [:text {:zindex             1000
-             :alignment-baseline "central"
-             :font-weight        "bold"}
+     [:text (merge {:zindex             1000
+                   :alignment-baseline "central"
+                   :font-weight        "bold"}
+                  (if (:preview opts) {:font-size "1.5em"} {}))
       [:tspan {:x 33
                :y 15}
        (if (= 0 area-percent)
@@ -466,7 +468,7 @@
 (defn energy-on-map
   "Represents the Energy source associated with nrg-key
   by drawing a circle and label."
-  [nrg-key]
+  [opts nrg-key]
   (let [{:keys [props radius area relative-area color darker-color]}
         @(rf/subscribe [:deriv/data-for-map nrg-key])
         circle-x (:cx props)
@@ -479,19 +481,19 @@
        ;; Label
        (let [area           (Math/round area)
              area-percent   (-> relative-area
-                              (* 1000)
-                              Math/round
-                              (/ 10))
+                                (* 1000)
+                                Math/round
+                                (/ 10))
              label-outside? (< radius 70)
              label-y        (if label-outside?
-                       (- circle-y radius 40)
-                       (- circle-y 15))
+                              (- circle-y radius 40)
+                              (- circle-y 15))
              label-x        (if label-outside?
-                       (- circle-x 15)
-                       (- circle-x 60))]
+                              (- circle-x 15)
+                              (- circle-x 60))]
          [:svg
           {:x label-x :y label-y}
-          (energy-label nrg-key)])])))
+          (energy-label opts nrg-key)])])))
 
 (defn arealess-indicator
   "Indicates produced energy without creating a
@@ -559,26 +561,39 @@
      [:feMergeNode
       {:in "SourceGraphic"}]]]])
 
+(defn map-svg
+  [{:keys [background-svg] :as opts}]
+  (into [:svg.karte
+         {:viewBox "0 0 640 876"
+          :style (when-not background-svg
+                   {:background-image "url('../imgs/deutschland2.svg')"})}
+
+         (when background-svg
+          [:svg {:viewBox "0 0 1000 1360" ;TODO: This hard codes Germany
+                 :dangerouslySetInnerHTML {:__html background-svg}}])
+
+         svg-defs
+         (when-not (:preview opts)
+           [:<>
+            [arealess-indicator :wind {:label "Offshore-Wind"
+                                       :x     430
+                                       :y     40
+                                       :color "rgba(135, 206, 250)"}]
+            [arealess-indicator :solar {:label "Aufdach-PV"
+                                        :x     540
+                                        :y     600
+                                        :color "yellow"}]])]
+         ;; Circles and labels
+         (doall (map (partial energy-on-map opts)
+                     cfg/nrg-keys))))
+
 
 (defn mapview
   "The actual SVG displaying the Content on the map.
   Background map come from CSS."
   []
   [:div.mapview
-   (into [:svg.karte
-          {:viewBox "0 0 640 876"}
-          svg-defs
-          [arealess-indicator :wind {:label "Offshore-Wind"
-                                     :x     430
-                                     :y     40
-                                     :color "rgba(135, 206, 250)"}]
-          [arealess-indicator :solar {:label "Aufdach-PV"
-                                      :x     540
-                                      :y     600
-                                      :color "yellow"}]]
-         ;; Circles and labels
-         (doall (map energy-on-map
-                     cfg/nrg-keys)))])
+   [map-svg]])
 
 
 
@@ -647,7 +662,8 @@
      "→ Link, um diesen Strommix zu teilen"]]
    [:div
     [:a {:href (str ;; "http://localhost:3000/api/savestate-img"
-                "http://api.euporia.net/api/savestate-img"
+                ;; "http://api.euporia.net/api/savestate-img"
+                "https://9xcjcr4b4m.execute-api.eu-central-1.amazonaws.com/test/preview"
                 @(rf/subscribe [:save/preview-query-string]))}
      "→ Link to preview"]]
    [:div

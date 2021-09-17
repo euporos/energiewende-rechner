@@ -1,18 +1,20 @@
 {
-	"name": "stromrechner",
-	"dependencies": {
-		"highlight.js": "9.18.1",
-		"huffman-url-compressor": "^1.0.2",
-		"lzutf8": "^0.6.0",
-		"posthtml-parser": "^0.9.0",
-		"protobufjs": "^6.10.2",
-		"puppeteer": "^9.1.1",
-		"react": "16.14.0",
-		"react-dom": "16.14.0",
-		"react-highlight.js": "1.0.7",
-		"shadow-cljs": "^2.11.11"
-	},
-	"devDependencies": {
-		"source-map-support": "^0.5.19"
-	}
+        "name": "stromrechner",
+        "dependencies": {
+                "highlight.js": "9.18.1",
+                "huffman-url-compressor": "^1.0.2",
+                "lzutf8": "^0.6.0",
+                "node-imagemagick": "^0.1.8",
+                "nodejs-base64-converter": "^1.0.5",
+                "posthtml-parser": "^0.9.0",
+                "puppeteer": "^11.0.0",
+                "react": "16.14.0",
+                "react-dom": "16.14.0",
+                "react-highlight.js": "1.0.7",
+                "shadow-cljs": "^2.11.11",
+                "sharp": "^0.29.2"
+        },
+        "devDependencies": {
+                "source-map-support": "^0.5.19"
+        }
 }
