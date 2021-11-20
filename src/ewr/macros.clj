@@ -1,7 +1,7 @@
 (ns ewr.macros
-  (:require [clojure.string :as str]
-            [markdown.core :as md]
-            [clojure.set :as set]))
+  (:require [clojure.set :as set]
+            [clojure.string :as str]
+            [markdown.core :as md]))
 
 (defn get-closure-define
   ""

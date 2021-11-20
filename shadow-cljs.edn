@@ -1,5 +1,4 @@
 {:nrepl {:port 8777}
-
  :source-paths ["src" "test"]
  :dependencies [[madvas/cemerick-url "0.1.2"]
                 [thi.ng/color "1.4.0"]
@@ -17,7 +16,7 @@
                 ]
  
  :builds {:app {:target :browser
-                :output-dir "resources/public/js/compiled"
+                :output-dir "export/main/js/compiled"
                 :asset-path "/js/compiled"
                 :modules {:app {:init-fn ewr.core/init
                                 :preloads [devtools.preload
@@ -31,13 +30,12 @@
                 :release {:build-options
                           {:ns-aliases
                            {day8.re-frame.tracing day8.re-frame.tracing-stubs}}}
-
-                :devtools {:http-root "resources/public"
-                           :http-port 3000
-                           }}
+                :devtools {:http-root "export/main"
+                           :http-port 3000}
+                }
           :prerender {:target :node-script
-                      :output-to "target/out/prerender.js"
-                      :output-dir "target/out"
+                      :output-to "export/other/prerender.js"
+                      :output-dir "eport/other"
                       :main prerender.main/prerender                      
                       :compiler-options
                       {:optimizations :simple
@@ -45,7 +43,7 @@
                        :infer-externs false}}
           :node-test
            {:target    :node-test
-            :output-to "out/node-tests.js"
+            :output-to "export/other/node-tests.js"
             ;; :ns-regexp "-test$"
             :autorun   true}}
  :lein false}

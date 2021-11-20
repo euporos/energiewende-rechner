@@ -3,72 +3,72 @@
 
 <html lang="de">
     <head>
-	<meta charset="utf-8"/>
-	<meta name="robots" content="noindex">
-	<meta content="width=device-width, initial-scale=1" name="viewport">
-	<title>Energiewende-Rechner – Wie viel Platz braucht unser Strom?</title>
-	<meta name="description" content="Stelle den Energiemix der Zukunft zusammen. Entscheide über CO2-Ausstoß, Flächenverbrauch und mehr!" />
+        <meta charset="utf-8"/>
+        <meta name="robots" content="noindex">
+        <meta content="width=device-width, initial-scale=1" name="viewport">
+        <title>Energiewende-Rechner – Wie viel Platz braucht unser Strom?</title>
+        <meta name="description" content="Stelle den Energiemix der Zukunft zusammen. Entscheide über CO2-Ausstoß, Flächenverbrauch und mehr!" />
 
-	<meta property="og:title" content="Energiewende-Rechner – Wie viel Platz braucht unser Strom?" />
-	<meta property="og:description" content="Stelle den Energiemix der Zukunft zusammen. Entscheide über CO2-Ausstoß, Flächenverbrauch und mehr!" />
-	<meta property="og:url" content="https://energiewende-rechner.org/" />
-	<meta property="og:image" content="https://energiewende-rechner.org/imgs/rich-preview_3.png" />
-	<meta name="twitter:card" content="summary_large_image" />
-	<link rel="shortcut icon" href="/favicon.svg">
+        <meta property="og:title" content="Energiewende-Rechner – Wie viel Platz braucht unser Strom?" />
+        <meta property="og:description" content="Stelle den Energiemix der Zukunft zusammen. Entscheide über CO2-Ausstoß, Flächenverbrauch und mehr!" />
+        <meta property="og:url" content="https://energiewende-rechner.org/" />
+        <meta property="og:image" content="{{preview-image|safe}}" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <link rel="shortcut icon" href="/favicon.svg">
 
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-tooltip@3.0.2/dist/css/bulma-tooltip.min.css">
-	<link rel="stylesheet" href="css/rechner.css" type="text/css" media="screen" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-tooltip@3.0.2/dist/css/bulma-tooltip.min.css">
+        <link rel="stylesheet" href="css/rechner.css" type="text/css" media="screen" />
     </head>
 
     <body>
 
-	<section class="mainframe" id="mainframe">
-	    <p class="has-text-centered">(Testversion)</p>
-	    <h1 id="hauptueberschrift" >Energiewende-Rechner</h1>
-	    <!-- <p class="subtitle has-text-centered">Flächenbedarf für Deutschland</p> -->
+        <section class="mainframe" id="mainframe">
+            <p class="has-text-centered">(Testversion)</p>
+            <h1 id="hauptueberschrift" >Energiewende-Rechner</h1>
+            <!-- <p class="subtitle has-text-centered">Flächenbedarf für Deutschland</p> -->
 
-	    <div class="block">
+            <div class="block">
 
-		<div></div>
+                <div></div>
 
-		<noscript>
-		    <div class="notification is-warning has-text-centered is-size-4">
-			Bitte aktiviere JavaScript in Deinem Browser, um den Energiewende-Rechner zu verwenden.
-		    </div>
-		</noscript>
+                <noscript>
+                    <div class="notification is-warning has-text-centered is-size-4">
+                        Bitte aktiviere JavaScript in Deinem Browser, um den Energiewende-Rechner zu verwenden.
+                    </div>
+                </noscript>
 
-		<div id="app"></div>
+                <div id="app">{{prerendered-app|safe}}</div>
 
-	    </div>
-	    <script src="js/compiled/app.js?v=34"></script>
-	</section>
+            </div>
+            <script src="js/compiled/app.js?v=34"></script>
+        </section>
 
-	<footer class="columns  is-mobile is-vcentered pb-4 pt-4 has-background-white-ter">
-		    <div class="column is-one-quarter has-text-centered">
-		    </div>
-		    <div class="column is-half">
-			<div class="columns is-centered is-multiline ">
-			    <div class="column is-narrow">
-				<a class="discretelink" href="/datenschutz">Datenschutzerklärung
-				</a>
-			    </div>
-			    <div class="is-divider-vertical" data-content="OR">
-			    </div>
-			    <div class="column is-narrow">
-				<a class="discretelink" href="/impressum">Impressum
-				</a>
-			    </div>
-			</div>
-		    </div>
-		    <div class="column is-one-quarter has-text-centered">
-			<div>
-			    <a href="https://nuklearia.de/" rel="noopener noreferrer" target="_blank">
-				<img width=70px
-				     src="https://nuklearia.de/wp-content/uploads/2021/03/Nuklearia_Wortbildmarke_hoch_auf_transparent_w0250.png">
-			    </a>
-			</div>
-		    </div>
-	    </footer>
+        <footer class="columns  is-mobile is-vcentered pb-4 pt-4 has-background-white-ter">
+                    <div class="column is-one-quarter has-text-centered">
+                    </div>
+                    <div class="column is-half">
+                        <div class="columns is-centered is-multiline ">
+                            <div class="column is-narrow">
+                                <a class="discretelink" href="/datenschutz">Datenschutzerklärung
+                                </a>
+                            </div>
+                            <div class="is-divider-vertical" data-content="OR">
+                            </div>
+                            <div class="column is-narrow">
+                                <a class="discretelink" href="/impressum">Impressum
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-one-quarter has-text-centered">
+                        <div>
+                            <a href="https://nuklearia.de/" rel="noopener noreferrer" target="_blank">
+                                <img width=70px
+                                     src="https://nuklearia.de/wp-content/uploads/2021/03/Nuklearia_Wortbildmarke_hoch_auf_transparent_w0250.png">
+                            </a>
+                        </div>
+                    </div>
+            </footer>
     </body>
 </html>

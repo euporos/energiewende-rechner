@@ -663,7 +663,7 @@
 ;; ############################
 
 (defn main-component []
-  [:div
+  [:div#ewr
    [:p.is-size-5.has-text-centered
     (snippet :subtitle)]
    [:p.is-size-5.has-text-centered

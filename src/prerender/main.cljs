@@ -13,7 +13,6 @@
                    (.resolve path "resources/public/index.html")))
 
 (defn prerender
-  ""
   []
   (go
     (let [browser (<p! (.launch puppeteer))
@@ -29,3 +28,5 @@
           (str/split
            html "\n"))))
       (.close browser))))
+
+;TODO: try to only extract the ewr https://stackoverflow.com/questions/46431288/puppeteer-get-innerhtml

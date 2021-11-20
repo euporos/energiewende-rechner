@@ -1,0 +1,7 @@
+.PHONY: dev-setup
+dev-setup:
+        mkdir export
+        mkdir export/main
+        mkdir export/preview
+
+main-add-static-files
