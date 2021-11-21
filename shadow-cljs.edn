@@ -13,6 +13,8 @@
                 [re-frame-utils "0.1.0"]
                 [metosin/malli "0.4.0"]
                 [thedavidmeister/cljc-md5 "0.0.2"]
+                [optimus "0.20.2"]
+                [selmer "1.12.44"]
                 ;; [org.clojure/core.async "1.3.618"]
                 ]
 
@@ -44,9 +46,9 @@
                        :infer-externs false}}
 
           :aws-preview {:target     :node-library
-                    :output-to  "target/aws/index.js"
+                    :output-to  "export/preview/index.js"
 
-                    :output-dir "target/aws"
+                    :output-dir "export/preview"
                     :exports    {:handler preview.main/handler}
                     :devtools  {:after-load preview.main/reload}
                     :compiler-options

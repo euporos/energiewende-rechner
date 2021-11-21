@@ -11,13 +11,13 @@ prod-build-main-project:
 	npx shadow-cljs release prerender
 	lein build-site-without-php
 	npx shadow-cljs release app --config-merge "{:closure-defines {:disabled-features \"bookmark-state\"}}"
-	chmmod -R 755 export/main
+	chmod -R 755 export/main
 
 .PHONY: test-build-project
 test-build-main-project:
 	npx shadow-cljs release prerender
 	lein build-site-with-php
-	npx shadow-cljs release app --config-merge
+	npx shadow-cljs release app
 	chmod -R 755 export/main
 
 .PHONY: build-aws-preview
