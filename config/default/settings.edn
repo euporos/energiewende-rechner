@@ -1,6 +1,5 @@
-{:main-site "https://energiewende-rechner.org"
- :preview-api "https://9xcjcr4b4m.execute-api.eu-central-1.amazonaws.com/test/preview"
- :features       #{:bookmark-state}
+{:main-site      "https://energiewende-rechner.org"
+ :features       #{}
  :co2-colors     ["#2AA364", "#F5EB4D", "#9E4229", "#381D02"]
  :total-landmass 357581
  :nrg-constants  {:wind        {:name          "Wind"

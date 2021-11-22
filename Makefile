@@ -6,22 +6,25 @@ dev-setup:
 	mkdir -p export/other >/dev/null
 	npx shadow-cljs release prerender
 
-.PHONY: prod-build-main-project
-prod-build-main-project:
+.PHONY: export-main-project
+export-main-project:
+	rm -r .shadow-cljs
 	npx shadow-cljs release prerender
-	lein build-site-without-php
-	npx shadow-cljs release app --config-merge "{:closure-defines {:disabled-features \"bookmark-state\"}}"
-	chmod -R 755 export/main
-
-.PHONY: test-build-project
-test-build-main-project:
-	npx shadow-cljs release prerender
-	lein build-site-with-php
+	lein build-site
 	npx shadow-cljs release app
 	chmod -R 755 export/main
 
+.PHONY: prod-export-main-project
+prod-export-main-project:
+	EWR_CONFIG_DIRS="config/default" make export-main-project
+
+.PHONY: stage-export-main-project
+stage-export-main-project:
+	EWR_CONFIG_DIRS="config/default config/default_stage" make export-main-project
+
 .PHONY: build-aws-preview
 build-aws-preview:
+	rm -r .shadow-cljs
 	rm -rf export/preview/*
 	cp -r resources/preview/* export/preview/
 	npx shadow-cljs release aws-preview

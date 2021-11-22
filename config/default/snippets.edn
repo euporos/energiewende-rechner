@@ -20,4 +20,5 @@
                            :resources         {:name "Ressourcenverbrauch in t/TWh"}
                            :arealess-capacity {:name {:solar "Solarkapazität auf Dächern in TWh"
                                                       :wind  "Kapazität für Offshore Windkraft in TWh"}}
-                           }}
+                           }
+ :static {:email-b64 "ZW5lcmdpZXdlbmRlcmVjaG5lckBudWtsZWFyaWEuZGU="}}

@@ -679,9 +679,9 @@
 ;; ############################
 
 (defn main-component []
-  [:div#ewr
+  [:div
    [:p.is-size-5.has-text-centered
-    (snippet :subtitle)]
+     (snippet :subtitle)]
    [:p.is-size-5.has-text-centered
     [:a {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :general])
          :style    {:cursor "pointer"}} (snippet :explanations)]]

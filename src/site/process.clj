@@ -2,7 +2,7 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.java.shell :refer [sh]]
-            ;; [ewr.macros :as m]
+            [ewr.macros :as m]
             [hiccup.page :refer [html5]]
             [optimus.assets :as assets]
             [optimus.export]
@@ -12,7 +12,13 @@
             [selmer.parser]
             [stasis.core :as stasis]))
 
-(def settings (edn/read-string (slurp "config/settings.edn")))
+
+
+(m/def-config config)
+
+(def inject-php? (get-in config [:settings :inject-php?]))
+
+(def settings (edn/read-string (slurp "config/default/settings.edn")))
 (def shadow-cljs (edn/read-string (slurp "shadow-cljs.edn")))
 
 (def prerendered-app
@@ -28,12 +34,12 @@
   (-> (map-vals
        #(selmer.parser/render % {:settings settings})
        (stasis/slurp-directory "resources/snippets" #".*\.(html|php)$"))
-      (assoc :prerendered-app "boo")))
+      (assoc :prerendered-app prerendered-app)))
 
-(defn get-html-pages [opts]
+(defn get-html-pages []
   (map-vals
-   #(selmer.parser/render % {:settings settings
-                             :preview-image         (if (:include-php opts)
+   #(selmer.parser/render % {:config config
+                             :preview-image         (if inject-php?
                                                      (get (get-php) "/preview-image.php")
                                                      (str (get settings :main-site)
                                                           "/imgs/rich-preview_3.png"))
@@ -46,9 +52,8 @@
   []
   (assets/load-assets "public" [#".*\.(svg|png|jpg|jpeg|css)$"]))
 
-(defn get-pages [production?]
-  (merge (get-html-pages production?)))
-
+(defn get-pages []
+  (merge (get-html-pages)))
 
 (def live-view (optimus/wrap ;; shouldn't be used
                 (stasis/serve-pages get-pages)
@@ -58,24 +63,16 @@
 
 (def export-dir "export/main")
 
-(defn export [opts]
+(defn export []
   (println "exporting")
   (let [assets (optimizations/all (get-assets) {})
-        pages  (get-pages opts)]
+        pages  (get-pages)]
     (println "emptying export dir" )
     (stasis/empty-directory! export-dir)
     (println "Saving optimized assets")
     (optimus.export/save-assets assets export-dir)
     (println "exporting pages")
     (stasis/export-pages pages export-dir {:optimus-assets assets})
-    (when (:include-php opts)
+    (when inject-php?
       (sh "mv" (str export-dir "/index.html") (str export-dir "/index.php"))))
   (System/exit 0))
-
-(defn export-without-php
-  []
-  (export {}))
-
-(defn export-with-php
-  []
-  (export {:include-php true}))

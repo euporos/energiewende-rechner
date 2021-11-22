@@ -11,7 +11,7 @@
 
         <meta property="og:title" content="Energiewende-Rechner – Wie viel Platz braucht unser Strom?" />
         <meta property="og:description" content="Stelle den Energiemix der Zukunft zusammen. Entscheide über CO2-Ausstoß, Flächenverbrauch und mehr!" />
-        <meta property="og:url" content="https://energiewende-rechner.org/" />
+        <meta property="og:url" content="{{config.settings.main-site}}" />
         <meta property="og:image" content="{{preview-image|safe}}" />
         <meta name="twitter:card" content="summary_large_image" />
         <link rel="shortcut icon" href="/favicon.svg">
@@ -23,8 +23,10 @@
 
     <body>
 
-        <section class="mainframe" id="mainframe">
-            <p class="has-text-centered">(Testversion)</p>
+      <section class="mainframe" id="mainframe">
+        {% if config.settings.test-version? %}
+        <p class="has-text-centered">(Testversion)</p>
+        {% endif %}
             <h1 id="hauptueberschrift" >Energiewende-Rechner</h1>
             <!-- <p class="subtitle has-text-centered">Flächenbedarf für Deutschland</p> -->
 
