@@ -69,7 +69,8 @@
     (println "exporting pages")
     (stasis/export-pages pages export-dir {:optimus-assets assets})
     (when (:include-php opts)
-      (sh "mv" (str export-dir "/index.html") (str export-dir "/index.php")))))
+      (sh "mv" (str export-dir "/index.html") (str export-dir "/index.php"))))
+  (System/exit 0))
 
 (defn export-without-php
   []
