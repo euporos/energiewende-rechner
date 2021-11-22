@@ -39,10 +39,11 @@
 (defn get-html-pages []
   (map-vals
    #(selmer.parser/render % {:config config
-                             :preview-image         (if inject-php?
-                                                     (get (get-php) "/preview-image.php")
-                                                     (str (get settings :main-site)
-                                                          "/imgs/rich-preview_3.png"))
+                             :preview-image
+                             (str (get-in config [:settings :preview-api])
+                                  (if inject-php?
+                                    (get (get-php) "/preview-image.php")
+                                    "/imgs/rich-preview_3.png"))
                              :snippets    nil
                              :prerendered-app prerendered-app})
 
