@@ -661,9 +661,8 @@
     [:a {:href @(rf/subscribe  [:save/url-string])}
      "→ Link, um diesen Strommix zu teilen"]]
    [:div
-    [:a {:href (str ;; "http://localhost:3000/api/savestate-img"
-                ;; "http://api.euporia.net/api/savestate-img"
-                "https://9xcjcr4b4m.execute-api.eu-central-1.amazonaws.com/test/preview"
+    [:a {:href (str
+                (get cfg/settings :preview-api)
                 @(rf/subscribe [:save/preview-query-string]))}
      "→ Link to preview"]]
    [:div
