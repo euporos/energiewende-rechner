@@ -313,19 +313,18 @@
  (fn [[_ nrg-key]]
    [(rf/subscribe [:energy-needed/get])
     (rf/subscribe [:nrg/get nrg-key])])
- (fn [[energy-needed nrg] [_ nrg-key]]
-   (let [{:keys                          [share power-density props
-                 capacity-factor deaths] :as nrg} nrg
-         area                                     (-> energy-needed
+ (fn [[energy-needed nrg] [_ _nrg-key]]
+   (let [{:keys [share power-density] :as nrg}
+         nrg
+         area (-> energy-needed
                   (* share)
                   (/ 100) ; share in TWh ;TODO: from constant
                   (- (:arealess-capacity nrg 0))
                   (* 1000000000000) ; share in Wh
                   (/ const/hours-per-year) ; needed W
-                  ;; (/ capacity-factor) ; needed brute W
                   (/ power-density) ; needed m²
                   (/ 1000000))                    ; needed km²
-         radius                                   (if (or (< area 0) ; area < 0 possible with arealess-capacity
+         radius (if (or (< area 0) ; area < 0 possible with arealess-capacity
                         (js/isNaN area)) 0
                     (h/radius-from-area-circle area))]
      (assoc nrg
