@@ -35,12 +35,12 @@
 (def publications (transpose-energy-sources
                    (:publications cfg/config)))
 
-(defn pubs-for-needed-power
+(defn pubs-for-global-value
   "Returns all publications providing a value
-  for :energy-needed"
-  []
+  for e.g :energy-needed"
+  [key]
   (filter
-   #(get % :energy-needed)
+   #(get % key)
    publications))
 
 (defn pubs-for-param

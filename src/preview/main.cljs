@@ -89,7 +89,7 @@
 
 (defn savestate-string->svg
   [savestate-string]
-  (rf/dispatch-sync [:global/load-default-pubs])
+  (rf/dispatch-sync [:pub/load-defaults])
   (when savestate-string
     (let [savestate
           (serialize/decompress-and-deserialize

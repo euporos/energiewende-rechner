@@ -74,7 +74,7 @@
  ;; loads the default publications
  (fn-traced [_ [_ load-savestate?]]
             {:db              default-db
-             :tech/dispatches [[:global/load-default-pubs]
+             :tech/dispatches [[:pub/load-defaults]
                                (when (and (cfg/feature-active? :bookmark-state)
                                           load-savestate?)
                                  [:save/load-savestate-from-url])]}))
@@ -178,17 +178,17 @@
                    matching-pubs))))
 
 (reg-sub
- :energy-needed/loaded-pub
+ :pub/global-loaded
  ;; the publication currently loaded for :energy-needed
  ;; Returns the whole map, not just the id
- (fn [db _]
-   (let [curval        (get db :energy-needed)
-         matching-pubs (pubs/matching-pubs-for-path [:energy-needed] curval)
-         last-loaded   (get-in db [:ui :loaded-pubs :energy-needed])]
+ (fn [db [_ key]]
+   (let [curval        (get db key)
+         matching-pubs (pubs/matching-pubs-for-path [key] curval)
+         last-loaded   (get-in db [:ui :loaded-pubs key])]
      (return-loaded-pub matching-pubs last-loaded))))
 
 (reg-sub
- :nrg/loaded-pub
+ :pub/nrg-param-loaded
  ;; returns the publication currently loaded for
  ;; a combination of Energy-source and Parameter
  ;; returns the entire map
@@ -222,20 +222,19 @@
     (param-pub-into-db db pub nrg-key param-key)))
 
 (reg-event-db
- :nrg/load-pub
+ :pub/load-nrg-param
  load-nrg-pub-rfh)
 
-(defn load-energy-needed-pub-rfh [db [_ pub]]
+(defn load-global-pub-rfh [db [_ key pub]]
   (if (not= pub nil)
     (-> db
-        (assoc :energy-needed
-               (get pub :energy-needed))
-        (assoc-in [:ui :loaded-pubs :energy-needed]
+        (assoc key
+               (get pub key))
+        (assoc-in [:ui :loaded-pubs key]
                   (:id pub)))))
-
 (reg-event-db
- :energy-needed/load-pub
- load-energy-needed-pub-rfh)
+ :pub/load-global
+ load-global-pub-rfh)
 
 (defn load-default-pubs-rfh [db _]
   (-> (reduce
@@ -245,14 +244,14 @@
        (for [nrg-key   cfg/nrg-keys ; … for alle combinations
              param-key params/common-param-keys] ; of energy-sources and parameters
          [nil nrg-key param-key]))
-      (load-energy-needed-pub-rfh [nil (first (pubs/pubs-for-needed-power))])
+      (load-global-pub-rfh [nil :energy-needed (first (pubs/pubs-for-global-value :energy-needed))])
       (load-nrg-pub-rfh [nil :solar :arealess-capacity ; …for rooftop solar
                          (pubs/default-pub :solar :arealess-capacity)])
       (load-nrg-pub-rfh [nil :wind :arealess-capacity ; …for offshore wind
                          (pubs/default-pub :wind :arealess-capacity)])))
 
 (rf/reg-event-db
- :global/load-default-pubs
+ :pub/load-defaults
  ;; Used on initialization. Loads all default publications…
  load-default-pubs-rfh)
 
@@ -317,17 +316,18 @@
  (fn [[energy-needed nrg] [_ _nrg-key]]
    (let [{:keys [share power-density] :as nrg}
          nrg
-         area                                                    (-> energy-needed
-                                                    (* share)
-                                                    (/ 100) ; share in TWh ;TODO: from constant
-                                                    (- (:arealess-capacity nrg 0))
-                                                    (* 1000000000000) ; share in Wh
-                                                    (/ const/hours-per-year) ; needed W
-                                                    (/ power-density) ; needed m²
-                                                    (/ 1000000)) ; needed km²
-         radius                                                  (if (or (< area 0) ; area < 0 possible with arealess-capacity
-                                                        (js/isNaN area)) 0
-                                                    (h/radius-from-area-circle area))]
+         area
+         (-> energy-needed
+             (* share)
+             (/ 100) ; share in TWh ;TODO: from constant
+             (- (:arealess-capacity nrg 0))
+             (* 1000000000000) ; share in Wh
+             (/ const/hours-per-year) ; needed W
+             (/ power-density) ; needed m²
+             (/ 1000000)) ; needed km²
+         radius           (if (or (< area 0) ; area < 0 possible with arealess-capacity
+                                  (js/isNaN area)) 0
+                              (h/radius-from-area-circle area))]
      (assoc nrg
             :area area
             :relative-area (/ area cfg/total-landmass)

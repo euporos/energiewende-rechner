@@ -122,8 +122,8 @@
   i.e. rooftop solar or offshore wind"
   [nrg-key]
   [publication-dropdown
-   {:value-subscription @(rf/subscribe [:nrg/loaded-pub nrg-key :arealess-capacity])
-    :partial-event      [:nrg/load-pub nrg-key :arealess-capacity]
+   {:value-subscription @(rf/subscribe [:pub/nrg-param-loaded nrg-key :arealess-capacity])
+    :partial-event      [:pub/load-nrg-param nrg-key :arealess-capacity]
     :publications       (pubs/pubs-for-param nrg-key :arealess-capacity)}])
 
 (defn arealess-input
@@ -141,9 +141,9 @@
 (defn energy-needed-dropdown
   []
   [publication-dropdown
-   {:value-subscription @(rf/subscribe [:energy-needed/loaded-pub])
-    :partial-event      [:energy-needed/load-pub]
-    :publications       (pubs/pubs-for-needed-power)}])
+   {:value-subscription @(rf/subscribe [:pub/global-loaded :energy-needed])
+    :partial-event      [:pub/load-global :energy-needed]
+    :publications       (pubs/pubs-for-global-value :energy-needed)}])
 
 (defn energy-needed
   []
@@ -152,7 +152,7 @@
           [:div.columns.is-mobile.is-vcentered.mb-0
            [:div.column
             [param-input [] params/energy-needed]]
-           (if-let [href (:link @(rf/subscribe [:energy-needed/loaded-pub]))]
+           (if-let [href (:link @(rf/subscribe [:pub/global-loaded  :energy-needed]))]
              [:div.column.is-narrow.has-text-centered
               [:a {:target "_blank"
                    :href   href} " → Quelle"]])]
@@ -170,8 +170,8 @@
   [nrg-key parameter-dfn]
   (let [[param-key _] parameter-dfn]
     [publication-dropdown
-     {:value-subscription @(rf/subscribe [:nrg/loaded-pub nrg-key param-key])
-      :partial-event      [:nrg/load-pub nrg-key param-key] ; the on-change-val gets conj'd onto this
+     {:value-subscription @(rf/subscribe [:pub/nrg-param-loaded nrg-key param-key])
+      :partial-event      [:pub/load-nrg-param nrg-key param-key] ; the on-change-val gets conj'd onto this
       :publications       (pubs/pubs-for-param nrg-key param-key)}]))
 
 (defn param-publication-link
@@ -179,7 +179,7 @@
   [nrg-key param-key]
   (if-let [loaded-pub-link
            (:link @(rf/subscribe
-                    [:nrg/loaded-pub nrg-key param-key]))]
+                    [:pub/nrg-param-loaded nrg-key param-key]))]
     [:a {:href   loaded-pub-link
          :target "_blank"
          :rel    "noopener noreferrer"} "→ Quelle"]))
