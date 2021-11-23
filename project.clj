@@ -22,7 +22,7 @@
                  [re-frame-utils "0.1.0"]
                  [metosin/malli "0.4.0"]
                  [thedavidmeister/cljc-md5 "0.0.2"]]
+  :plugins [[lein-cljfmt "0.8.0"]]
   :ring {:handler site.process/live-view}
   :aliases {"build-site" ["run" "-m" "site.process/export"]}
   :profiles {:dev {:plugins [[lein-ring "0.12.6"]]}})
-
