@@ -2,7 +2,6 @@
   (:require [stromrechner.logic :as logic]
             [cljs.test :as t :include-macros true]))
 
-
 (t/deftest remix-unblocked?-test
   (t/is (not (logic/remix-blocked?
               :wind 2000
@@ -18,7 +17,7 @@
                :bio
                {:share 1500
                 :locked? false}})))
-  (t/is (not 
+  (t/is (not
          (logic/remix-blocked?
           :wind 2000
           {:wind
@@ -62,10 +61,8 @@
           {:share 1500
            :locked? true}})))
 
-
-
 (t/deftest remix-energy-shares-int-test
-  
+
   (t/is (= ; case without lockings
          (logic/remix-energy-shares
           :wind 5000
@@ -93,7 +90,7 @@
           :bio
           {:share (- 1500 250)
            :locked? false}}))
-  
+
   (t/is (= ; case with lockings
          (logic/remix-energy-shares
           :wind 5000
@@ -121,7 +118,7 @@
           :bio
           {:share 1500
            :locked? true}}))
-  
+
   (t/is (= ; case with reduction
          (logic/remix-energy-shares
           :wind 3000
@@ -202,10 +199,7 @@
            :locked? false}
           :bio
           {:share 1000
-           :locked? true}}))
-  )
-
-
+           :locked? true}})))
 
 (t/deftest remix-energy-shares-float-test
   (t/is (=
@@ -293,17 +287,17 @@
          (logic/remix-energy-shares-float
           :wind 88
           {:wind
-          {:share 100
-           :locked? false}
-          :solar
-          {:share 0
-           :locked? false}
-          :nuclear
-          {:share 0
-           :locked? false}
-          :bio
-          {:share 0
-           :locked? false}})
+           {:share 100
+            :locked? false}
+           :solar
+           {:share 0
+            :locked? false}
+           :nuclear
+           {:share 0
+            :locked? false}
+           :bio
+           {:share 0
+            :locked? false}})
          {:wind
           {:share 88
            :locked? false}
@@ -317,4 +311,4 @@
           {:share 4
            :locked? false}}) "raise reacting energies equally from 0"))
 
- 
+

@@ -33,7 +33,7 @@
         second-level-keys (keys (reduce merge (map second indata)))
         paths             (for [flk first-level-keys
                                 slk second-level-keys]
-                [flk slk])]
+                            [flk slk])]
 
     (reduce
      (fn [sofar nextpath]
@@ -50,7 +50,6 @@
   ""
   [val]
   (if (js/isNaN val) 0 val))
-
 
 (defn structure-int
   "Structures large integers

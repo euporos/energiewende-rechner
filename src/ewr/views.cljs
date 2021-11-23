@@ -28,7 +28,7 @@
 ;;
 
 (def co2
-  [:<> "CO"[:sub "2"]])
+  [:<> "CO" [:sub "2"]])
 
 (defn panel
   "Generic Bulma Panel"
@@ -64,8 +64,7 @@
       [:div
        {:style {:overflow   (if open? "visible" "hidden")
                 :max-height (if (not open?) 0)}}
-       (into [:div.block.pt-3.pb-3.pr-3.pl-3 ] comps)]]]))
-
+       (into [:div.block.pt-3.pb-3.pr-3.pl-3] comps)]]]))
 
 ;;
 ;; Inputs
@@ -103,11 +102,10 @@
                     edn/read-string ; parse back into data structure
                     partial-event)} ; before dispatch
        [:option {:value nil}  "Benutzerdefiniert"]
-       (for [pub publications ]
+       (for [pub publications]
          ^{:key (:id pub)}
          [:option {:value (str pub)} ; only strings can be values ;(
           (:id pub)])]]]]])
-
 
 ;; ############################
 ;; ###### Arealess Power ######
@@ -135,7 +133,6 @@
   [param-input [:energy-sources nrg-key]
    params/arealess-capacity])
 
-
 ;; ########################
 ;; ##### Energy Needed ####
 ;; ########################
@@ -161,7 +158,6 @@
           [:div
            [energy-needed-dropdown]]]))
 
-
 ;; ####################################################################
 ;; ############## Parameter-Inputs »Profi-Einstellungen« ##############
 ;; ####################################################################
@@ -186,7 +182,6 @@
     [:a {:href   loaded-pub-link
          :target "_blank"
          :rel    "noopener noreferrer"} "→ Quelle"]))
-
 
 ;; ################################
 ;; ####### Tabular Settings #######
@@ -217,13 +212,13 @@
    (map-indexed
     (fn [i parameter-dfn]
       [:td {:key i} [param-settings-tabular
-                     nrg-key parameter-dfn] ])
+                     nrg-key parameter-dfn]])
     params/common-nrg-parameters)])
 
 (defn settings-table-top-row
   ""
   []
-  [:tr  [:th ]
+  [:tr  [:th]
    (map-indexed
     (fn [i [param-key parameter-dfn]]
       [:th.has-text-centered
@@ -253,7 +248,6 @@
     [:div.column.is-narrow [param-publication-link nrg-key :arealess-capacity]]
     [:div.column]]])
 
-
 (defn detailed-settings-tabular
   "The table of Parameters settings.
   Shown only on larger Screens."
@@ -273,7 +267,6 @@
 
                      [arealess-settings :solar]
                      [arealess-settings :wind])])
-
 
 ;; ########################
 ;; ##### Explanations #####
@@ -317,8 +310,7 @@
    (format-explanation i exp-key nil))
   ([i exp-key supplement]
    (let [heading (get cfg/explanation-headings exp-key)
-         text    (get cfg/texts exp-key)
-         ]
+         text    (get cfg/texts exp-key)]
      [:div.block
       {:key i
        :id  (str "explanation-" (name exp-key))}
@@ -331,7 +323,7 @@
   []
   [:div#detailed-settings.mt-4
    [controlled-panel :explanations
-    [:<> "Erläuterungen" [:span.is-hidden-desktop " und Parameter" ]]
+    [:<> "Erläuterungen" [:span.is-hidden-desktop " und Parameter"]]
     [:div.block
      [:h3.title.is-3 {:id "explanation-general"} (get cfg/explanation-headings :general)]
      [:div.content (h/dangerous-html (get cfg/texts :general))]]
@@ -343,7 +335,6 @@
     [:h3.title.is-3 "Parameter"]
     (map-indexed
      format-explanation params/common-param-keys)]])
-
 
 ;; ######################
 ;; ##### Energy-Mix #####
@@ -359,9 +350,8 @@
    [:img {:width  "25px"
           :height "25px"
           :src    (if @(rf/subscribe [:nrg-share/locked? nrg-key])
-                 "symbols/lock_closed.svg"
-                 "symbols/lock_open.svg")}]])
-
+                    "symbols/lock_closed.svg"
+                    "symbols/lock_open.svg")}]])
 
 (defn energy-slider
   "Single Slider to adjust the share of an Energy.
@@ -384,9 +374,9 @@
     [:div.column.is-narrow
      [:label
       [:strong name " "
-       (Math/round share)" % | "
+       (Math/round share) " % | "
        (Math/round
-        @(rf/subscribe [:nrg-share/get-absolute-share nrg-key]))" TWh"]]]]
+        @(rf/subscribe [:nrg-share/get-absolute-share nrg-key])) " TWh"]]]]
 
    ;; Actual Slider
    [:input {:type      "range" :min 0 :max 100
@@ -418,7 +408,6 @@
          ^{:key (first nrg-source)}
          [:div [energy-slider nrg-source]])]]]))
 
-
 ;; #########
 ;; ## Map ##
 ;; #########
@@ -432,7 +421,6 @@
      :stroke       "black"
      :stroke-width "0"}
     props)])
-
 
 (defn energy-label
   "Label and icon indicating the area occupied by the energy
@@ -451,9 +439,9 @@
               :x         5
               :height    20}]
      [:text (merge {:zindex             1000
-                   :alignment-baseline "central"
-                   :font-weight        "bold"}
-                  (if (:preview opts) {:font-size "1.5em"} {}))
+                    :alignment-baseline "central"
+                    :font-weight        "bold"}
+                   (if (:preview opts) {:font-size "1.5em"} {}))
       [:tspan {:x 33
                :y 15}
        (if (= 0 area-percent)
@@ -463,7 +451,6 @@
        (str
         (h/structure-int
          area) " km²")]]]))
-
 
 (defn energy-on-map
   "Represents the Energy source associated with nrg-key
@@ -529,7 +516,6 @@
                           :y (+ y 18)})
             (Math/round exhausted-arealess) " TWh"]])))))
 
-
 (def svg-defs
   "Filters for use in the SVG MapView"
   [:defs
@@ -569,8 +555,8 @@
                    {:background-image "url('../imgs/deutschland2.svg')"})}
 
          (when background-svg
-          [:svg {:viewBox "0 0 1000 1360" ;TODO: This hard codes Germany
-                 :dangerouslySetInnerHTML {:__html background-svg}}])
+           [:svg {:viewBox "0 0 1000 1360" ;TODO: This hard codes Germany
+                  :dangerouslySetInnerHTML {:__html background-svg}}])
 
          svg-defs
          (when-not (:preview opts)
@@ -584,9 +570,8 @@
                                         :y     600
                                         :color "yellow"}]])]
          ;; Circles and labels
-         (doall (map (partial energy-on-map opts)
-                     cfg/nrg-keys))))
-
+        (doall (map (partial energy-on-map opts)
+                    cfg/nrg-keys))))
 
 (defn mapview
   "The actual SVG displaying the Content on the map.
@@ -594,8 +579,6 @@
   []
   [:div.mapview
    [map-svg]])
-
-
 
 ;; ######################
 ;; ##### Indicators #####
@@ -619,12 +602,12 @@
        {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation param-key])}
        (with-tooltip heading) " " (formatter param-total) unit]
       ;; Absolute numbers per Energy-source
-      (into [:div ] (interpose " | "
-                               (keep (fn [{:keys [name absolute]}]
-                                       (when (> absolute 0)
-                                         [:span
-                                          name ": " (formatter absolute) [:nobr] unit]))
-                                     (vals energy-sources))))]
+      (into [:div] (interpose " | "
+                              (keep (fn [{:keys [name absolute]}]
+                                      (when (> absolute 0)
+                                        [:span
+                                         name ": " (formatter absolute) [:nobr] unit]))
+                                    (vals energy-sources))))]
      ;; Graphical Representation
      [:div
       (into [:svg
@@ -667,7 +650,7 @@
      "→ Link to preview"]]
    [:div
     [:a {:href     (js/encodeURI
-                @(rf/subscribe  [:save/csv-string]))
+                    @(rf/subscribe  [:save/csv-string]))
          :download (str "strommix_"
                         (md5/string->md5-hex
                          (str @(rf/subscribe [:save/savestate])))
@@ -680,7 +663,7 @@
 (defn main-component []
   [:div
    [:p.is-size-5.has-text-centered
-     (snippet :subtitle)]
+    (snippet :subtitle)]
    [:p.is-size-5.has-text-centered
     [:a {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :general])
          :style    {:cursor "pointer"}} (snippet :explanations)]]

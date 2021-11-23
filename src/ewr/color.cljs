@@ -58,8 +58,8 @@
   [maximum share color-edges]
   (let [gradients         (color-edges-to-gradients color-edges)
         normalized-share  (-> share
-                             (/ maximum)
-                             (* (- (count gradients) 1)))
+                              (/ maximum)
+                              (* (- (count gradients) 1)))
         gradient-n        (Math/floor normalized-share)   ; share falls in to gradient with this index
         ratio             (- normalized-share gradient-n) ; it falls here within this gradient
         [color-a color-b] (nth gradients gradient-n)] ; pick the gradient
@@ -72,7 +72,6 @@
     "#000000" "#ffffff"))
 
 (def test-color-edges ["#2AA364", "#F5EB4D", "#9E4229", "#381D02"])
-
 
 (comment
   (color-edges-to-gradients test-color-edges)

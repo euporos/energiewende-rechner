@@ -4,8 +4,7 @@
             [clojure.pprint :refer [pprint]]
             [clojure.set :as set]
             [clojure.string :as str]
-            [markdown.core :as md]
-            ))
+            [markdown.core :as md]))
 
 (defn deep-merge [a b]
   (cond
@@ -42,8 +41,7 @@
     b
 
     :else
-    (throw (ex-info "failed to merge config value" {:a a :b b}))
-    ))
+    (throw (ex-info "failed to merge config value" {:a a :b b}))))
 
 (defmacro def-string-from-file [var file f]
   `(def ~var
@@ -94,23 +92,22 @@
                                      (parser
                                       (slurp
                                        (.getAbsolutePath %)))))
-                             (into {})
-                             )]
+                             (into {}))]
     texts))
 
 (defn read-configuration-dir
-    [config-dir]
-    (->
-     (read-files-into-map config-dir "edn" edn/read-string true)
-     (assoc :texts (read-files-into-map (in-dir config-dir "/text") "md" md/md-to-html-string true))))
+  [config-dir]
+  (->
+   (read-files-into-map config-dir "edn" edn/read-string true)
+   (assoc :texts (read-files-into-map (in-dir config-dir "/text") "md" md/md-to-html-string true))))
 
 (defn read-configuration
   [configuration-dirs]
   (reduce
-    (fn [sofar next-config-dir]
-      (deep-merge sofar (read-configuration-dir next-config-dir)))
-    {}
-    configuration-dirs))
+   (fn [sofar next-config-dir]
+     (deep-merge sofar (read-configuration-dir next-config-dir)))
+   {}
+   configuration-dirs))
 
 (defmacro def-config [var]
   "Constructs the configuration as it wille be available at runtime"

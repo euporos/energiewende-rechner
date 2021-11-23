@@ -23,7 +23,6 @@
     :deaths 0.44
     :co2 101000}})
 
-
 (t/deftest enrich-data-for-indicator-test
   (t/is (= {:param-total 239.2
             :unit nil

@@ -8,7 +8,6 @@
    [clojure.core.async :refer [go <!]]
    [cljs.core.async.interop :refer-macros [<p!]]))
 
-
 (def app-page (str "file://"
                    (.resolve path "resources/public/index.html")))
 

@@ -49,7 +49,6 @@
              :fill color
              :height 30 :width (* share 5)}]]))
 
-
 (defn energy-needed
   []
   (let [energy-needed @(rf/subscribe [:energy-needed/get])]
@@ -92,10 +91,10 @@
   [savestate-string]
   (rf/dispatch-sync [:global/load-default-pubs])
   (when savestate-string
-   (let [savestate
-         (serialize/deserialize-savestate-string
-          savestate-string)]
-     (rf/dispatch-sync [:save/savestate-into-db savestate])))
+    (let [savestate
+          (serialize/deserialize-savestate-string
+           savestate-string)]
+      (rf/dispatch-sync [:save/savestate-into-db savestate])))
 
   (let [svg (rdom/render-to-string
              [:svg {:xmlns      "http://www.w3.org/2000/svg"
@@ -106,8 +105,7 @@
                      :transform "scale(1.25)"}
                [views/map-svg {:preview        true
                                :background-svg (m/slurp-file "resources/public/imgs/deutschland2.svg")}]]
-              [energy-list]
-              ])]
+              [energy-list]])]
     svg))
 
 (defn handler

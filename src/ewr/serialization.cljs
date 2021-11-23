@@ -13,12 +13,11 @@
 
 (def code-savestate-huff
   (let [encoder (createEncoder
-                  "[1300 [[57 4.56 0.12 11 10260 240] [8.600000000000001 5.2 0.44 44 16447 142] [8.600000000000001 240.8 0.08 12 930] [8.600000000000001 0.16 4.63 230 1080] [8.600000000000001 482.1 2.82 490 572] [8.600000000000001 135.1 28.67 820 1185]]]")]
+                 "[1300 [[57 4.56 0.12 11 10260 240] [8.600000000000001 5.2 0.44 44 16447 142] [8.600000000000001 240.8 0.08 12 930] [8.600000000000001 0.16 4.63 230 1080] [8.600000000000001 482.1 2.82 490 572] [8.600000000000001 135.1 28.67 820 1185]]]")]
     (fn [string decode?]
       (if decode?
         (decodeConfig string encoder)
-        (encodeConfig string encoder)
-        ))))
+        (encodeConfig string encoder)))))
 
 (defn encode-savestate-huff
   ""
@@ -29,7 +28,6 @@
   ""
   [string]
   (code-savestate-huff string true))
-
 
 ;; ######################################
 ;; ######## Manual Serialization ########
@@ -74,7 +72,7 @@
   [savestate]
   (str
    ":energy-needed," (get savestate :energy-needed) "\n"
-   "energy-source\\Parameter," (str/join "," param-order)"\n"
+   "energy-source\\Parameter," (str/join "," param-order) "\n"
    (str/join "\n"
              (map
               (fn [nrg-key]
@@ -84,10 +82,8 @@
                                 (fn [param-key]
                                   (get-in savestate
                                           [:energy-sources nrg-key param-key]))
-                                param-order))
-                     ))
+                                param-order))))
               nrg-order))))
-
 
 ;; ###############################################
 ;; ########## Application to savestates ##########
@@ -119,24 +115,19 @@
      [:coal energy-source-spec]]]
    [:energy-needed float?]])
 
-
 (defn deserialize-savestate-string
   "work around bug in Huffman-Library
   see https://stackoverflow.com/questions/67273883/information-lost-in-huffman-encoding"
   [savestate-string]
   (let [decoded (decode-savestate-huff savestate-string)
         parsed  (try (deserialize
-                     (edn/read-string (str decoded "]")))
-                    (catch js/Object e
-                      (js/console.log "Error reading savestate… not loading")
-                      nil))
+                      (edn/read-string (str decoded "]")))
+                     (catch js/Object e
+                       (js/console.log "Error reading savestate… not loading")
+                       nil))]
 
-        ]
     (if (and parsed (m/validate savestate-spec parsed))
       parsed)))
-
-
-
 
 (comment
   (def failing-savestate
@@ -154,13 +145,9 @@
       ;; decode-savestate-huff
       ;; edn/read-string
       ))
-
-
 ;; ########################################################
 ;; ############ Legacy: Protobuf Serialization ############
 ;; ########################################################
-
-
 
 ;; (def savestate-proto
 ;;   ((.. protobuf -Root -fromJSON)
@@ -200,7 +187,6 @@
 ;;                         :id 1}
 ;;         :energySources {:type :EnergySources
 ;;                          :id 2}}}}})))
-
 
 ;; (def testload
 ;;   {:energySources
@@ -244,12 +230,10 @@
 ;;      :resources 1185}}
 ;;    :energyNeeded 1300})
 
-
 ;; (let [savestate (.lookupType savestate-proto
 ;;                              "Savestate")
 ;;       payload (clj->js testload)
 ;;       errMsg (.verify savestate payload)]
-
 
 ;;   (if errMsg
 ;;     (throw errMsg)

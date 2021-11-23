@@ -12,8 +12,6 @@
             [selmer.parser]
             [stasis.core :as stasis]))
 
-
-
 (m/def-config config)
 
 (def inject-php? (get-in config [:settings :inject-php?]))
@@ -27,8 +25,8 @@
     (:out (sh "node" (get-in shadow-cljs [:builds :prerender :output-to])))))
 
 (defn map-vals [f m]
-    (->> (map #(update % 1 f) m)
-         (into {})))
+  (->> (map #(update % 1 f) m)
+       (into {})))
 
 (defn get-php []
   (-> (map-vals
@@ -68,7 +66,7 @@
   (println "exporting")
   (let [assets (optimizations/all (get-assets) {})
         pages  (get-pages)]
-    (println "emptying export dir" )
+    (println "emptying export dir")
     (stasis/empty-directory! export-dir)
     (println "Saving optimized assets")
     (optimus.export/save-assets assets export-dir)

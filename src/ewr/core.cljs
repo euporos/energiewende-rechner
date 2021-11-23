@@ -23,5 +23,4 @@
   (print "EWR version " version)
   (js/console.log "Compiled with the following features: " (str/join ", " (:features config/settings)))
   (re-frame/dispatch-sync [:global/initialize])
-  (mount-root)
-  )
+  (mount-root))

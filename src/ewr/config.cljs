@@ -30,7 +30,6 @@
   [settings]
   (update settings :nrg-constants enrich-nrg-constants))
 
-
 ;; ####################################################################
 ;; ############## Load the Settings from the config file ##############
 ;; ####################################################################

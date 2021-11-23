@@ -4,7 +4,6 @@
             [cljs.test :as t :include-macros true]
             ["nodejs-base64-converter" :as nodeBase64]))
 
-
 (def testsvg "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>
 <!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">
 <svg width=\"632pt\" height=\"91pt\" viewBox=\"0.00 0.00 631.61 91.30\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">
@@ -59,15 +58,11 @@
                              "stage"        "test"}
     "isBase64Encoded"       false}))
 
-
-
 (defn dummy-callback
   [_ response]
   (let [png-buffer (.decode nodeBase64 (get (js->clj response) "body"))]
     (print "png-buffer is " png-buffer)
-    (.writeFileSync fs "test.png" png-buffer
-                    )))
-
+    (.writeFileSync fs "test.png" png-buffer)))
 
 (defn ^:dev/after-load test-img-output
   []

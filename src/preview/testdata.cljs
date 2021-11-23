@@ -3,7 +3,6 @@
             [ewr.serialization :as serialize]
             ["nodejs-base64-converter" :as nodeBase64]))
 
-
 (def teststate
   {:energy-needed 3000
    :energy-sources
@@ -100,5 +99,4 @@
   [_ response]
   (let [png-buffer (.decode nodeBase64 (get (js->clj response) "body"))]
     ;; (print "png-buffer is " png-buffer)
-    (.writeFileSync fs "test.png" png-buffer
-                    )))
+    (.writeFileSync fs "test.png" png-buffer)))

@@ -17,8 +17,7 @@
    [thi.ng.color.core :as col]
    [wrap.compress :as compress]
    [cemerick.url :as url :refer (url url-encode)]
-   [vimsical.re-frame.cofx.inject :as inject]
-   ))
+   [vimsical.re-frame.cofx.inject :as inject]))
 
 ;; ###################
 ;; #### Technical ####
@@ -53,7 +52,6 @@
 (reg-sub :tech/db
          (fn [db _] db))
 
-
 ;; ########################
 ;; ##### Global Stuff #####
 ;; ########################
@@ -85,14 +83,13 @@
  (fn [db [_ prepath param
           unparsed-newval]]
    (let ; we take parse-fn from the parameter-definition
-       [[param-key {:keys [parse-fn]}] param]
+    [[param-key {:keys [parse-fn]}] param]
      (assoc-in db (conj prepath param-key)
                (parse-fn unparsed-newval)))))
 
 (reg-sub :param/get
          (fn [db [_ pre-path param-key]]
            (h/nan->nil (get-in db (conj pre-path param-key)))))
-
 
 ;; ###########################
 ;; ###### Energy Needed ######
@@ -108,7 +105,6 @@
  :energy-needed/set
  (fn [db [_ newval]]
    (assoc db :energy-needed newval)))
-
 
 ;; #####################################################
 ;; ########### Energy Sources and Parameters ###########
@@ -151,7 +147,6 @@
  (fn [[arealess-capacity twh-share] [_ nrg-key]]
    (if (> twh-share arealess-capacity)
      arealess-capacity twh-share)))
-
 
 ;; ########################
 ;; ##### Publications #####
@@ -214,45 +209,43 @@
   "loads whatever value a given publication provides
  for a specific combination of energy-source-and parameter"
   [db [_ nrg-key param-key pub]]
-   (when (not= pub nil) ;; if there actually is a publication
-     (param-pub-into-db db pub nrg-key param-key)))
+  (when (not= pub nil) ;; if there actually is a publication
+    (param-pub-into-db db pub nrg-key param-key)))
 
 (reg-event-db
  :nrg/load-pub
  load-nrg-pub-rfh)
 
 (defn load-energy-needed-pub-rfh [db [_ pub]]
-   (if (not= pub nil)
-     (-> db
-         (assoc :energy-needed
-                (get pub :energy-needed))
-         (assoc-in [:ui :loaded-pubs :energy-needed]
-                   (:id pub)))))
+  (if (not= pub nil)
+    (-> db
+        (assoc :energy-needed
+               (get pub :energy-needed))
+        (assoc-in [:ui :loaded-pubs :energy-needed]
+                  (:id pub)))))
 
 (reg-event-db
  :energy-needed/load-pub
-  load-energy-needed-pub-rfh)
+ load-energy-needed-pub-rfh)
 
 (defn load-default-pubs-rfh [db _]
   (-> (reduce
        (fn [db [_ nrg-key param-key]]
          (load-nrg-pub-rfh db [nil nrg-key param-key (pubs/default-pub nrg-key param-key)]))
-        db
-        (for [nrg-key   cfg/nrg-keys ; … for alle combinations
-              param-key params/common-param-keys] ; of energy-sources and parameters
-          [nil nrg-key param-key]))
-       (load-energy-needed-pub-rfh [nil (first (pubs/pubs-for-needed-power))])
-       (load-nrg-pub-rfh [nil :solar :arealess-capacity ; …for rooftop solar
-                          (pubs/default-pub :solar :arealess-capacity)])
-       (load-nrg-pub-rfh [nil :wind :arealess-capacity ; …for offshore wind
-                          (pubs/default-pub :wind :arealess-capacity)])))
+       db
+       (for [nrg-key   cfg/nrg-keys ; … for alle combinations
+             param-key params/common-param-keys] ; of energy-sources and parameters
+         [nil nrg-key param-key]))
+      (load-energy-needed-pub-rfh [nil (first (pubs/pubs-for-needed-power))])
+      (load-nrg-pub-rfh [nil :solar :arealess-capacity ; …for rooftop solar
+                         (pubs/default-pub :solar :arealess-capacity)])
+      (load-nrg-pub-rfh [nil :wind :arealess-capacity ; …for offshore wind
+                         (pubs/default-pub :wind :arealess-capacity)])))
 
 (rf/reg-event-db
  :global/load-default-pubs
  ;; Used on initialization. Loads all default publications…
  load-default-pubs-rfh)
-
-
 
 ;; ###########################
 ;; ###### Energy shares ######
@@ -297,7 +290,6 @@
            #(remix/attempt-remix
              nrg-key (* 1 (js/parseInt newval)) %))))
 
-
 ;; ############################
 ;; ###### Derived-values ######
 ;; ############################
@@ -340,14 +332,14 @@
 (defn enrich-data-for-indicator
   [[energy-needed energy-sources] [_ param-key]]
   (let [abs-added    (h/map-vals
-                   #(assoc % :absolute
-                           (-> (:share %)
-                               (/ 100)            ;TODO: from const
-                               (* energy-needed)  ; TWh of this nrg
-                               (* (param-key %))))
-                   energy-sources)
+                      #(assoc % :absolute
+                              (-> (:share %)
+                                  (/ 100)            ;TODO: from const
+                                  (* energy-needed)  ; TWh of this nrg
+                                  (* (param-key %))))
+                      energy-sources)
         total        (reduce #(+ %1 (:absolute (second %2)))
-                      0 abs-added)
+                             0 abs-added)
         shares-added (h/map-vals
                       #(assoc % :param-share
                               (-> (:absolute %)
@@ -358,7 +350,7 @@
     {:param-total    total
      :factor         (get-in params/common-parameter-map [param-key :indicator-factor] 0)
      :formatter      (get-in params/common-parameter-map
-                        [param-key :indicator-formatter] #(Math/round %))
+                             [param-key :indicator-formatter] #(Math/round %))
      :unit           (get-in params/common-parameter-map [param-key :abs-unit])
      :energy-sources shares-added}))
 
@@ -383,7 +375,6 @@
    (if (and param-total (> energy-needed 0))
      (-> param-total                            ; kt/needed-nrg
          (/ energy-needed)))))  ; g/kWh
-
 
 (reg-sub
  :deriv/max-co-per-kwh
@@ -410,7 +401,6 @@
                actual-co2-intensity cfg/co2-colors)]
        [(:col bg)
         (color/contrasty-bw bg)]))))
-
 
 ;; ############################
 ;; ###### User Interface ######
@@ -451,7 +441,6 @@
  :ui/panel-open?
  (fn [db [_ panel-key]]
    (get-in db [:ui :panels panel-key])))
-
 
 ;; ##############
 ;; ### Saving ###
@@ -529,14 +518,11 @@
  (fn [savestate-string]
    (str "?savestate=" savestate-string "&sv=" serialize/serializer-version)))
 
-
 (reg-sub
  :save/querystring
  (fn []
    (rf/subscribe [:save/url-string]))
- (fn []
-   ))
-
+ (fn []))
 
 (reg-sub
  :save/csv-string
@@ -547,7 +533,6 @@
     "data:application/octet-stream,"
     (serialize/savestate-to-csv savestate))))
 
-
 (rf/reg-event-fx
  :save/load-savestate-from-url
  [(rf/inject-cofx :global/url)]
@@ -557,8 +542,8 @@
      (let [savestate (serialize/deserialize-savestate-string
                       url-savestate-string)]
        {:db         (if savestate
-              (merge db savestate)
-              (assoc-in db [:ui :savestate-load-failed?] true))
+                      (merge db savestate)
+                      (assoc-in db [:ui :savestate-load-failed?] true))
         :tech/alert (when (empty? savestate)
                       "Leider konnte der gespeicherte Energiemix nicht geladen werden\n\nRechner startet mit Standardmix")})
      {})))
