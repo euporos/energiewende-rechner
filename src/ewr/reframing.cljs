@@ -210,41 +210,49 @@
       (assoc-in [:ui :loaded-pubs nrg-key param-key]
                 (:id pub))))
 
-(reg-event-db
- ;; loads whatever value a given publication provides
- ;; for a specific combination of energy-source-and parameter
- :nrg/load-pub
- (fn [db [_ nrg-key param-key pub]]
-   (if (not= pub nil) ;; if there actually is a publication
-     (param-pub-into-db db pub nrg-key param-key))))
+(defn load-nrg-pub-rfh
+  "loads whatever value a given publication provides
+ for a specific combination of energy-source-and parameter"
+  [db [_ nrg-key param-key pub]]
+   (when (not= pub nil) ;; if there actually is a publication
+     (param-pub-into-db db pub nrg-key param-key)))
 
 (reg-event-db
- :energy-needed/load-pub
- (fn [db [_ pub]]
+ :nrg/load-pub
+ load-nrg-pub-rfh)
+
+(defn load-energy-needed-pub-rfh [db [_ pub]]
    (if (not= pub nil)
      (-> db
          (assoc :energy-needed
                 (get pub :energy-needed))
          (assoc-in [:ui :loaded-pubs :energy-needed]
-                   (:id pub))))))
+                   (:id pub)))))
 
+(reg-event-db
+ :energy-needed/load-pub
+  load-energy-needed-pub-rfh)
 
-(rf/reg-event-fx
+(defn load-default-pubs-rfh [db _]
+  (-> (reduce
+       (fn [db [_ nrg-key param-key]]
+         (load-nrg-pub-rfh db [nil nrg-key param-key (pubs/default-pub nrg-key param-key)]))
+        db
+        (for [nrg-key   cfg/nrg-keys ; … for alle combinations
+              param-key params/common-param-keys] ; of energy-sources and parameters
+          [nil nrg-key param-key]))
+       (load-energy-needed-pub-rfh [nil (first (pubs/pubs-for-needed-power))])
+       (load-nrg-pub-rfh [nil :solar :arealess-capacity ; …for rooftop solar
+                          (pubs/default-pub :solar :arealess-capacity)])
+       (load-nrg-pub-rfh [nil :wind :arealess-capacity ; …for offshore wind
+                          (pubs/default-pub :wind :arealess-capacity)])))
+
+(rf/reg-event-db
  :global/load-default-pubs
  ;; Used on initialization. Loads all default publications…
- (fn [_ _]
-   {:tech/dispatches (into
-                      [[:energy-needed/load-pub ; …for power needed
-                        (first (pubs/pubs-for-needed-power))]
-                       [:nrg/load-pub :solar :arealess-capacity ; …for rooftop solar
-                        (pubs/default-pub :solar :arealess-capacity)]
-                       [:nrg/load-pub :wind :arealess-capacity ; …for offshore wind
-                        (pubs/default-pub :wind :arealess-capacity)]]
+ load-default-pubs-rfh)
 
-                      (for [nrg-key   cfg/nrg-keys ; … for alle combinations
-                            param-key params/common-param-keys] ; of energy-sources and parameters
-                        [:nrg/load-pub nrg-key param-key
-                         (pubs/default-pub nrg-key param-key)]))}))
+
 
 ;; ###########################
 ;; ###### Energy shares ######

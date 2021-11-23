@@ -37,6 +37,8 @@
 
 (m/def-config config)
 
+;; (def config {:snippets {:subtitle "boo me too"}})
+
 (def settings  (:settings config))
 
 (def texts (:texts config))

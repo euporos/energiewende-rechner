@@ -57,7 +57,6 @@ html {
   z-index: 1;
   max-height: 50rem;
   background-repeat: no-repeat;
-  background-image: url("../imgs/deutschland2.svg");
   background-position: center;
   background-size: contain; }
   @media (max-width: 56.25em) {
