@@ -21,6 +21,6 @@
 
 (defn init []
   (print "EWR version " version)
-  (js/console.log "Compiled with the following features: " (str/join ", " (:features config/settings)))
+  (print "Built with settings: " config/settings)
   (re-frame/dispatch-sync [:global/initialize])
   (mount-root))
