@@ -17,6 +17,7 @@
 (def inject-php? (get-in config [:settings :inject-php?]))
 
 (def settings (edn/read-string (slurp "config/default/settings.edn")))
+(def features (get settings :features))
 (def shadow-cljs (edn/read-string (slurp "shadow-cljs.edn")))
 
 (def prerendered-app
@@ -38,10 +39,9 @@
   (map-vals
    #(selmer.parser/render % {:config config
                              :preview-image
-                             (str (get-in config [:settings :preview-api])
-                                  (if inject-php?
-                                    (get (get-php) "/preview-image.php")
-                                    "/imgs/rich-preview_3.png"))
+                             (if (and inject-php? (features :dynamic-preview))
+                               (str (get settings :preview-api) (get (get-php) "/preview-image.php"))
+                               (str (get settings :main-site) "/imgs/rich-preview_3.png"))
                              :snippets    nil
                              :prerendered-app prerendered-app})
 
