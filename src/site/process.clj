@@ -16,7 +16,7 @@
 
 (def inject-php? (get-in config [:settings :inject-php?]))
 
-(def settings (edn/read-string (slurp "config/default/settings.edn")))
+(def settings (get config :settings))
 (def features (get settings :features))
 (def shadow-cljs (edn/read-string (slurp "shadow-cljs.edn")))
 
