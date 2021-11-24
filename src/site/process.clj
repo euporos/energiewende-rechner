@@ -32,8 +32,7 @@
 (defn get-php []
   (-> (map-vals
        #(selmer.parser/render % {:settings settings})
-       (stasis/slurp-directory "resources/snippets" #".*\.(html|php)$"))
-      (assoc :prerendered-app prerendered-app)))
+       (stasis/slurp-directory "resources/snippets" #".*\.(php)$"))))
 
 (defn get-html-pages []
   (map-vals
