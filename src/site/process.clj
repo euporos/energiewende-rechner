@@ -39,7 +39,7 @@
    #(selmer.parser/render % {:config config
                              :preview-image
                              (if (and inject-php? (features :dynamic-preview))
-                               (str (get settings :preview-api) (get (get-php) "/preview-image.php"))
+                               (get (get-php) "/preview-image.php")
                                (str (get settings :main-site) "/imgs/rich-preview_3.png"))
                              :snippets    nil
                              :prerendered-app prerendered-app})
