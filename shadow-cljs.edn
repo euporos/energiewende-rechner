@@ -50,7 +50,7 @@
                     :exports    {:handler preview.main/handler}
                     :devtools  {:after-load preview.main/reload}
                     :compiler-options
-                    {:optimizations      :simple
+                    {:optimizations      :advanced
                      :output-feature-set :es5
                      :infer-externs      :auto}}
           :node-test
