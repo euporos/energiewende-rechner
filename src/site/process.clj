@@ -35,16 +35,18 @@
        (stasis/slurp-directory "resources/snippets" #".*\.(php)$"))))
 
 (defn get-html-pages []
-  (map-vals
-   #(selmer.parser/render % {:config config
-                             :preview-image
-                             (if (and inject-php? (features :dynamic-preview))
-                               (get (get-php) "/preview-image.php")
-                               (str (get settings :main-site) "/imgs/rich-preview_3.png"))
-                             :snippets    nil
-                             :prerendered-app prerendered-app})
+  (let [php-snippets (if inject-php? (get-php))]
+   (map-vals
+    #(selmer.parser/render % {:config config
+                              :request-uri (get php-snippets "/request-uri.php")
+                              :preview-image
+                              (if (and inject-php? (features :dynamic-preview))
+                                (get php-snippets "/preview-image.php")
+                                (str (get settings :main-site) "/imgs/rich-preview_3.png"))
+                              :snippets    nil
+                              :prerendered-app prerendered-app})
 
-   (stasis/slurp-directory "resources/public" #".*\.(html|php)$")))
+    (stasis/slurp-directory "resources/public" #".*\.(html|php)$"))))
 
 (defn get-assets
   []
