@@ -510,7 +510,8 @@
              serialize/serialize
              str
              serialize/encode-savestate-huff)]
-     (rf/dispatch [:savestate/rewrite-url savestate-string])
+     (when (cfg/features :bookmark-state)
+      (rf/dispatch [:savestate/rewrite-url savestate-string]))
      savestate-string)))
 
 (reg-sub
