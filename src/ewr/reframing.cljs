@@ -452,14 +452,13 @@
    (assoc coeffects :url (url (.. js/window -location -href)))))
 
 (rf/reg-fx
- ;; Currently unused
- :global/set-url-query-param
+ ;; Currently unused, reloads page
+ :global/set-url-query-param-and-reload
  (fn [[param value]]
    (let [current-url
          (url/url (.. js/window -location -href))
          new-url (assoc-in current-url
                            [:query (str param)] (str value))]
-     (js/console.log (str new-url))
      (set! (.. js/window -location -href) (str new-url)))))
 
 (reg-sub
@@ -479,15 +478,40 @@
                    [key (dissoc vals :locked?)])
                  nrgs))))))
 
+(rf/reg-fx
+ :global/set-url-query-params
+ (fn [query-map]
+   (let [current-url
+         (url/url (.. js/window -location -href))
+         new-url
+         (reduce-kv
+          (fn [sofar k v]
+            (assoc-in sofar
+                      [:query (name k)] v))
+          current-url
+          query-map)]
+     (-> js/window
+         .-history
+         (.pushState nil nil new-url)))))
+
+(rf/reg-event-fx
+ :savestate/rewrite-url
+ (fn [_ [_ new-savestate-string]]
+   {:global/set-url-query-params {:savestate new-savestate-string
+                                  :sv "1"}}))
+
 (reg-sub
  :save/savestate-string
  (fn []
    (rf/subscribe [:save/savestate]))
  (fn [savestate _]
-   (-> savestate
-       serialize/serialize
-       str
-       serialize/encode-savestate-huff)))
+   (let [savestate-string
+         (-> savestate
+             serialize/serialize
+             str
+             serialize/encode-savestate-huff)]
+     (rf/dispatch [:savestate/rewrite-url savestate-string])
+     savestate-string)))
 
 (reg-sub
  :save/analysed-url
