@@ -92,7 +92,7 @@
   (rf/dispatch-sync [:global/load-default-pubs])
   (when savestate-string
     (let [savestate
-          (serialize/deserialize-savestate-string
+          (serialize/decompress-and-deserialize
            savestate-string)]
       (rf/dispatch-sync [:save/savestate-into-db savestate])))
 

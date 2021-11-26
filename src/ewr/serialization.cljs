@@ -7,28 +7,6 @@
    [clojure.string :as str]))
 
 ;; ######################################
-;; ######## Huffmann-Compression ########
-;; ######################################
-
-(def code-savestate-huff
-  (let [encoder (createEncoder
-                 "[1300 [[57 4.56 0.12 11 10260 240] [8.600000000000001 5.2 0.44 44 16447 142] [8.600000000000001 240.8 0.08 12 930] [8.600000000000001 0.16 4.63 230 1080] [8.600000000000001 482.1 2.82 490 572] [8.600000000000001 135.1 28.67 820 1185]]]")]
-    (fn [string decode?]
-      (if decode?
-        (decodeConfig string encoder)
-        (encodeConfig string encoder)))))
-
-(defn encode-savestate-huff
-  ""
-  [string]
-  (code-savestate-huff string nil))
-
-(defn decode-savestate-huff
-  ""
-  [string]
-  (code-savestate-huff string true))
-
-;; ######################################
 ;; ######## Manual Serialization ########
 ;; ######################################
 
@@ -61,6 +39,55 @@
     (map
      (partial zipmap param-order)
      nrgs))})
+
+;; #################################
+;; ####### Float-compression #######
+;; #################################
+
+(def alphabet
+  "abcdefghijklmn")
+
+(defn compress-floatstrings
+  [instring]
+  (str/replace
+   instring
+   #"([0-9])\1{2,}"
+   (fn [[m1 m2]]
+     (str (get alphabet (count m1)) m2))))
+
+(defn expand-floatstrings
+  [compressed-string]
+  (str/replace
+   compressed-string
+   #"([a-z])([0-9])"
+   (fn [[full letter number]]
+     (apply str
+            (take (.indexOf alphabet letter)  (repeat number))))))
+
+(expand-floatstrings
+ (compress-floatstrings "8.600000000000001"))
+
+;; ######################################
+;; ######## Huffmann-Compression ########
+;; ######################################
+
+(def code-savestate-huff
+  (let [encoder (createEncoder
+                 (str alphabet "[1300 [[28 4.56 0.12 11 10260 240] [12 5.2 0.44 44 16447 142] [15 240.8 0.08 12 930] [2 0.16 4.63 230 1080] [12 482.1 2.82 490 572] [31 135.1 28.67 820 1185]]]"))]
+    (fn [string decode?]
+      (if decode?
+        (decodeConfig string encoder)
+        (encodeConfig string encoder)))))
+
+(defn encode-savestate-huff
+  ""
+  [string]
+  (code-savestate-huff string nil))
+
+(defn decode-savestate-huff
+  ""
+  [string]
+  (code-savestate-huff string true))
 
 ;; #################################
 ;; ####### CSV-serialization #######
@@ -114,11 +141,16 @@
      [:coal energy-source-spec]]]
    [:energy-needed float?]])
 
-(defn deserialize-savestate-string
+;; ############################
+;; ###### Main Functions ######
+;; ############################
+
+(defn decompress-and-deserialize
   "work around bug in Huffman-Library
   see https://stackoverflow.com/questions/67273883/information-lost-in-huffman-encoding"
   [savestate-string]
-  (let [decoded (decode-savestate-huff savestate-string)
+  (let [decoded (expand-floatstrings
+                 (decode-savestate-huff savestate-string))
         parsed  (try (deserialize
                       (edn/read-string (str decoded "]")))
                      (catch js/Object e
@@ -127,3 +159,10 @@
 
     (if (and parsed (m/validate savestate-spec parsed))
       parsed)))
+
+(def serialize-and-compress
+  (comp
+   encode-savestate-huff
+   compress-floatstrings
+   str
+   serialize))

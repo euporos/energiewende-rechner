@@ -564,7 +564,7 @@
  (fn [{:keys [url db] :as cofx} []]
    (if-let [url-savestate-string
             (get-in url [:query "savestate"])]
-     (let [savestate (serialize/deserialize-savestate-string
+     (let [savestate (serialize/decompress-and-deserialize
                       url-savestate-string)]
        {:db         (if savestate
                       (merge db savestate)
