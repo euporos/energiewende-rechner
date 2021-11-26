@@ -127,20 +127,3 @@
 
     (if (and parsed (m/validate savestate-spec parsed))
       parsed)))
-
-(comment
-  (def failing-savestate
-    {:energy-sources {:wind {:share 56, :power-density 4.56, :deaths 0.12, :co2 11, :resources 10260, :arealess-capacity 240}, :solar {:share 44, :power-density 5.2, :deaths 0.44, :co2 44, :resources 16447, :arealess-capacity 142}, :nuclear {:share 0, :power-density 240.8, :deaths 0.08, :co2 12, :resources 930}, :bio {:share 0, :power-density 0.16, :deaths 4.63, :co2 230, :resources 1080}, :natural-gas {:share 0, :power-density 482.1, :deaths 2.82, :co2 490, :resources 572}, :coal {:share 0, :power-density 135.1, :deaths 28.67, :co2 820, :resources 1185}}, :energy-needed 1300})
-
-  (-> failing-savestate
-      serialize
-      str
-      ;;compress/compress-b64
-      encode-savestate-huff
-      ;; count
-      ;; edn/read-string
-      ;; decode
-      ;; (= @(rf/subscribe [:save/savestate]))
-      ;; decode-savestate-huff
-      ;; edn/read-string
-      ))
