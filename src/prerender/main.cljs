@@ -9,7 +9,7 @@
    [cljs.core.async.interop :refer-macros [<p!]]))
 
 (def app-page (str "file://"
-                   (.resolve path "resources/public/index.html")))
+                   (.resolve path "export/main/index.html")))
 
 (defn prerender
   []
