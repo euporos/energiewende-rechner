@@ -15,6 +15,7 @@
                 "sharp": "^0.29.2"
         },
         "devDependencies": {
+                "scss": "^0.2.4",
                 "source-map-support": "^0.5.19"
         }
 }
