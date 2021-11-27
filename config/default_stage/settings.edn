@@ -1,5 +1,5 @@
 {:main-site "https://test.stromwende-rechner.de"
- :preview-api "https://9xcjcr4b4m.execute-api.eu-central-1.amazonaws.com/test/preview"
+ :preview-api "https://9xcjcr4b4m.execute-api.eu-central-1.amazonaws.com/test/preview-test"
  :features       #{:bookmark-state :dynamic-preview}
  :test-version? true
  :inject-php? true}
