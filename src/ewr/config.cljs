@@ -40,6 +40,8 @@
 
 (def settings  (:settings config))
 
+(def features (:features settings))
+
 (def texts (:texts config))
 
 (def snippets (:snippets config))
