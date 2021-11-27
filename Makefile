@@ -15,6 +15,10 @@ export-main-project:
 	npx shadow-cljs release app
 	chmod -R 755 export/main
 
+.PHONY: prepare-dev
+	lein build-site
+	npx scss --update --force scss:export/main/css
+
 .PHONY: prod-export-main-project
 prod-export-main-project:
 	EWR_CONFIG_DIRS="config/default" make export-main-project
