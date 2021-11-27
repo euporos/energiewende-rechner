@@ -11,6 +11,7 @@ export-main-project:
 	rm -r .shadow-cljs
 	npx shadow-cljs release prerender
 	lein build-site
+	npx scss  --style compressed --update --force scss:export/main/css
 	npx shadow-cljs release app
 	chmod -R 755 export/main
 
