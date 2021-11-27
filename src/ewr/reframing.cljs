@@ -15,6 +15,8 @@
    [ewr.remix :as remix]
    [ewr.serialization :as serialize]
    [thi.ng.color.core :as col]
+   [clojure.core.async :refer [>! <! chan sliding-buffer go timeout]]
+
    [wrap.compress :as compress]
    [cemerick.url :as url :refer (url url-encode)]
    [vimsical.re-frame.cofx.inject :as inject]))
@@ -466,17 +468,24 @@
  (fn [_]
    (url/url (.. js/window -location -href))))
 
+(defn db->savestate [db]
+  (update
+   (select-keys db [:energy-sources :energy-needed])
+   :energy-sources
+   (fn [nrgs]
+     (into {}
+           (map (fn [[key vals]]
+                  [key (dissoc vals :locked?)])
+                nrgs)))))
+
+(def savestate-chan (chan (sliding-buffer 1)))
+
 (reg-sub
  :save/savestate
  (fn [db _]
-   (update
-    (select-keys db [:energy-sources :energy-needed])
-    :energy-sources
-    (fn [nrgs]
-      (into {}
-            (map (fn [[key vals]]
-                   [key (dissoc vals :locked?)])
-                 nrgs))))))
+   (let [savestate (db->savestate db)]
+     (go (>! savestate-chan savestate))
+     savestate)))
 
 (rf/reg-fx
  :global/set-url-query-params
@@ -498,21 +507,29 @@
  :savestate/rewrite-url
  (fn [_ [_ new-savestate-string]]
    {:global/set-url-query-params {:savestate new-savestate-string
-                                  :sv "1"}}))
+                                  :sv        "1"}}))
+
+(rf/reg-event-fx
+ :savestate/set-string!
+ (fn [{db :db} [_ new-savestate-string]]
+   {:global/set-url-query-params {:savestate new-savestate-string
+                                  :sv        "1"}
+    :db (assoc db :savestate-string new-savestate-string)}))
+
+(def update-savestate-string
+  (go
+    (loop [savestate nil]
+      (let [savestate-string
+            (serialize/serialize-and-compress savestate)]
+        (rf/dispatch [:savestate/set-string!
+                      savestate-string]))
+      (<! (timeout 1000))
+      (recur (<! savestate-chan)))))
 
 (reg-sub
  :save/savestate-string
- (fn []
-   (rf/subscribe [:save/savestate]))
- (fn [savestate _]
-   (let [savestate-string
-         (-> savestate
-             serialize/serialize
-             str
-             serialize/encode-savestate-huff)]
-     (when (cfg/features :bookmark-state)
-      (rf/dispatch [:savestate/rewrite-url savestate-string]))
-     savestate-string)))
+ (fn [db _]
+   (get db :savestate-string)))
 
 (reg-sub
  :save/analysed-url

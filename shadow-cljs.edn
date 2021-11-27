@@ -5,7 +5,9 @@
                  [selmer "1.12.44"]
                  [hiccup "1.0.5"]
                  [optimus "0.20.2"]
-                 ;; [thheller/shadow-cljs "2.16.5"]
+                ;; [thheller/shadow-cljs "2.16.5"]
+
+                 [org.clojure/core.async "1.5.640"]
                  
                  ;; [org.clojure/clojurescript "1.10.891"]
                  [madvas/cemerick-url "0.1.2"]
