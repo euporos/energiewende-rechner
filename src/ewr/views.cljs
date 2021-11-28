@@ -652,7 +652,9 @@
    [:div
     [:a {:href (when (exists? js/window)
                  @(rf/subscribe  [:save/url-string]))}
-     "→ Link, um diesen Strommix zu teilen"]]
+     "→ Link, um diesen Strommix zu teilen"
+     [:img {:src "symbols/csv.svg"
+            }]]]
    [:div
     [:a {:href (str
                 (get cfg/settings :preview-api)
