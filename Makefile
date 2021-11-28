@@ -34,7 +34,6 @@ build-aws-preview:
 	cp -r resources/preview/* export/preview/
 	npx shadow-cljs release aws-preview
 	cp -r node_modules export/preview/node_modules
-	#These are unneeded for AWS and removed to keep the zip small
-	rm -r export/preview/node_modules/puppeteer
+	#Shadow-cljs is unneeded for AWS and removed to keep the zip small
 	rm -r export/preview/node_modules/shadow-cljs-jar
 	cd export/preview/ && zip -r lambda.zip node_modules index.js fonts
