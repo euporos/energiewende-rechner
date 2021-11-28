@@ -641,7 +641,8 @@
   []
   [:div
    [:div
-    [:a {:href @(rf/subscribe  [:save/url-string])}
+    [:a {:href (when (exists? js/window)
+                 @(rf/subscribe  [:save/url-string]))}
      "→ Link, um diesen Strommix zu teilen"]]
    [:div
     [:a {:href (str
