@@ -4,6 +4,11 @@
             [clojure.pprint :refer [pprint]]
             [clojure.set :as set]
             [clojure.string :as str]
+            [clojure.zip :as zip]
+            [hickory.convert :refer [hickory-to-hiccup]]
+            [hickory.core :as hickory]
+            [hickory.render :refer [hickory-to-html]]
+            [hickory.zip :refer [hiccup-zip]]
             [markdown.core :as md]))
 
 (defn deep-merge [a b]
@@ -43,6 +48,7 @@
     :else
     (throw (ex-info "failed to merge config value" {:a a :b b}))))
 
+
 (defmacro def-string-from-file [var file f]
   `(def ~var
      (~f ~(slurp file))))
@@ -65,7 +71,59 @@
   [path]
   (slurp path))
 
-;; (println "the following features will be disabled: " (disabled-features))
+(defmacro slurp-svg
+  ""
+  [path opts]
+  (let [hickory     (-> path
+                        slurp
+                        hickory/parse
+                        hickory/as-hickory)
+        svg         (some #(when (= :svg (:tag %)) %)
+                          (tree-seq map? :content
+                                    hickory))
+        updated-svg (update svg :attrs
+                            #(merge % (:merge-attributes opts)))]
+    (case (:as opts)
+      :inner-html [:svg
+                   {:dangerouslySetInnerHTML
+                    {:__html
+                     (hickory-to-html updated-svg)}}]
+      :string (hickory-to-html updated-svg)
+      (hickory-to-hiccup updated-svg))))
+
+
+
+(defn replace-colon-with-hyphen-in-keys
+  [inmap]
+  (into {}
+      (map
+       (fn [[key val]]
+         [(keyword (str/replace (name key) ":" "-")) val])
+       inmap)))
+
+(defmacro slurp-svg
+  ""
+  [path opts]
+  (let [hickory     (-> path
+                        slurp
+                        hickory/parse
+                        hickory/as-hickory)
+        svg         (some #(when (= :svg (:tag %)) %)
+                          (tree-seq map? :content
+                                    hickory))
+        updated-svg (update svg :attrs
+                            #(merge (replace-colon-with-hyphen-in-keys %)
+                                    (:merge-attributes opts)))]
+    (case (:as opts)
+      :inner-html [:svg
+                   {:dangerouslySetInnerHTML
+                    {:__html
+                     (hickory-to-html updated-svg)}}]
+      :string     (hickory-to-html updated-svg)
+      (hickory-to-hiccup updated-svg))))
+
+
+
 
 (defn in-dir
   "prepends a path with the config directors
