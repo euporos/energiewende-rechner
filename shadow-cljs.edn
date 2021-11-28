@@ -32,8 +32,8 @@
                 :devtools {:http-root "export/main"
                            :http-port 3000}}
           :prerender {:target     :node-script
-                      :output-to  "target/out/prerender.js"
-                      :output-dir "target/out"
+                      :output-to  "export/prerender/prerender.js"
+                      :output-dir "export/prerender"
                       :main       prerender.main/prerender
                       :compiler-options
                       {:optimizations      :simple
