@@ -1,15 +1,10 @@
 {:nrepl        {:port 8777}
  :source-paths ["src" "test"]
- :dependencies [;; [org.clojure/clojure "1.10.3"]
-                [stasis "2.5.1"]
+ :dependencies [[stasis "2.5.1"]
                 [selmer "1.12.44"]
                 [hiccup "1.0.5"]
                 [optimus "0.20.2"]
-                ;; [thheller/shadow-cljs "2.16.5"]
-
                 [org.clojure/core.async "1.5.640"]
-                
-                ;; [org.clojure/clojurescript "1.10.891"]
                 [madvas/cemerick-url "0.1.2"]
                 [thi.ng/color "1.4.0"]
                 [reagent "0.10.0"]
