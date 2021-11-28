@@ -490,18 +490,19 @@
 (rf/reg-fx
  :global/set-url-query-params
  (fn [query-map]
-   (let [current-url
-         (url/url (.. js/window -location -href))
-         new-url
-         (reduce-kv
-          (fn [sofar k v]
-            (assoc-in sofar
-                      [:query (name k)] v))
-          current-url
-          query-map)]
-     (-> js/window
-         .-history
-         (.pushState nil nil new-url)))))
+   (when (exists? js/window) ; only do this in the browser
+    (let [current-url
+          (url/url (.. js/window -location -href))
+          new-url
+          (reduce-kv
+           (fn [sofar k v]
+             (assoc-in sofar
+                       [:query (name k)] v))
+           current-url
+           query-map)]
+      (-> js/window
+          .-history
+          (.pushState nil nil new-url))))))
 
 (rf/reg-event-fx
  :savestate/rewrite-url
