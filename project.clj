@@ -1,4 +1,4 @@
-(defproject cjohansen-no "EWR-Nuklearia"
+(defproject ewr "EWR-Nuklearia"
   :description ""
   :url "https://energiewende-rechner.org/"
   :source-paths ["src" "test"]
