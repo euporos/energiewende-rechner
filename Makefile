@@ -16,6 +16,7 @@ export-main-project:
 	chmod -R 755 export/main
 
 .PHONY: prepare-dev
+prepare-dev:
 	lein build-site
 	npx scss --update --force scss:export/main/css
 
