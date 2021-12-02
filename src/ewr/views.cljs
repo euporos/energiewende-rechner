@@ -1,5 +1,6 @@
 (ns ewr.views
   (:require
+   [ewr.icons :as icons]
    [ewr.constants :as constants]
    [re-frame.core :as rf]
    [ewr.publications :as pubs]
@@ -650,11 +651,17 @@
   []
   [:div
    [:div
+    [:a {:href (js/encodeURI
+                    @(rf/subscribe  [:save/csv-string]))}
+     [:img {:src   "symbols/csv.svg"
+            :style {:height "5rem"}}]
+     ;; icons/csv
+     ]]
+   [:div
     [:a {:href (when (exists? js/window)
                  @(rf/subscribe  [:save/url-string]))}
      "→ Link, um diesen Strommix zu teilen"
-     [:img {:src "symbols/csv.svg"
-            }]]]
+     ]]
    [:div
     [:a {:href (str
                 (get cfg/settings :preview-api)
