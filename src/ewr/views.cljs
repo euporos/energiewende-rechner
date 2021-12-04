@@ -646,34 +646,37 @@
    [indicator "Statistisch erwartbare Todesfälle pro Jahr:" :deaths]
    [indicator "Jährlicher Ressourcenverbrauch:" :resources]))
 
+
+(defn share-icon
+  [{:keys [href download icon height]}]
+  [:a.column {:href href
+              :download download}
+   [:img {:src   icon
+          :style {:height (or height "5rem")}}]])
+
 (defn savelinks
   ""
   []
   [:div
    [:div
-    [:a {:href (js/encodeURI
-                    @(rf/subscribe  [:save/csv-string]))}
-     [:img {:src   "symbols/csv.svg"
-            :style {:height "5rem"}}]
-     ;; icons/csv
-     ]]
-   [:div
-    [:a {:href (when (exists? js/window)
-                 @(rf/subscribe  [:save/url-string]))}
-     "→ Link, um diesen Strommix zu teilen"
-     ]]
-   [:div
-    [:a {:href (str
+    [:div.columns.is-mobile.has-text-centered.is-vcentered
+
+     (map share-icon
+          [{:href (when (exists? js/window)
+                 @(rf/subscribe  [:save/url-string]))
+            :icon "symbols/share.svg"
+            :height "3.75rem"}
+           {:href (str
                 (get cfg/settings :preview-api)
-                @(rf/subscribe [:save/preview-query-string]))}
-     "→ Link to preview"]]
-   [:div
-    [:a {:href     (js/encodeURI
-                    @(rf/subscribe  [:save/csv-string]))
-         :download (str "strommix_"
-                        (md5/string->md5-hex
-                         (str @(rf/subscribe [:save/savestate])))
-                        ".csv")} "→ Konfiguration als CSV herunterladen"]]])
+                @(rf/subscribe [:save/preview-query-string]))
+            :icon "symbols/camera.svg"}
+           {:href (js/encodeURI
+                   @(rf/subscribe  [:save/csv-string]))
+            :icon "symbols/csv.svg"
+            :download (str "strommix_"
+                           (md5/string->md5-hex
+                            (str @(rf/subscribe [:save/savestate])))
+                           ".csv")}])]]])
 
 ;; ############################
 ;; ###### Main Component ######
