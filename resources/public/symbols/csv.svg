@@ -9,8 +9,8 @@ viewBox="0 0 2048 2048"
    <![CDATA[
     .fil0 {fill:none}
     .fil4 {fill:black}
-    .fil1 {fill:#333}
-    .fil2 {fill:#999}
+    .fil1 {fill:#999}
+    .fil2 {fill:#eee}
     .fil3 {fill:black;fill-rule:nonzero}
     .fil5 {fill:white;fill-rule:nonzero}
    ]]>

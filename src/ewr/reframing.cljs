@@ -28,6 +28,22 @@
              (fn [cofx _]
                (assoc cofx :now (.now js/Date))))
 
+(defonce timeouts (r/atom {}))
+
+(rf/reg-fx
+ :tech/timeout
+ (fn [{:keys [id event time]}]
+   (println "id event time is: " id event time)
+   (when-some [existing (get @timeouts id)]
+     (js/clearTimeout existing)
+     (swap! timeouts dissoc id))
+   (when (some? event)
+     (swap! timeouts assoc id
+            (js/setTimeout
+             (fn []
+               (rf/dispatch event))
+             time)))))
+
 (rf/reg-fx
  :tech/dispatches
  ;; Dispatches Events passed
@@ -45,14 +61,6 @@
  :tech/log
  (fn [_ [_ & prstrs]]
    (apply js/console.log prstrs)))
-
-(comment
-  (rf/reg-event-fx
-   :test/dsp
-   (fn [{:keys [db]} [_]]
-     {:tech/dispatches [[:tech/log "1"]
-                        [:tech/log "2"]
-                        [:tech/log "3"]]})))
 
 (reg-sub :tech/db
          (fn [db _] db))
@@ -616,24 +624,7 @@
 (rf/reg-event-fx
  :clipboard/show-message-temporarily
  (fn [{:keys [db]} [_ key]]
-   {:dispatch [:clipboard/show-message key]
-    }))
-
-(defonce timeouts (r/atom {}))
-
-(rf/reg-fx
- :tech/timeout
- (fn [{:keys [id event time]}]
-   (println "id event time is: " id event time)
-   (when-some [existing (get @timeouts id)]
-     (js/clearTimeout existing)
-     (swap! timeouts dissoc id))
-   (when (some? event)
-     (swap! timeouts assoc id
-            (js/setTimeout
-             (fn []
-               (rf/dispatch event))
-             time)))))
+   {:dispatch [:clipboard/show-message key]}))
 
 (rf/reg-event-db
   :ui/hide-alert
