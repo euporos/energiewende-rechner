@@ -641,17 +641,22 @@
     (assoc-in db [:ui :copy-alert :show?] false)))
 
 (rf/reg-event-fx
+ :ui/set-copy-alert
+ (fn [{:keys [db] :as _cofx} [_ text]]
+   {:db (-> db
+            (assoc-in [:ui :copy-alert :text] text)
+            (assoc-in [:ui :copy-alert :show?] true))
+    :tech/timeout {:id :remove-copy-alert
+                   :event [:ui/hide-alert :copy-alert]
+                   :time 2000}}))
+
+(rf/reg-event-fx
  :save/copy-link-to-clipboard
  [(rf/inject-cofx ::inject/sub [:save/url-string])]
  (fn [{:keys [:save/url-string db] :as _cofx} _]
    (println "url-string is: " url-string)
    {:clipboard/copy-to url-string
-    :db (-> db
-            (assoc-in [:ui :copy-alert :text] "Link zum Energiemix kopiert")
-            (assoc-in [:ui :copy-alert :show?] true))
-    :tech/timeout {:id :remove-copy-alert
-                   :event [:ui/hide-alert :copy-alert]
-                   :time 2000}}))
+    :dispatch [:ui/set-copy-alert "Link zum Energiemix kopiert"]}))
 
 (rf/reg-event-fx
  :save/copy-preview-link-to-clipboard
@@ -661,12 +666,7 @@
    {:clipboard/copy-to (str
                         (get cfg/settings :preview-api)
                         preview-query-string)
-    :db (-> db
-            (assoc-in [:ui :copy-alert :text] "Link zum Vorschaubild kopiert")
-            (assoc-in [:ui :copy-alert :show?] true))
-    :tech/timeout {:id :remove-copy-alert
-                   :event [:ui/hide-alert :copy-alert]
-                   :time 2000}}))
+    :dispatch [:ui/set-copy-alert "Link zum Vorschaubild kopiert"]}))
 
 (reg-sub
  :ui/copy-alert

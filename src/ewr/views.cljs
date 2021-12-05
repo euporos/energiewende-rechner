@@ -648,13 +648,11 @@
 
 
 (defn share-icon
-  [!hovering !hover-message {:keys [href download icon height event hover-message]}]
+  [{:keys [href download icon height event hover-message]}]
   [:a.column {:href href
               :download download}
    [:img {:src            icon
-          :on-mouse-enter #(do (reset! !hovering true)
-                               (reset! !hover-message hover-message))
-          :on-mouse-leave #(reset! !hovering false)
+          :on-mouse-enter #(rf/dispatch [:ui/set-copy-alert hover-message])
           :on-click       (when event (h/dispatch-on-x event))
           :style          {:height (or height "5rem")}}]])
 
@@ -665,7 +663,7 @@
     (fn []
       [:div
        (into [:div.columns.is-mobile.has-text-centered.is-vcentered]
-             (map (partial share-icon !hovering? !hover-message))
+             (map share-icon)
              [{:icon          "symbols/share.svg"
                :height        "3.75rem"
                :event         [:save/copy-link-to-clipboard]
