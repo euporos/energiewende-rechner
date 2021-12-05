@@ -648,38 +648,49 @@
 
 
 (defn share-icon
-  [{:keys [href download icon height event]}]
+  [!hovering !hover-message {:keys [href download icon height event hover-message]}]
   [:a.column {:href href
               :download download}
-   [:img {:src   icon
-          :on-click (when event (h/dispatch-on-x event))
-          :style {:height (or height "5rem")}}]])
+   [:img {:src            icon
+          :on-mouse-enter #(do (reset! !hovering true)
+                               (reset! !hover-message hover-message))
+          :on-mouse-leave #(reset! !hovering false)
+          :on-click       (when event (h/dispatch-on-x event))
+          :style          {:height (or height "5rem")}}]])
 
 (defn savelinks
   []
-  [:div
-   [:div
-    (into [:div.columns.is-mobile.has-text-centered.is-vcentered]
-          (map share-icon)
-          [{:href   (when (exists? js/window)
-                      @(rf/subscribe  [:save/url-string]))
-            :icon   "symbols/share.svg"
-            :height "3.75rem"
-            :event  [:save/copy-link-to-clipboard]}
-           {:event [:save/copy-preview-link-to-clipboard]
-            :icon  "symbols/camera.svg"}
-           {:href     (js/encodeURI
-                       @(rf/subscribe  [:save/csv-string]))
-            :icon     "symbols/csv.svg"
-            :download (str "strommix_"
-                           (md5/string->md5-hex
-                            (str @(rf/subscribe [:save/savestate])))
-                           ".csv")}])
-    [:div.is-hidden-mobile.has-text-centered
-     {:style {:transition  "all .5s"
-              :font-weight "bold"
-              :opacity     (if @(rf/subscribe [:ui/copy-alert-visible?]) "100" "0")}}
-     (or @(rf/subscribe [:ui/copy-alert]) " ")]]])
+  (let [!hover-message (r/atom nil)
+        !hovering? (r/atom false)]
+    (fn []
+      [:div
+       (into [:div.columns.is-mobile.has-text-centered.is-vcentered]
+             (map (partial share-icon !hovering? !hover-message))
+             [{:icon          "symbols/share.svg"
+               :height        "3.75rem"
+               :event         [:save/copy-link-to-clipboard]
+               :hover-message "Strommix-teilen"}
+              {:event         [:save/copy-preview-link-to-clipboard]
+               :icon          "symbols/camera.svg"
+               :hover-message "Bild teilen"}
+              {:href          (js/encodeURI
+                               @(rf/subscribe  [:save/csv-string]))
+               :icon          "symbols/csv.svg"
+               :download      (str "strommix_"
+                                   (md5/string->md5-hex
+                                    (str @(rf/subscribe [:save/savestate])))
+                                   ".csv")
+               :hover-message "Mix als CSV herunterladen"}])
+       [:div.is-hidden-mobile.has-text-centered
+        {:style {:transition  "all .5s"
+                 :font-weight "bold"
+                 :opacity     (if (or
+                                   @!hovering?
+                                   @(rf/subscribe [:ui/copy-alert-visible?])) "100" "0")}}
+        (cond
+          @(rf/subscribe [:ui/copy-alert-visible?]) @(rf/subscribe [:ui/copy-alert])
+          @!hovering?                           @!hover-message
+          :else                                 (or @(rf/subscribe [:ui/copy-alert]) @!hover-message))]])))
 
 ;; ############################
 ;; ###### Main Component ######
