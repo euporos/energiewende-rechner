@@ -24,6 +24,10 @@
 ;; #### Technical ####
 ;; ###################
 
+(rf/reg-cofx :tech/now
+             (fn [cofx _]
+               (assoc cofx :now (.now js/Date))))
+
 (rf/reg-fx
  :tech/dispatches
  ;; Dispatches Events passed
@@ -52,6 +56,17 @@
 
 (reg-sub :tech/db
          (fn [db _] db))
+
+(rf/reg-fx :clipboard/copy-to
+           (fn [val]
+             (let [el (js/document.createElement "textarea")]
+               (set! (.-value el) val)
+               (.setAttribute el "readonly" "")
+               (set! (.-style el) "position: absolute; left: -9999px;")
+               (.appendChild js/document.body el)
+               (.select el)
+               (js/document.execCommand "copy")
+               (js/console.log "copied to clipboard: " val))))
 
 ;; ########################
 ;; ##### Global Stuff #####
@@ -592,3 +607,73 @@
  :save/savestate-load-failed?
  (fn [db _]
    (get-in db [:ui :savestate-load-failed?])))
+
+(reg-event-db
+ :clipboard/show-message
+ (fn [db [_ key]]
+   (assoc-in db [:ui :clipboard] key)))
+
+(rf/reg-event-fx
+ :clipboard/show-message-temporarily
+ (fn [{:keys [db]} [_ key]]
+   {:dispatch [:clipboard/show-message key]
+    }))
+
+(defonce timeouts (r/atom {}))
+
+(rf/reg-fx
+ :tech/timeout
+ (fn [{:keys [id event time]}]
+   (println "id event time is: " id event time)
+   (when-some [existing (get @timeouts id)]
+     (js/clearTimeout existing)
+     (swap! timeouts dissoc id))
+   (when (some? event)
+     (swap! timeouts assoc id
+            (js/setTimeout
+             (fn []
+               (rf/dispatch event))
+             time)))))
+
+(rf/reg-event-db
+  :ui/hide-alert
+  (fn [db [_ key]]
+    (assoc-in db [:ui :copy-alert :show?] false)))
+
+(rf/reg-event-fx
+ :save/copy-link-to-clipboard
+ [(rf/inject-cofx ::inject/sub [:save/url-string])]
+ (fn [{:keys [:save/url-string db] :as _cofx} _]
+   (println "url-string is: " url-string)
+   {:clipboard/copy-to url-string
+    :db (-> db
+            (assoc-in [:ui :copy-alert :text] "Link zum Energiemix kopiert")
+            (assoc-in [:ui :copy-alert :show?] true))
+    :tech/timeout {:id :remove-copy-alert
+                   :event [:ui/hide-alert :copy-alert]
+                   :time 2000}}))
+
+(rf/reg-event-fx
+ :save/copy-preview-link-to-clipboard
+ [(rf/inject-cofx ::inject/sub [:save/preview-query-string])]
+ (fn [{:keys [:save/preview-query-string db] :as _cofx} _]
+   (println "preview-query-string is: " preview-query-string)
+   {:clipboard/copy-to (str
+                        (get cfg/settings :preview-api)
+                        preview-query-string)
+    :db (-> db
+            (assoc-in [:ui :copy-alert :text] "Link zum Vorschaubild kopiert")
+            (assoc-in [:ui :copy-alert :show?] true))
+    :tech/timeout {:id :remove-copy-alert
+                   :event [:ui/hide-alert :copy-alert]
+                   :time 2000}}))
+
+(reg-sub
+ :ui/copy-alert
+ (fn [db]
+   (get-in db [:ui :copy-alert :text])))
+
+(reg-sub
+ :ui/copy-alert-visible?
+ (fn [db]
+   (get-in db [:ui :copy-alert :show?])))

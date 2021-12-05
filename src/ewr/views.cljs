@@ -648,35 +648,38 @@
 
 
 (defn share-icon
-  [{:keys [href download icon height]}]
+  [{:keys [href download icon height event]}]
   [:a.column {:href href
               :download download}
    [:img {:src   icon
+          :on-click (when event (h/dispatch-on-x event))
           :style {:height (or height "5rem")}}]])
 
 (defn savelinks
-  ""
   []
   [:div
    [:div
-    [:div.columns.is-mobile.has-text-centered.is-vcentered
-
-     (map share-icon
-          [{:href (when (exists? js/window)
-                 @(rf/subscribe  [:save/url-string]))
-            :icon "symbols/share.svg"
-            :height "3.75rem"}
-           {:href (str
-                (get cfg/settings :preview-api)
-                @(rf/subscribe [:save/preview-query-string]))
-            :icon "symbols/camera.svg"}
-           {:href (js/encodeURI
-                   @(rf/subscribe  [:save/csv-string]))
-            :icon "symbols/csv.svg"
+    (into [:div.columns.is-mobile.has-text-centered.is-vcentered]
+          (map share-icon)
+          [{:href   (when (exists? js/window)
+                      @(rf/subscribe  [:save/url-string]))
+            :icon   "symbols/share.svg"
+            :height "3.75rem"
+            :event  [:save/copy-link-to-clipboard]}
+           {:event [:save/copy-preview-link-to-clipboard]
+            :icon  "symbols/camera.svg"}
+           {:href     (js/encodeURI
+                       @(rf/subscribe  [:save/csv-string]))
+            :icon     "symbols/csv.svg"
             :download (str "strommix_"
                            (md5/string->md5-hex
                             (str @(rf/subscribe [:save/savestate])))
-                           ".csv")}])]]])
+                           ".csv")}])
+    [:div.is-hidden-mobile.has-text-centered
+     {:style {:transition  "all .5s"
+              :font-weight "bold"
+              :opacity     (if @(rf/subscribe [:ui/copy-alert-visible?]) "100" "0")}}
+     (or @(rf/subscribe [:ui/copy-alert]) " ")]]])
 
 ;; ############################
 ;; ###### Main Component ######
