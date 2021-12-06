@@ -1,6 +1,7 @@
 {
         "name": "stromrechner",
         "dependencies": {
+                "base64-arraybuffer": "^1.0.1",
                 "highlight.js": "9.18.1",
                 "huffman-url-compressor": "^1.0.2",
                 "lzutf8": "^0.6.0",

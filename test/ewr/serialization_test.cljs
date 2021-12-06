@@ -1,6 +1,7 @@
 (ns ewr.serialization-test
   (:require [ewr.serialization :as sut]
-            [cljs.test :as t :include-macros true]))
+            [cljs.test :as t :include-macros true]
+            [deercreeklabs.lancaster :as l]))
 
 (def teststate-badfloats
   {:energy-sources
@@ -102,3 +103,6 @@
 (count "CrvgA6xjekzTyqlbpx2xgU8vLzLNGaUjNZKZxgVfHbKzOsp5b3YwHmaSMUuj3crXGBTxlc1HKvGt-X2OMC6pV15qOpSyK_KpbxEQ")
 
 "[1300 [[28 4.56 0.12 11 10260 240] [12 5.2 0.44 44 16447 142] [15 240.8 0.08 12 930] [2 0.16 4.63 230 1080] [12 482.1 2.82 490 572] [31 135.1 28.67 820 1185]]]"
+
+
+(l/serialize teststate-goodfloats)

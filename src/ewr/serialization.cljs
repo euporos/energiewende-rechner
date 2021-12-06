@@ -4,7 +4,9 @@
    ["huffman-url-compressor" :as huff :refer [createEncoder encodeConfig decodeConfig]] [wrap.compress :as compress]
    [clojure.edn :as edn]
    [malli.core :as m]
-   [clojure.string :as str]))
+   [deercreeklabs.lancaster :as l]
+   [clojure.string :as str]
+   ["base64-arraybuffer" :as b64]))
 
 ;; ######################################
 ;; ######## Manual Serialization ########
@@ -166,3 +168,72 @@
    compress-floatstrings
    str
    serialize))
+
+
+;; ############
+;; ### Avro ###
+;; ############
+
+(l/def-record-schema nrg-schema
+  [:share l/float-schema]
+  [:power-density l/float-schema]
+  [:deaths l/float-schema]
+  [:co2 l/float-schema]
+  [:resources l/float-schema]
+  [:arealess-capacity l/float-schema])
+
+(l/def-record-schema nrg-sources-schema
+  [:wind nrg-schema]
+  [:solar nrg-schema]
+  [:nuclear nrg-schema]
+  [:bio nrg-schema]
+  [:natural-gas nrg-schema]
+  [:coal nrg-schema])
+
+(l/def-record-schema savestate-schema
+  [:energy-sources nrg-sources-schema]
+  [:energy-needed l/float-schema])
+
+(count
+ (b64/encode
+  (l/serialize savestate-schema
+               {:energy-sources
+                {:wind
+                 {:share             28
+                  :power-density     4.56
+                  :deaths            0.12
+                  :co2               11
+                  :resources         10260
+                  :arealess-capacity 240}
+                 :solar
+                 {:share             12
+                  :power-density     5.2
+                  :deaths            0.44
+                  :co2               44
+                  :resources         16447
+                  :arealess-capacity 142}
+                 :nuclear
+                 {:share         15
+                  :power-density 240.8
+                  :deaths        0.08
+                  :co2           12
+                  :resources     930}
+                 :bio
+                 {:share         2
+                  :power-density 0.16
+                  :deaths        4.63
+                  :co2           230
+                  :resources     1080}
+                 :natural-gas
+                 {:share         12
+                  :power-density 482.1
+                  :deaths        2.82
+                  :co2           490
+                  :resources     572}
+                 :coal
+                 {:share         31
+                  :power-density 135.1
+                  :deaths        28.67
+                  :co2           820
+                  :resources     1185}}
+                :energy-needed 1300})))

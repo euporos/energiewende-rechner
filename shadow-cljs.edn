@@ -9,6 +9,7 @@
                 [thi.ng/color "1.4.0"]
                 [reagent "0.10.0"]
                 [re-frame "1.1.2"]
+                [deercreeklabs/lancaster "0.9.11"]
                 [markdown-clj "1.10.5"]
                 [day8.re-frame/tracing "0.6.0"]
                 [binaryage/devtools "1.0.2"]
