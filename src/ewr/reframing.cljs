@@ -28,22 +28,6 @@
              (fn [cofx _]
                (assoc cofx :now (.now js/Date))))
 
-(defonce timeouts (r/atom {}))
-
-(rf/reg-fx
- :tech/timeout
- (fn [{:keys [id event time]}]
-   (println "id event time is: " id event time)
-   (when-some [existing (get @timeouts id)]
-     (js/clearTimeout existing)
-     (swap! timeouts dissoc id))
-   (when (some? event)
-     (swap! timeouts assoc id
-            (js/setTimeout
-             (fn []
-               (rf/dispatch event))
-             time)))))
-
 (rf/reg-fx
  :tech/dispatches
  ;; Dispatches Events passed
@@ -634,12 +618,12 @@
 (rf/reg-event-fx
  :ui/set-copy-alert
  (fn [{:keys [db] :as _cofx} [_ text]]
-   {:db (-> db
+   {:db                (-> db
             (assoc-in [:ui :copy-alert :text] text)
             (assoc-in [:ui :copy-alert :show?] true))
-    :tech/timeout {:id :remove-copy-alert
-                   :event [:ui/hide-alert :copy-alert]
-                   :time 2000}}))
+    :dispatch-debounce {:key   :remove-copy-alert
+                        :event [:ui/hide-alert :copy-alert]
+                        :delay 2000}}))
 
 (rf/reg-event-fx
  :save/copy-link-to-clipboard
