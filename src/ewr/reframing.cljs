@@ -15,8 +15,7 @@
    [ewr.remix :as remix]
    [ewr.serialization :as serialize]
    [thi.ng.color.core :as col]
-   [clojure.core.async :refer [>! <! chan sliding-buffer go timeout]]
-
+   [troglotit.re-frame.debounce-fx]
    [wrap.compress :as compress]
    [cemerick.url :as url :refer (url url-encode)]
    [vimsical.re-frame.cofx.inject :as inject]))
@@ -478,13 +477,11 @@
                   [key (dissoc vals :locked?)])
                 nrgs)))))
 
-(def savestate-chan (chan (sliding-buffer 1)))
-
 (reg-sub
  :save/savestate
  (fn [db _]
    (let [savestate (db->savestate db)]
-     (go (>! savestate-chan savestate))
+     (rf/dispatch [:savestate/on-change savestate])
      savestate)))
 
 (rf/reg-fx
@@ -511,21 +508,20 @@
                                   :sv        "1"}}))
 
 (rf/reg-event-fx
- :savestate/set-string!
- (fn [{db :db} [_ new-savestate-string]]
-   {:global/set-url-query-params {:savestate new-savestate-string
-                                  :sv        "1"}
-    :db (assoc db :savestate-string new-savestate-string)}))
-
-(def update-savestate-string
-  (go
-    (loop [savestate nil]
-      (let [savestate-string
+ :savestate/encode-string
+ (fn [{db :db} [_ savestate]]
+   (let [savestate-string
             (serialize/serialize-and-compress savestate)]
-        (rf/dispatch [:savestate/set-string!
-                      savestate-string]))
-      (<! (timeout 1000))
-      (recur (<! savestate-chan)))))
+     {:global/set-url-query-params {:savestate savestate-string
+                                    :sv        "1"}
+      :db                          (assoc db :savestate-string savestate-string)})))
+
+(rf/reg-event-fx
+ :savestate/on-change
+ (fn [_ [_ savestate]]
+   {:dispatch-debounce {:key   :on-savestate-change
+                        :event [:savestate/encode-string savestate]
+                        :delay 250}}))
 
 (reg-sub
  :save/savestate-string
