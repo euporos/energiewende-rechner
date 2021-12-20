@@ -110,6 +110,19 @@ html {
     user-select: none;
 }
 
+.message {
+    position: fixed;
+    background: linear-gradient(to right, rgba(255,255,255,.7),  rgba(255,255,0,100), rgba(255,255,255,.7));
+    top: 50vh;
+    width:100%;
+    text-align: center;
+    font-size: 2rem;
+    transition: opacity 1s;
+    z-index: 99;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
 
 // //  #################
 // //  #### Rundrum ####

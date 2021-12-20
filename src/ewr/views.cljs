@@ -1,16 +1,16 @@
 (ns ewr.views
   (:require
-   [ewr.icons :as icons]
-   [ewr.constants :as constants]
-   [re-frame.core :as rf]
-   [ewr.publications :as pubs]
-   [clojure.string :as str]
    [clojure.edn :as edn]
-   [ewr.parameters :as params]
-   [ewr.helpers :as h]
+   [clojure.string :as str]
    [ewr.config :as cfg :refer [snippet]]
-   [reagent.core :as r]
-   [md5.core :as md5])
+   [ewr.constants :as constants]
+   [ewr.helpers :as h]
+   [ewr.icons :as icons]
+   [ewr.parameters :as params]
+   [ewr.publications :as pubs]
+   [md5.core :as md5]
+   [re-frame.core :as rf]
+   [reagent.core :as r])
   (:require-macros [ewr.macros :as m]))
 
 ;; ########################
@@ -561,11 +561,11 @@
   [{:keys [background-svg] :as opts}]
   (into [:svg.karte
          {:viewBox "0 0 640 876"
-          :style (when-not background-svg
-                   {:background-image "url('../imgs/deutschland2.svg')"})}
+          :style   (when-not background-svg
+                     {:background-image "url('../imgs/deutschland2.svg')"})}
 
          (when background-svg
-           [:svg {:viewBox "0 0 1000 1360" ;TODO: This hard codes Germany
+           [:svg {:viewBox                 "0 0 1000 1360" ;TODO: This hard codes Germany
                   :dangerouslySetInnerHTML {:__html background-svg}}])
 
          svg-defs
@@ -649,7 +649,7 @@
 
 (defn share-icon
   [{:keys [href download icon height event hover-message]}]
-  [:a.column {:href href
+  [:a.column {:href     href
               :download download}
    [:img {:src            icon
           :on-mouse-enter #(rf/dispatch [:ui/set-copy-alert hover-message])
@@ -659,7 +659,7 @@
 (defn savelinks
   []
   (let [!hover-message (r/atom nil)
-        !hovering? (r/atom false)]
+        !hovering?     (r/atom false)]
     (fn []
       [:div
        (into [:div.columns.is-mobile.has-text-centered.is-vcentered]
@@ -679,7 +679,7 @@
                                     (str @(rf/subscribe [:save/savestate])))
                                    ".csv")
                :hover-message "Mix als CSV herunterladen"}])
-       [:div.is-hidden-mobile.has-text-centered
+       [:div.is-hidden-touch.has-text-centered
         {:style {:transition  "all .5s"
                  :font-weight "bold"
                  :opacity     (if (or
@@ -687,8 +687,8 @@
                                    @(rf/subscribe [:ui/copy-alert-visible?])) "100" "0")}}
         (cond
           @(rf/subscribe [:ui/copy-alert-visible?]) @(rf/subscribe [:ui/copy-alert])
-          @!hovering?                           @!hover-message
-          :else                                 (or @(rf/subscribe [:ui/copy-alert]) @!hover-message))]])))
+          @!hovering?                               @!hover-message
+          :else                                     (or @(rf/subscribe [:ui/copy-alert]) @!hover-message))]])))
 
 ;; ############################
 ;; ###### Main Component ######
@@ -696,6 +696,8 @@
 
 (defn main-component []
   [:div
+   [:div.message.is-hidden-desktop
+    @(rf/subscribe [:ui/copy-alert])]
    [:p.is-size-5.has-text-centered
     (snippet :subtitle)]
    [:p.is-size-5.has-text-centered
