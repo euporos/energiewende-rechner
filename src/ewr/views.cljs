@@ -403,7 +403,16 @@
       ;; Sliders
       [:div.pt-3.pb-3.pr-3.pl-3
        [:div.mb-3
-        "Stelle hier den Strommix der Zukunft zusammen…"]
+        [:div.columns.is-mobile.is-vcentered
+         [:div.column.is-four-fifths
+          "Stelle hier den Strommix der Zukunft zusammen…"]
+         [:div.column.has-text-centered.is-clickable
+          {:on-click (h/dispatch-on-x
+                      [:global/initialize false])}
+          [:img {:src   "symbols/reset.svg"
+                 :width "40rem"}] [:br]
+          "Reset"]]]
+
        (for [nrg-source @(rf/subscribe [:nrg/get-all])]
          ^{:key (first nrg-source)}
          [:div [energy-slider nrg-source]])]]]))

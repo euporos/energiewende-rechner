@@ -65,10 +65,11 @@
  :global/initialize
  ;; initializes the db
  ;; loads the default publications
- (fn-traced [_ _]
+ (fn-traced [_ [_ load-savestate?]]
             {:db              default-db
              :tech/dispatches [[:global/load-default-pubs]
-                               (when (cfg/feature-active? :bookmark-state)
+                               (when (and (cfg/feature-active? :bookmark-state)
+                                          load-savestate?)
                                  [:save/load-savestate-from-url])]}))
 
 ;; ############################

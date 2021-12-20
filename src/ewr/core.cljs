@@ -22,5 +22,5 @@
 (defn init []
   (print "EWR version " version)
   (print "Built with settings: " config/settings)
-  (re-frame/dispatch-sync [:global/initialize])
+  (re-frame/dispatch-sync [:global/initialize :load-savestate])
   (mount-root))
