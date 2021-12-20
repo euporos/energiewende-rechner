@@ -123,6 +123,12 @@ html {
     padding-bottom: 1rem;
 }
 
+.share-icon {
+    &:hover {
+        background: radial-gradient(closest-side, yellow, white);;
+    }
+}
+
 
 // //  #################
 // //  #### Rundrum ####
