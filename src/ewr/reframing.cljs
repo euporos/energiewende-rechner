@@ -1,28 +1,32 @@
 (ns ewr.reframing
   (:require
-   [re-frame.core :as rf :refer [reg-event-db reg-sub]]
-   [day8.re-frame.tracing :refer-macros [fn-traced]]
-   [reagent.core :as r]
-   [reagent.ratom :as ratom]
-   [ewr.publications :as pubs]
+   [cemerick.url :as url :refer (url url-encode)]
    [clojure.edn :as edn]
+   [day8.re-frame.tracing :refer-macros [fn-traced]]
    [ewr.color :as color]
+   [ewr.config :as cfg]
    [ewr.constants :as constants]
    [ewr.constants :as const]
-   [ewr.parameters :as params]
    [ewr.helpers :as h]
-   [ewr.config :as cfg]
+   [ewr.parameters :as params]
+   [ewr.publications :as pubs]
    [ewr.remix :as remix]
    [ewr.serialization :as serialize]
+   [re-frame.core :as rf :refer [reg-event-db reg-sub]]
+   [reagent.core :as r]
+   [reagent.ratom :as ratom]
    [thi.ng.color.core :as col]
    [troglotit.re-frame.debounce-fx]
-   [wrap.compress :as compress]
-   [cemerick.url :as url :refer (url url-encode)]
-   [vimsical.re-frame.cofx.inject :as inject]))
+   [vimsical.re-frame.cofx.inject :as inject]
+   [wrap.compress :as compress]))
 
 ;; ###################
 ;; #### Technical ####
 ;; ###################
+
+(rf/reg-cofx :tech/now
+             (fn [cofx _]
+               (assoc cofx :now (.now js/Date))))
 
 (rf/reg-fx
  :tech/dispatches
@@ -42,16 +46,19 @@
  (fn [_ [_ & prstrs]]
    (apply js/console.log prstrs)))
 
-(comment
-  (rf/reg-event-fx
-   :test/dsp
-   (fn [{:keys [db]} [_]]
-     {:tech/dispatches [[:tech/log "1"]
-                        [:tech/log "2"]
-                        [:tech/log "3"]]})))
-
 (reg-sub :tech/db
          (fn [db _] db))
+
+(rf/reg-fx :clipboard/copy-to
+           (fn [val]
+             (let [el (js/document.createElement "textarea")]
+               (set! (.-value el) val)
+               (.setAttribute el "readonly" "")
+               (set! (.-style el) "position: absolute; left: -9999px;")
+               (.appendChild js/document.body el)
+               (.select el)
+               (js/document.execCommand "copy")
+               (js/console.log "copied to clipboard: " val))))
 
 ;; ########################
 ;; ##### Global Stuff #####
@@ -65,10 +72,11 @@
  :global/initialize
  ;; initializes the db
  ;; loads the default publications
- (fn-traced [_ _]
+ (fn-traced [_ [_ load-savestate?]]
             {:db              default-db
              :tech/dispatches [[:global/load-default-pubs]
-                               (when (cfg/feature-active? :bookmark-state)
+                               (when (and (cfg/feature-active? :bookmark-state)
+                                          load-savestate?)
                                  [:save/load-savestate-from-url])]}))
 
 ;; ############################
@@ -84,7 +92,7 @@
  (fn [db [_ prepath param
           unparsed-newval]]
    (let ; we take parse-fn from the parameter-definition
-    [[param-key {:keys [parse-fn]}] param]
+       [[param-key {:keys [parse-fn]}] param]
      (assoc-in db (conj prepath param-key)
                (parse-fn unparsed-newval)))))
 
@@ -309,17 +317,17 @@
  (fn [[energy-needed nrg] [_ _nrg-key]]
    (let [{:keys [share power-density] :as nrg}
          nrg
-         area (-> energy-needed
-                  (* share)
-                  (/ 100) ; share in TWh ;TODO: from constant
-                  (- (:arealess-capacity nrg 0))
-                  (* 1000000000000) ; share in Wh
-                  (/ const/hours-per-year) ; needed W
-                  (/ power-density) ; needed m²
-                  (/ 1000000))                    ; needed km²
-         radius (if (or (< area 0) ; area < 0 possible with arealess-capacity
-                        (js/isNaN area)) 0
-                    (h/radius-from-area-circle area))]
+         area                                                    (-> energy-needed
+                                                    (* share)
+                                                    (/ 100) ; share in TWh ;TODO: from constant
+                                                    (- (:arealess-capacity nrg 0))
+                                                    (* 1000000000000) ; share in Wh
+                                                    (/ const/hours-per-year) ; needed W
+                                                    (/ power-density) ; needed m²
+                                                    (/ 1000000)) ; needed km²
+         radius                                                  (if (or (< area 0) ; area < 0 possible with arealess-capacity
+                                                        (js/isNaN area)) 0
+                                                    (h/radius-from-area-circle area))]
      (assoc nrg
             :area area
             :relative-area (/ area cfg/total-landmass)
@@ -488,15 +496,15 @@
  :global/set-url-query-params
  (fn [query-map]
    (when (exists? js/window) ; only do this in the browser
-    (let [current-url
-          (url/url (.. js/window -location -href))
-          new-url
-          (reduce-kv
-           (fn [sofar k v]
-             (assoc-in sofar
-                       [:query (name k)] v))
-           current-url
-           query-map)]
+     (let [current-url
+           (url/url (.. js/window -location -href))
+           new-url
+           (reduce-kv
+            (fn [sofar k v]
+              (assoc-in sofar
+                        [:query (name k)] v))
+            current-url
+            query-map)]
       (-> js/window
           .-history
           (.pushState nil nil new-url))))))
@@ -511,7 +519,7 @@
  :savestate/encode-string
  (fn [{db :db} [_ savestate]]
    (let [savestate-string
-            (serialize/serialize-and-compress savestate)]
+         (serialize/serialize-and-compress savestate)]
      {:global/set-url-query-params {:savestate savestate-string
                                     :sv        "1"}
       :db                          (assoc db :savestate-string savestate-string)})))
@@ -591,3 +599,60 @@
  :save/savestate-load-failed?
  (fn [db _]
    (get-in db [:ui :savestate-load-failed?])))
+
+(reg-event-db
+ :clipboard/show-message
+ (fn [db [_ key]]
+   (assoc-in db [:ui :clipboard] key)))
+
+(rf/reg-event-fx
+ :clipboard/show-message-temporarily
+ (fn [{:keys [db]} [_ key]]
+   {:dispatch [:clipboard/show-message key]}))
+
+(rf/reg-event-db
+  :ui/hide-alert
+  (fn [db [_ key]]
+    (assoc-in db [:ui :copy-alert :show?] false)))
+
+(rf/reg-event-fx
+ :ui/set-copy-alert
+ (fn [{:keys [db] :as _cofx} [_ text]]
+   {:db                (-> db
+                           (assoc-in [:ui :copy-alert :text] text)
+                           (assoc-in [:ui :copy-alert :show?] true))
+    :dispatch-debounce {:key   :remove-copy-alert
+                        :event [:ui/hide-alert :copy-alert]
+                        :delay 2000}}))
+
+(rf/reg-event-fx
+ :save/copy-link-to-clipboard
+ [(rf/inject-cofx ::inject/sub [:save/url-string])]
+ (fn [{:keys [:save/url-string db] :as _cofx} _]
+   (println "url-string is: " url-string)
+   {:clipboard/copy-to url-string
+    :dispatch          [:ui/set-copy-alert "Link zum Energiemix kopiert"]}))
+
+(reg-sub :save/preview-link
+         (fn [_]
+           (rf/subscribe [:save/preview-query-string]))
+         (fn [query-string _]
+           (str (get cfg/settings :preview-api)
+                query-string)))
+
+(rf/reg-event-fx
+ :save/copy-preview-link-to-clipboard
+ [(rf/inject-cofx ::inject/sub [:save/preview-link])]
+ (fn [{:keys [:save/preview-link db] :as _cofx} _]
+   {:clipboard/copy-to preview-link
+    :dispatch          [:ui/set-copy-alert "Link zum Vorschaubild kopiert"]}))
+
+(reg-sub
+ :ui/copy-alert
+ (fn [db]
+   (get-in db [:ui :copy-alert :text])))
+
+(reg-sub
+ :ui/copy-alert-visible?
+ (fn [db]
+   (get-in db [:ui :copy-alert :show?])))

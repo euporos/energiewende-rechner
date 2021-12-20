@@ -8,7 +8,7 @@
                  [hiccup "1.0.5"]
                  [optimus "0.20.2"]
                  [thheller/shadow-cljs "2.16.5"]
-                 
+                 [hickory "0.7.1"]
                  [org.clojure/clojurescript "1.10.891"]
                  [madvas/cemerick-url "0.1.2"]
                  [thi.ng/color "1.4.0"]

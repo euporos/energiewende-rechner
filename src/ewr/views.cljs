@@ -1,15 +1,16 @@
 (ns ewr.views
   (:require
-   [ewr.constants :as constants]
-   [re-frame.core :as rf]
-   [ewr.publications :as pubs]
-   [clojure.string :as str]
    [clojure.edn :as edn]
-   [ewr.parameters :as params]
-   [ewr.helpers :as h]
+   [clojure.string :as str]
    [ewr.config :as cfg :refer [snippet]]
-   [reagent.core :as r]
-   [md5.core :as md5])
+   [ewr.constants :as constants]
+   [ewr.helpers :as h]
+   [ewr.icons :as icons]
+   [ewr.parameters :as params]
+   [ewr.publications :as pubs]
+   [md5.core :as md5]
+   [re-frame.core :as rf]
+   [reagent.core :as r])
   (:require-macros [ewr.macros :as m]))
 
 ;; ########################
@@ -403,7 +404,16 @@
       ;; Sliders
       [:div.pt-3.pb-3.pr-3.pl-3
        [:div.mb-3
-        "Stelle hier den Strommix der Zukunft zusammen…"]
+        [:div.columns.is-mobile.is-vcentered
+         [:div.column.is-four-fifths
+          "Stelle hier den Strommix der Zukunft zusammen…"]
+         [:div.column.has-text-centered.is-clickable
+          {:on-click (h/dispatch-on-x
+                      [:global/initialize false])}
+          [:img {:src   "symbols/reset.svg"
+                 :width "40rem"}] [:br]
+          "Reset"]]]
+
        (for [nrg-source @(rf/subscribe [:nrg/get-all])]
          ^{:key (first nrg-source)}
          [:div [energy-slider nrg-source]])]]]))
@@ -551,11 +561,11 @@
   [{:keys [background-svg] :as opts}]
   (into [:svg.karte
          {:viewBox "0 0 640 876"
-          :style (when-not background-svg
-                   {:background-image "url('../imgs/deutschland2.svg')"})}
+          :style   (when-not background-svg
+                     {:background-image "url('../imgs/deutschland2.svg')"})}
 
          (when background-svg
-           [:svg {:viewBox "0 0 1000 1360" ;TODO: This hard codes Germany
+           [:svg {:viewBox                 "0 0 1000 1360" ;TODO: This hard codes Germany
                   :dangerouslySetInnerHTML {:__html background-svg}}])
 
          svg-defs
@@ -636,26 +646,54 @@
    [indicator "Statistisch erwartbare Todesfälle pro Jahr:" :deaths]
    [indicator "Jährlicher Ressourcenverbrauch:" :resources]))
 
+
+(defn share-icon
+  [{:keys [href download icon height event label]}]
+  [:div.column.share-icon
+   [:a {:href href}
+    [:div{:style    {:display     "block"
+                     :height      "5rem"
+                     :padding-top (when height
+                                    (str (/ (- 5 height) 2) "rem"))}
+          :download download}
+     [:img {:src      icon
+            :on-click (when event (h/dispatch-on-x event))
+            :style    {:height (str (or height 5) "rem")}}]]
+    label]])
+
 (defn savelinks
-  ""
   []
-  [:div
-   [:div
-    [:a {:href (when (exists? js/window)
-                 @(rf/subscribe  [:save/url-string]))}
-     "→ Link, um diesen Strommix zu teilen"]]
-   [:div
-    [:a {:href (str
-                (get cfg/settings :preview-api)
-                @(rf/subscribe [:save/preview-query-string]))}
-     "→ Link to preview"]]
-   [:div
-    [:a {:href     (js/encodeURI
-                    @(rf/subscribe  [:save/csv-string]))
-         :download (str "strommix_"
-                        (md5/string->md5-hex
-                         (str @(rf/subscribe [:save/savestate])))
-                        ".csv")} "→ Konfiguration als CSV herunterladen"]]])
+  (let [!hover-message (r/atom nil)
+        !hovering?     (r/atom false)]
+    (fn []
+      [:div
+       (into [:div.columns.is-mobile.has-text-centered]
+             (map share-icon)
+             [{:icon   "symbols/share.svg"
+               :href   @(rf/subscribe [:save/url-string])
+               :height 3.75
+               :event  [:save/copy-link-to-clipboard]
+               :label  "Strommix teilen"}
+              {:event [:save/copy-preview-link-to-clipboard]
+               :href  @(rf/subscribe [:save/preview-link])
+               :icon  "symbols/camera.svg"
+               :label "Bild teilen"}
+              {:href     (js/encodeURI
+                          @(rf/subscribe  [:save/csv-string]))
+               :icon     "symbols/csv.svg"
+               :download (str "strommix_"
+                              (md5/string->md5-hex
+                               (str @(rf/subscribe [:save/savestate])))
+                              ".csv")
+               :label    "Download als CSV"}])
+       [:div.is-hidden-touch.has-text-centered
+        {:style {:transition  "all .5s"
+                 :font-weight "bold"
+                 :opacity     (if @(rf/subscribe [:ui/copy-alert-visible?]) "100" "0")}}
+        (cond
+          @(rf/subscribe [:ui/copy-alert-visible?]) @(rf/subscribe [:ui/copy-alert])
+          @!hovering?                               @!hover-message
+          :else                                     (or @(rf/subscribe [:ui/copy-alert]) @!hover-message))]])))
 
 ;; ############################
 ;; ###### Main Component ######
@@ -663,6 +701,11 @@
 
 (defn main-component []
   [:div
+   [:div.message.is-hidden-desktop
+    {:style {:transition  "all .5s"
+             :font-weight "bold"
+             :opacity     (if @(rf/subscribe [:ui/copy-alert-visible?]) "100" "0")}}
+    @(rf/subscribe [:ui/copy-alert])]
    [:p.is-size-5.has-text-centered
     (snippet :subtitle)]
    [:p.is-size-5.has-text-centered
