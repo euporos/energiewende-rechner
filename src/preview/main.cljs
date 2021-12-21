@@ -1,13 +1,13 @@
 (ns preview.main
   (:require
-   [ewr.serialization :as serialize]
-   [reagent.dom.server :as rdom]
-   [ewr.views :as views]   [ewr.reframing :as rfr]
-   [re-frame.core :as rf]
-   [preview.testdata :as testdata]
-   ["sharp" :as sharp]
    ["fs" :as fs]
-   ["nodejs-base64-converter" :as nodeBase64])
+   ["nodejs-base64-converter" :as nodeBase64]
+   ["sharp" :as sharp]
+   [ewr.serialization :as serialize]
+   [ewr.views :as views]   [ewr.reframing :as rfr]
+   [preview.testdata :as testdata]
+   [re-frame.core :as rf]
+   [reagent.dom.server :as rdom])
   (:require-macros [ewr.macros :as m]))
 
 (defn svg->png
@@ -38,16 +38,16 @@
 
 (defn energy-text
   [offset i  [_key {:keys [name color share] :as nrg}]]
-  (let [y-text  (+ 30 (* i offset))]
+  (let [y-text (+ 30 (* i offset))]
     [:<>
      [:text {:zindex    1000
              :font-size "3em"}
       [:tspan {:x 3 :y y-text} (str name ": " (Math/round share) "%")]]
-     [:rect {:x 2 :y (+ 15 y-text)
-             :stroke "black"
+     [:rect {:x            2  :y     (+ 15 y-text)
+             :stroke       "black"
              :stroke-width 2
-             :fill color
-             :height 30 :width (* share 5)}]]))
+             :fill         color
+             :height       30 :width (* share 5)}]]))
 
 (defn energy-needed
   []
@@ -58,26 +58,26 @@
 
 (defn co2
   []
-  (let [co2-intensity @(rf/subscribe [:deriv/co2-per-kwh-mix])
+  (let [co2-intensity         @(rf/subscribe [:deriv/co2-per-kwh-mix])
         [bg-color font-color] @(rf/subscribe [:ui/decab-color])]
 
     [:g
-     [:rect {:x 200 :y 505
-             :stroke "black"
+     [:rect {:x            200 :y     505
+             :stroke       "black"
              :stroke-width 2
-             :fill bg-color
-             :height 50 :width 250}]
+             :fill         bg-color
+             :height       50  :width 250}]
      [:text {:zindex    1000
              :font-size "3em"
-             :fill font-color}
+             :fill      font-color}
       [:tspan {:x 220 :y 540}
        (Math/round co2-intensity) " g" views/co2 "/kWh"]]]))
 
 (defn energy-list
   []
-  (let [offset  (/ 630 (+ 2 (count @(rf/subscribe [:nrg/get-all]))))]
+  (let [offset (/ 630 (+ 2 (count @(rf/subscribe [:nrg/get-all]))))]
     (into [:svg {:viewBox "0 0 1200 630"
-                 :x 680 :y (/ offset 2)}
+                 :x       680 :y (/ offset 2)}
            [energy-needed]
            [co2]]
           (map-indexed (partial energy-text offset)
@@ -112,7 +112,7 @@
   [event _context callback]
   (let [request          (js->clj event :keywordize-keys true)
         savestate-string (get-in request [:queryStringParameters :savestate])
-        svg-string (savestate-string->svg savestate-string)]
+        svg-string       (savestate-string->svg savestate-string)]
 
     (when js/goog.DEBUG
       (svg-string->png-buf svg-string
@@ -121,9 +121,9 @@
     (svg-string->png-buf svg-string
                          #(callback
                            nil
-                           (clj->js {:statusCode 200
-                                     :body       (.encode nodeBase64 %)
-                                     :headers    {"Content-Type" "image/png"}
+                           (clj->js {:statusCode      200
+                                     :body            (.encode nodeBase64 %)
+                                     :headers         {"Content-Type" "image/png"}
                                      :isBase64Encoded true})))))
 
 (defn ^:dev/after-load test-img-output

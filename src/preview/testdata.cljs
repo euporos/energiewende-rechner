@@ -1,7 +1,7 @@
 (ns preview.testdata
   (:require ["fs" :as fs]
-            [ewr.serialization :as serialize]
-            ["nodejs-base64-converter" :as nodeBase64]))
+            ["nodejs-base64-converter" :as nodeBase64]
+            [ewr.serialization :as serialize]))
 
 (def teststate
   {:energy-needed 3000
