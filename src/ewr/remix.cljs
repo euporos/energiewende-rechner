@@ -78,16 +78,16 @@
   "Remix-function based on a representation of shares
   as integers."
   [changed-nrg-key newval nrgs]
-  (let [unlocked-nrgs          (into {}
+  (let [unlocked-nrgs                     (into {}
                                      (filter
                                       #(not (:locked? (second %)))
                                       nrgs))
-        unlocked-share         (transduce (map (comp :share second))
+        unlocked-share                    (transduce (map (comp :share second))
                                           + unlocked-nrgs)
-        reacting-nrgs          (dissoc unlocked-nrgs changed-nrg-key)
-        freed-share            (- (get-in nrgs [changed-nrg-key :share]) ; if negative
+        reacting-nrgs                     (dissoc unlocked-nrgs changed-nrg-key)
+        freed-share                       (- (get-in nrgs [changed-nrg-key :share]) ; if negative
                                   newval) ; would more adequately be called "grabbed share"
-        reacting-share         (transduce (map (comp :share second))
+        reacting-share                    (transduce (map (comp :share second))
                                           + reacting-nrgs)]
     (if (> newval unlocked-share)
       nrgs ; return unchanged

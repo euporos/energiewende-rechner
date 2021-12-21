@@ -1,6 +1,6 @@
 (ns ewr.parameters
-  (:require [ewr.helpers :as h]
-            [ewr.config :as cfg]))
+  (:require [ewr.config :as cfg]
+            [ewr.helpers :as h]))
 
 ;; ###########################
 ;; ###### Energy Needed ######

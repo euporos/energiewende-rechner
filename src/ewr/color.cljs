@@ -1,9 +1,8 @@
 (ns ewr.color
   (:require
+   [clojure.string :as str]
    [thi.ng.color.core :as col]
-   [thi.ng.color.gradients :as grad]
-   [thi.ng.math.core :as math]
-   [clojure.string :as str]))
+   [thi.ng.math.core :as math]))
 
 ;; #################################
 ;; ####### Manipulate Colors #######

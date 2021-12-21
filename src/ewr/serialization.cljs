@@ -1,10 +1,9 @@
 (ns ewr.serialization
   (:require
-   [re-frame.core :as rf :refer [reg-event-db reg-sub]]
    ["huffman-url-compressor" :as huff :refer [createEncoder encodeConfig decodeConfig]] [wrap.compress :as compress]
    [clojure.edn :as edn]
-   [malli.core :as m]
-   [clojure.string :as str]))
+   [clojure.string :as str]
+   [malli.core :as m]))
 
 ;; ######################################
 ;; ######## Manual Serialization ########

@@ -1,11 +1,10 @@
 (ns ewr.core
   (:require
-   [ewr.reframing]
-   [reagent.dom :as rdom]
-   [re-frame.core :as re-frame]
-   [ewr.views :as views]
    [ewr.config :as config]
-   [clojure.string :as str])
+   [ewr.reframing]
+   [ewr.views :as views]
+   [re-frame.core :as re-frame]
+   [reagent.dom :as rdom])
   (:require-macros [ewr.macros :as m]))
 
 (def root-el

@@ -4,11 +4,9 @@
             [clojure.pprint :refer [pprint]]
             [clojure.set :as set]
             [clojure.string :as str]
-            [clojure.zip :as zip]
             [hickory.convert :refer [hickory-to-hiccup]]
             [hickory.core :as hickory]
             [hickory.render :refer [hickory-to-html]]
-            [hickory.zip :refer [hiccup-zip]]
             [markdown.core :as md]))
 
 (defn deep-merge [a b]
@@ -88,7 +86,7 @@
                    {:dangerouslySetInnerHTML
                     {:__html
                      (hickory-to-html updated-svg)}}]
-      :string (hickory-to-html updated-svg)
+      :string     (hickory-to-html updated-svg)
       (hickory-to-hiccup updated-svg))))
 
 
@@ -135,8 +133,8 @@
 
 (defn read-files-into-map
   [dir extension parser keywordize?]
-  (let [rework-keys #(if keywordize?
-                       (keyword (str/replace % #"\.[^\.]+$" "")) %)
+  (let [rework-keys     #(if keywordize?
+                           (keyword (str/replace % #"\.[^\.]+$" "")) %)
         grammar-matcher (.getPathMatcher
                          (java.nio.file.FileSystems/getDefault)
                          (str "glob:*.{" extension "}"))

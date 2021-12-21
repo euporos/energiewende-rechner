@@ -1,7 +1,6 @@
 (ns ewr.publications
-  (:require [ewr.helpers :as h]
-            [ewr.config :as cfg])
-  (:require-macros [ewr.macros :as m]))
+  (:require [ewr.config :as cfg]
+            [ewr.helpers :as h]))
 
 (defn transpose-energy-sources
   "The publication file is more comfortably

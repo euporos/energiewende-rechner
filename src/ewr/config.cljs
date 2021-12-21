@@ -1,7 +1,6 @@
 (ns ewr.config
-  (:require [ewr.helpers :as h]
-            [ewr.color :as color]
-            [clojure.string :as str])
+  (:require [ewr.color :as color]
+            [ewr.helpers :as h])
   (:require-macros [ewr.macros :as m]))
 
 ;; ##########################################
