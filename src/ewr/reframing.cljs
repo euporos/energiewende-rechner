@@ -238,11 +238,6 @@
    {:energy-sources
     (get cfg/settings :init-mix)}))
 
-(rf/reg-event-db
- :pub/load-defaults
- ;; Used on initialization. Loads all default publications…
- (fn [db _] (load-default-pubs db)))
-
 ;; ###########################
 ;; ###### Energy shares ######
 ;; ###########################
