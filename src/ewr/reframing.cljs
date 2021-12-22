@@ -238,6 +238,11 @@
    {:energy-sources
     (get cfg/settings :init-mix)}))
 
+(rf/reg-event-db
+ :pub/load-defaults
+ ;; Used on initialization. Loads all default publications…
+ (fn [db _] (load-default-pubs db)))
+
 ;; ###########################
 ;; ###### Energy shares ######
 ;; ###########################
@@ -468,11 +473,6 @@
                   [key (dissoc vals :locked?)])
                 nrgs)))))
 
-(def default-savestate-string
-  (-> default-db
-      db->savestate
-      serialize/serialize-and-compress))
-
 (reg-sub
  :save/savestate
  (fn [db _]
@@ -489,13 +489,10 @@
            new-url
            (reduce-kv
             (fn [sofar k v]
-              (if (empty? v)
-                (update sofar :query #(dissoc % (name k)))
-                (assoc-in sofar
-                          [:query (name k)] v)))
+              (assoc-in sofar
+                        [:query (name k)] v))
             current-url
             query-map)]
-       (println "new-url is: " new-url)
        (-> js/window
            .-history
            (.pushState nil nil new-url))))))
@@ -511,13 +508,9 @@
  (fn [{db :db} [_ savestate]]
    (let [savestate-string
          (serialize/serialize-and-compress savestate)]
-     (if (= savestate-string default-savestate-string)
-       {:global/set-url-query-params {:savestate ""
-                                      :sv        ""}
-        :db                          (assoc db :savestate-string savestate-string)}
-       {:global/set-url-query-params {:savestate savestate-string
-                                      :sv        "1"}
-        :db                          (assoc db :savestate-string savestate-string)}))))
+     {:global/set-url-query-params {:savestate savestate-string
+                                    :sv        "1"}
+      :db                          (assoc db :savestate-string savestate-string)})))
 
 (rf/reg-event-fx
  :savestate/on-change
@@ -652,9 +645,11 @@
  (fn [db]
    (get-in db [:ui :copy-alert :show?])))
 
+
 ;; ########################
 ;; ##### Global Stuff #####
 ;; ########################
+
 
 (rf/reg-event-fx
  :global/initialize
