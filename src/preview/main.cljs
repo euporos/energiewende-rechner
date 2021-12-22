@@ -3,8 +3,9 @@
    ["fs" :as fs]
    ["nodejs-base64-converter" :as nodeBase64]
    ["sharp" :as sharp]
+   [ewr.reframing :refer [default-db]]
    [ewr.serialization :as serialize]
-   [ewr.views :as views]   [ewr.reframing :as rfr]
+   [ewr.views :as views]
    [preview.testdata :as testdata]
    [re-frame.core :as rf]
    [reagent.dom.server :as rdom])
@@ -33,8 +34,8 @@
 
 (rf/reg-event-db
  :save/savestate-into-db
- (fn [db [_ savestate]]
-   (merge db savestate)))
+ (fn [_db [_ savestate]]
+   (merge default-db savestate)))
 
 (defn energy-text
   [offset i  [_key {:keys [name color share] :as nrg}]]
@@ -89,7 +90,6 @@
 
 (defn savestate-string->svg
   [savestate-string]
-  (rf/dispatch-sync [:pub/load-defaults])
   (when savestate-string
     (let [savestate
           (serialize/decompress-and-deserialize
