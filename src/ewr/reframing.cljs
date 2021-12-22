@@ -60,25 +60,6 @@
                (js/document.execCommand "copy")
                (js/console.log "copied to clipboard: " val))))
 
-;; ########################
-;; ##### Global Stuff #####
-;; ########################
-
-(def default-db
-  {:energy-sources
-   (get cfg/settings :init-mix)})
-
-(rf/reg-event-fx
- :global/initialize
- ;; initializes the db
- ;; loads the default publications
- (fn-traced [_ [_ load-savestate?]]
-            {:db              default-db
-             :tech/dispatches [[:pub/load-defaults]
-                               (when (and (cfg/feature-active? :bookmark-state)
-                                          load-savestate?)
-                                 [:save/load-savestate-from-url])]}))
-
 ;; ############################
 ;; ###### Input handling ######
 ;; ############################
@@ -214,18 +195,19 @@
       (assoc-in [:ui :loaded-pubs nrg-key param-key]
                 (:id pub))))
 
-(defn load-nrg-pub-rfh
+(defn load-nrg-pub
   "loads whatever value a given publication provides
  for a specific combination of energy-source-and parameter"
-  [db [_ nrg-key param-key pub]]
+  [db nrg-key param-key pub]
   (when (not= pub nil) ;; if there actually is a publication
     (param-pub-into-db db pub nrg-key param-key)))
 
 (reg-event-db
  :pub/load-nrg-param
- load-nrg-pub-rfh)
+ (fn [db [_ nrg-key param-key pub]]
+   (load-nrg-pub db nrg-key param-key pub)))
 
-(defn load-global-pub-rfh [db [_ key pub]]
+(defn load-global-pub [db key pub]
   (if (not= pub nil)
     (-> db
         (assoc key
@@ -234,26 +216,32 @@
                   (:id pub)))))
 (reg-event-db
  :pub/load-global
- load-global-pub-rfh)
+ (fn [db [_ key pub]]
+   (load-global-pub db key pub)))
 
-(defn load-default-pubs-rfh [db _]
+(defn load-default-pubs [db]
   (-> (reduce
        (fn [db [_ nrg-key param-key]]
-         (load-nrg-pub-rfh db [nil nrg-key param-key (pubs/default-pub nrg-key param-key)]))
+         (load-nrg-pub db  nrg-key param-key (pubs/default-pub nrg-key param-key)))
        db
        (for [nrg-key   cfg/nrg-keys ; … for alle combinations
              param-key params/common-param-keys] ; of energy-sources and parameters
          [nil nrg-key param-key]))
-      (load-global-pub-rfh [nil :energy-needed (first (pubs/pubs-for-global-value :energy-needed))])
-      (load-nrg-pub-rfh [nil :solar :arealess-capacity ; …for rooftop solar
-                         (pubs/default-pub :solar :arealess-capacity)])
-      (load-nrg-pub-rfh [nil :wind :arealess-capacity ; …for offshore wind
-                         (pubs/default-pub :wind :arealess-capacity)])))
+      (load-global-pub :energy-needed (first (pubs/pubs-for-global-value :energy-needed)))
+      (load-nrg-pub :solar :arealess-capacity ; …for rooftop solar
+                    (pubs/default-pub :solar :arealess-capacity))
+      (load-nrg-pub :wind :arealess-capacity ; …for offshore wind
+                    (pubs/default-pub :wind :arealess-capacity))))
+
+(def default-db
+  (load-default-pubs
+   {:energy-sources
+    (get cfg/settings :init-mix)}))
 
 (rf/reg-event-db
  :pub/load-defaults
  ;; Used on initialization. Loads all default publications…
- load-default-pubs-rfh)
+ (fn [db _] (load-default-pubs db)))
 
 ;; ###########################
 ;; ###### Energy shares ######
@@ -656,3 +644,18 @@
  :ui/copy-alert-visible?
  (fn [db]
    (get-in db [:ui :copy-alert :show?])))
+
+
+;; ########################
+;; ##### Global Stuff #####
+;; ########################
+
+(rf/reg-event-fx
+ :global/initialize
+ ;; initializes the db
+ ;; loads the default publications
+ (fn-traced [_ [_ load-savestate?]]
+            {:db              default-db
+             :tech/dispatches [(when (and (cfg/feature-active? :bookmark-state)
+                                          load-savestate?)
+                                 [:save/load-savestate-from-url])]}))
