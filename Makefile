@@ -28,6 +28,10 @@ prod-export-main-project:
 stage-export-main-project:
 	EWR_CONFIG_DIRS="config/default config/default_stage" make export-main-project
 
+.PHONY: test-export-main-project
+test-export-main-project:
+	EWR_CONFIG_DIRS="config/default config/default_test" make export-main-project
+
 .PHONY: build-aws-preview
 build-aws-preview:
 	rm -r .shadow-cljs
