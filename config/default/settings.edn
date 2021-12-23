@@ -1,6 +1,7 @@
 {:main-site      "https://energiewende-rechner.org"
  :default-preview-image "/imgs/rich-preview_3.png"
  :no-index?         false
+ :google-site-verification "uklV9qdCaIfYBKJhQRrWb8iNCA9SgnAQCGjwn6ZWMk4"
  :features       #{}
  :co2-colors     ["#2AA364", "#F5EB4D", "#9E4229", "#381D02"]
  :total-landmass 357581

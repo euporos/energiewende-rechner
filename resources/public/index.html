@@ -2,11 +2,14 @@
 
 
 <html lang="de">
-    <head>
-      <meta charset="utf-8"/>
+  <head>
+    <meta charset="utf-8"/>
         {% if config.settings.no-index? %}
           <meta name="robots" content="noindex">
-        {% endif%}>
+        {% endif%}
+        {% if config.settings.google-site-verification %}
+          <meta name="google-site-verification" content="{{ config.settings.google-site-verification }}" />
+        {% endif%}
         <meta content="width=device-width, initial-scale=1" name="viewport">
         <title>Energiewende-Rechner – Wie viel Platz braucht unser Strom?</title>
         <meta name="description" content="Stelle den Energiemix der Zukunft zusammen. Entscheide über CO2-Ausstoß, Flächenverbrauch und mehr!" />
