@@ -126,7 +126,11 @@ html {
 .share-icon {
     &:hover {
         background: radial-gradient(closest-side, yellow, white);;
+        @include respond(phone) {
+            background: none;
+        }
     }
+
 }
 
 
