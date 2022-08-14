@@ -18,7 +18,17 @@
 ;; ##### Publications #####
 ;; ########################
 
-[{:id            "2050, große Effizienzgewinne (Quaschning 2016)"
+[{:id "Jahr 2045, »ambitioniert« (HTW 2022)"
+  :link "https://solar.htw-berlin.de/wp-content/uploads/HTW-Studie-Solarstromausbau-fuer-den-Klimaschutz.pdf#page=9"
+  :energy-needed 2159}
+ {:id "Jahr 2045, »visionär« (HTW 2022)"
+  :link "https://solar.htw-berlin.de/wp-content/uploads/HTW-Studie-Solarstromausbau-fuer-den-Klimaschutz.pdf#page=9"
+  :energy-needed 1869}
+ {:id "Jahr 2045, »mutlos« (HTW 2022)"
+  :link "https://solar.htw-berlin.de/wp-content/uploads/HTW-Studie-Solarstromausbau-fuer-den-Klimaschutz.pdf#page=9"
+  :energy-needed 2420}
+
+ {:id            "2050, große Effizienzgewinne (Quaschning 2016)"
   :link          "https://www.volker-quaschning.de/publis/studien/sektorkopplung/Sektorkopplungsstudie.pdf"
   :energy-needed 1300}
  ;; {:id "2050,  mittlere Effizienzgewinne (Quaschning 2016)"
