@@ -650,15 +650,15 @@
 (defn share-icon
   [{:keys [href download icon height event label]}]
   [:div.column.share-icon
-   [:a {:href href}
+   [:a {:href     href
+        :on-click (when event (h/dispatch-on-x event))}
     [:div{:style    {:display     "block"
                      :height      "5rem"
                      :padding-top (when height
                                     (str (/ (- 5 height) 2) "rem"))}
           :download download}
-     [:img {:src      icon
-            :on-click (when event (h/dispatch-on-x event))
-            :style    {:height (str (or height 5) "rem")}}]]
+     [:img {:src   icon
+            :style {:height (str (or height 5) "rem")}}]]
     label]])
 
 (defn savelinks
