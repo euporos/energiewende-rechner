@@ -50,7 +50,7 @@
   `(def ~var
      (~f ~(slurp file))))
 
-(def default-config-dirs ["config/default" "config/default_stage" "config/default_dev"])
+(def default-config-dirs ["config/default" "config/default_stage" "config/default_test" "config/default_dev"])
 
 (defn get-config-dirs
   []
