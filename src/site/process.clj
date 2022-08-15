@@ -20,6 +20,8 @@
 (def features (get settings :features))
 (def shadow-cljs (edn/read-string (slurp "shadow-cljs.edn")))
 
+
+
 (def prerendered-app
   (do
     (println "Prerendering App")
@@ -34,16 +36,20 @@
        #(selmer.parser/render % {:settings settings})
        (stasis/slurp-directory "resources/snippets" #".*\.(php)$"))))
 
+(defn hash-resource [path]
+  (hash (slurp path)))
+
 (defn get-html-pages []
   (let [php-snippets (if inject-php? (get-php))]
    (map-vals
-    #(selmer.parser/render % {:config config
-                              :request-uri (get php-snippets "/request-uri.php")
+    #(selmer.parser/render % {:config          config
+                              :app-hash        (hash-resource "export/main/js/compiled/app.js")
+                              :request-uri     (get php-snippets "/request-uri.php")
                               :preview-image
                               (if (and inject-php? (features :dynamic-preview))
                                 (get php-snippets "/preview-image.php")
                                 (str (get settings :main-site) "/imgs/rich-preview_3.png"))
-                              :snippets    nil
+                              :snippets        nil
                               :prerendered-app prerendered-app})
 
     (stasis/slurp-directory "resources/public" #".*\.(html|php)$"))))
@@ -67,8 +73,6 @@
   (println "exporting")
   (let [assets (optimizations/all (get-assets) {})
         pages  (get-pages)]
-    (println "emptying export dir")
-    (stasis/empty-directory! export-dir)
     (println "Saving optimized assets")
     (optimus.export/save-assets assets export-dir)
     (println "exporting pages")

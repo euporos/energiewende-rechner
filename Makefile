@@ -9,10 +9,12 @@ dev-setup:
 .PHONY: export-main-project
 export-main-project:
 	rm -r .shadow-cljs
+	rm -r export/*
+	echo "CLEAN SLATE – Export dir emptied"
 	npx shadow-cljs release prerender
-	lein build-site
 	npx scss  --style compressed --update --force scss:export/main/css
 	npx shadow-cljs release app
+	lein build-site
 	chmod -R 755 export/main
 
 .PHONY: prepare-dev
