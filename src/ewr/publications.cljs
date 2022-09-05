@@ -90,7 +90,31 @@
       (/ (* 24 365)) ; W/m²
       ))
 
+(defn ha-per-twh-to-m2-per-W [input]
+  (-> (/ 1 input) ; km² / TWh → TWh/km²
+      (/ 10000) ; TWh/m²
+      (* 1000000000000) ; Wh/m² (per year)
+      (/ (* 24 365)) ; W/m²
+      ))
+
+
+
 (comment
+
+  ;; Plos One
+  (h/map-vals
+   #(-> %
+        ha-per-twh-to-m2-per-W
+        (* 100)
+        Math/round
+        (/ 100.0))
+   {:solar       2000
+    :wind        12000
+    :bio         58000
+    :nuclear     7.1
+    :natural-gas 410
+    :coal        1000})
+
   (h/map-vals
    #(-> %
         annual-twh-per-km2-to-W-per-m2

@@ -18,7 +18,17 @@
 ;; ##### Publications #####
 ;; ########################
 
-[{:id            "2050, große Effizienzgewinne (Quaschning 2016)"
+[{:id "Jahr 2045, »ambitioniert« (HTW 2022)"
+  :link "https://solar.htw-berlin.de/wp-content/uploads/HTW-Studie-Solarstromausbau-fuer-den-Klimaschutz.pdf#page=9"
+  :energy-needed 2159}
+ {:id "Jahr 2045, »visionär« (HTW 2022)"
+  :link "https://solar.htw-berlin.de/wp-content/uploads/HTW-Studie-Solarstromausbau-fuer-den-Klimaschutz.pdf#page=9"
+  :energy-needed 1869}
+ {:id "Jahr 2045, »mutlos« (HTW 2022)"
+  :link "https://solar.htw-berlin.de/wp-content/uploads/HTW-Studie-Solarstromausbau-fuer-den-Klimaschutz.pdf#page=9"
+  :energy-needed 2420}
+
+ {:id            "2050, große Effizienzgewinne (Quaschning 2016)"
   :link          "https://www.volker-quaschning.de/publis/studien/sektorkopplung/Sektorkopplungsstudie.pdf"
   :energy-needed 1300}
  ;; {:id "2050,  mittlere Effizienzgewinne (Quaschning 2016)"
@@ -78,7 +88,6 @@
  ;; ###### Power Density ######
  ;; ###########################
 
-
  {:id   "BMVI (2015)"
   :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
   :energy-sources
@@ -109,6 +118,16 @@
     :nuclear     1 ; 0.93
     :natural-gas 1}}}
 
+ {:id   "Plos One (inkl. Infrastruktur)"
+  :link "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0270155#sec004"
+  :energy-sources
+  {:power-density
+   {:solar 5.71
+    :wind 0.95
+    :bio 0.2
+    :nuclear 1607.82
+    :natural-gas 27.84
+    :coal 11.42}}}
 
  {:id   "Energy Policy (ohne Infrastruktur)"
   :link "https://doi.org/10.1016/j.enpol.2018.08.023"
