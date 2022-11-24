@@ -5,7 +5,6 @@
    [re-frame.core :as rf]
    [reagent.dom.server :as rdom]))
 
-
 (defn prerender
   ""
   []

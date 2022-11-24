@@ -79,16 +79,16 @@
   as integers."
   [changed-nrg-key newval nrgs]
   (let [unlocked-nrgs                     (into {}
-                                     (filter
-                                      #(not (:locked? (second %)))
-                                      nrgs))
+                                                (filter
+                                                 #(not (:locked? (second %)))
+                                                 nrgs))
         unlocked-share                    (transduce (map (comp :share second))
-                                          + unlocked-nrgs)
+                                                     + unlocked-nrgs)
         reacting-nrgs                     (dissoc unlocked-nrgs changed-nrg-key)
         freed-share                       (- (get-in nrgs [changed-nrg-key :share]) ; if negative
-                                  newval) ; would more adequately be called "grabbed share"
+                                             newval) ; would more adequately be called "grabbed share"
         reacting-share                    (transduce (map (comp :share second))
-                                          + reacting-nrgs)]
+                                                     + reacting-nrgs)]
     (if (> newval unlocked-share)
       nrgs ; return unchanged
       (first ; extract only the remixed energies

@@ -46,7 +46,6 @@
     :else
     (throw (ex-info "failed to merge config value" {:a a :b b}))))
 
-
 (defmacro def-string-from-file [var file f]
   `(def ~var
      (~f ~(slurp file))))
@@ -89,15 +88,13 @@
       :string     (hickory-to-html updated-svg)
       (hickory-to-hiccup updated-svg))))
 
-
-
 (defn replace-colon-with-hyphen-in-keys
   [inmap]
   (into {}
-      (map
-       (fn [[key val]]
-         [(keyword (str/replace (name key) ":" "-")) val])
-       inmap)))
+        (map
+         (fn [[key val]]
+           [(keyword (str/replace (name key) ":" "-")) val])
+         inmap)))
 
 (defmacro slurp-svg
   ""
@@ -119,9 +116,6 @@
                      (hickory-to-html updated-svg)}}]
       :string     (hickory-to-html updated-svg)
       (hickory-to-hiccup updated-svg))))
-
-
-
 
 (defn in-dir
   "prepends a path with the config directors

@@ -96,9 +96,6 @@
       (* 1000000000000) ; Wh/m² (per year)
       (/ (* 24 365)) ; W/m²
       ))
-
-
-
 (comment
 
   ;; Plos One

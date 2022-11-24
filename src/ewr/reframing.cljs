@@ -73,7 +73,7 @@
  (fn [db [_ prepath param
           unparsed-newval]]
    (let ; we take parse-fn from the parameter-definition
-       [[param-key {:keys [parse-fn]}] param]
+    [[param-key {:keys [parse-fn]}] param]
      (assoc-in db (conj prepath param-key)
                (parse-fn unparsed-newval)))))
 
@@ -496,9 +496,9 @@
             current-url
             query-map)]
        (println "new-url is: " new-url)
-      (-> js/window
-          .-history
-          (.pushState nil nil new-url))))))
+       (-> js/window
+           .-history
+           (.pushState nil nil new-url))))))
 
 (rf/reg-event-fx
  :savestate/rewrite-url
@@ -606,9 +606,9 @@
    {:dispatch [:clipboard/show-message key]}))
 
 (rf/reg-event-db
-  :ui/hide-alert
-  (fn [db [_ key]]
-    (assoc-in db [:ui :copy-alert :show?] false)))
+ :ui/hide-alert
+ (fn [db [_ key]]
+   (assoc-in db [:ui :copy-alert :show?] false)))
 
 (rf/reg-event-fx
  :ui/set-copy-alert
@@ -651,7 +651,6 @@
  :ui/copy-alert-visible?
  (fn [db]
    (get-in db [:ui :copy-alert :show?])))
-
 
 ;; ########################
 ;; ##### Global Stuff #####

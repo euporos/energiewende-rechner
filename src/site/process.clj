@@ -20,8 +20,6 @@
 (def features (get settings :features))
 (def shadow-cljs (edn/read-string (slurp "shadow-cljs.edn")))
 
-
-
 (def prerendered-app
   (do
     (println "Prerendering App")
@@ -41,18 +39,18 @@
 
 (defn get-html-pages []
   (let [php-snippets (if inject-php? (get-php))]
-   (map-vals
-    #(selmer.parser/render % {:config          config
-                              :app-hash        (hash-resource "export/main/js/compiled/app.js")
-                              :request-uri     (get php-snippets "/request-uri.php")
-                              :preview-image
-                              (if (and inject-php? (features :dynamic-preview))
-                                (get php-snippets "/preview-image.php")
-                                (str (get settings :main-site) "/imgs/rich-preview_3.png"))
-                              :snippets        nil
-                              :prerendered-app prerendered-app})
+    (map-vals
+     #(selmer.parser/render % {:config          config
+                               :app-hash        (hash-resource "export/main/js/compiled/app.js")
+                               :request-uri     (get php-snippets "/request-uri.php")
+                               :preview-image
+                               (if (and inject-php? (features :dynamic-preview))
+                                 (get php-snippets "/preview-image.php")
+                                 (str (get settings :main-site) "/imgs/rich-preview_3.png"))
+                               :snippets        nil
+                               :prerendered-app prerendered-app})
 
-    (stasis/slurp-directory "resources/public" #".*\.(html|php)$"))))
+     (stasis/slurp-directory "resources/public" #".*\.(html|php)$"))))
 
 (defn get-assets
   []
