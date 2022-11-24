@@ -109,6 +109,15 @@
                                     :arealess-capacity :name :solar)
                        "Solarkapazität auf Dächern in TWh")))
 
+(def cap
+  [:cap {:name                "Deckelung sonstiger Energien in TWh"
+         :unit                "TWh"
+         :parse-fn            js/parseInt
+         :input-attrs         {:type    "number"
+                               :pattern "0"
+                               :step    "1"
+                               :min     1}}])
+
 (def arealess-capacity-wind
   (assoc-in arealess-capacity
             [1 :name] (or
