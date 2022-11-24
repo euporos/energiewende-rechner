@@ -50,5 +50,7 @@
                           :locked? false}
             :natural-gas {:share   12
                           :locked? false}
-            :coal        {:share   31
-                          :locked? false}}}
+            :coal        {:share   30
+                          :locked? false}
+            :minor        {:share   1
+                           :locked? false}}}
