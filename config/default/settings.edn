@@ -10,8 +10,7 @@
                                 :icon          "symbols/wind2.svg"
                                 :color         "rgba(135, 206, 250)"
                                 :props         {:cx 400
-                                                :cy 250
-                                                }}
+                                                :cy 250}}
                   :solar       {:name          "Sonne"
                                 :has-arealess? true
                                 :icon          "symbols/solar.svg"
