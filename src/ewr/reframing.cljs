@@ -20,6 +20,19 @@
    [vimsical.re-frame.cofx.inject :as inject]
    [wrap.compress :as compress]))
 
+(def ensure-caps
+  (rf/->interceptor
+   :id :ensure-caps
+   :after (fn [context]
+            (update-in context [:effects :db :energy-sources]
+                       (partial remix/ensure-caps
+                                (-> context
+                                    :coeffects
+                                    :db
+                                    :energy-needed))))))
+
+(rf/reg-global-interceptor ensure-caps)
+
 ;; ###################
 ;; #### Technical ####
 ;; ###################
