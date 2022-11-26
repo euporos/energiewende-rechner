@@ -63,9 +63,6 @@
      (apply str
             (take (.indexOf alphabet letter)  (repeat number))))))
 
-(expand-floatstrings
- (compress-floatstrings "8.600000000000001"))
-
 ;; ######################################
 ;; ######## Huffmann-Compression ########
 ;; ######################################
