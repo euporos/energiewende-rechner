@@ -25,6 +25,17 @@
         (< cap (relative-share-to-twh energy-needed share)))
     nrg))
 
+(defn ensure-caps [remix-fn energy-needed nrgs]
+  (let [exceeding-nrg (some (partial cap-exceeded? energy-needed)
+                            nrgs)]
+    (if exceeding-nrg
+      (recur remix-fn energy-needed
+             (remix-fn
+              (first exceeding-nrg)
+              (twh-to-relative-share energy-needed (:cap (second exceeding-nrg)))
+              energy-needed nrgs))
+      nrgs)))
+
 (defn remix-energy-shares-float
   "Takes a set of energy shares (NRGS) and returns
   a new one with the share of CHANGED-NRG-KEY
@@ -68,14 +79,7 @@
                                            scalefactor))))
                           (assoc-in nrgs [changed-nrg-key :share] newval) ; update the nrg changed by user
                           reacting-nrgs)]
-    (let [exceeding-nrg (some (partial cap-exceeded? energy-needed)
-                              reacted-energies)]
-      (if exceeding-nrg
-        (remix-energy-shares-float
-         (first exceeding-nrg)
-         (twh-to-relative-share energy-needed (:cap (second exceeding-nrg)))
-         energy-needed reacted-energies)
-        reacted-energies))))
+    (ensure-caps remix-energy-shares-float energy-needed reacted-energies)))
 
 (defn attempt-remix
   "If remix is blocked, reurns thes energy-sources unchanged.
