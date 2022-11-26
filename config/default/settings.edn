@@ -41,7 +41,7 @@
                                           :cy 430}}
                   :minor        {:name    "Sonstige"
                                  :icon    "symbols/minors.svg"
-                                 :color   "rgb(140, 140, 140)"
+                                 :color   "rgb(153, 51, 255)"
                                  :fossil? false
                                  :props   {:cx 380
                                            :cy 800}}}
