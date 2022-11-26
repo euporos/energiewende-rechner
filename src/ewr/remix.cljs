@@ -18,7 +18,7 @@
   a new one with the share of CHANGED-NRG-KEY
   set to NEWVAL. Unblocked energie shares are rebalanced
   accordingly."
-  [changed-nrg-key newval nrgs]
+  [changed-nrg-key newval energy-needed nrgs]
   (let [;; nrgs that need to change to compensate the change made by the user
         sum-shares     (partial
                         transduce (map (comp :share second)) +)
@@ -38,34 +38,37 @@
                            (- newval)
                            (+ reacting-share))
         ;; avoid extremely small values for reactions
-        reacted-share  (if (< reacted-share 0.1) 0 reacted-share)]
+        reacted-share  (if (< reacted-share 0.1) 0 reacted-share)
+        reacted-energies (reduce
+                          (fn [nrgs [reacting-nrg-key reacting-nrg]]
+                            (let [scalefactor
+                                  (cond
+                                    (= reacted-share 0)  ; account for test case #3
+                                    0
+                                    (= reacting-share 0) ; account for test case #4
+                                    (/ 1 (count reacting-nrgs))
+                                    :else
+                                    (/ (:share reacting-nrg)
+                                       reacting-share))]
+                              (assoc-in nrgs
+                                        [reacting-nrg-key :share]
+                                        (* reacted-share
+                                           scalefactor))))
+                          (assoc-in nrgs [changed-nrg-key :share] newval) ; update the nrg changed by user
+                          reacting-nrgs)]
+
+    reacted-energies
 
     ;; (js/console.log "unlocked share is " unlocked-share)
-    (reduce
-     (fn [nrgs [reacting-nrg-key reacting-nrg]]
-       (let [scalefactor
-             (cond
-               (= reacted-share 0)  ; account for test case #3
-               0
-               (= reacting-share 0) ; account for test case #4
-               (/ 1 (count reacting-nrgs))
-               :else
-               (/ (:share reacting-nrg)
-                  reacting-share))]
-         (assoc-in nrgs
-                   [reacting-nrg-key :share]
-                   (* reacted-share
-                      scalefactor))))
-     (assoc-in nrgs [changed-nrg-key :share] newval) ; update the nrg changed by user
-     reacting-nrgs)))
+    ))
 
 (defn attempt-remix
   "If remix is blocked, reurns thes energy-sources unchanged.
   Otherwise performs the remix"
-  [changed-nrg-key newval nrg-sources]
+  [changed-nrg-key newval energy-needed nrg-sources]
   (if (remix-blocked? changed-nrg-key newval nrg-sources)
     nrg-sources
-    (remix-energy-shares-float changed-nrg-key newval nrg-sources)))
+    (remix-energy-shares-float changed-nrg-key newval energy-needed  nrg-sources)))
 
 ;; ##############
 ;; ### Legacy ###
