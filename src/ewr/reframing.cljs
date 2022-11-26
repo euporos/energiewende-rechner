@@ -483,6 +483,17 @@
                            [:query (str param)] (str value))]
      (set! (.. js/window -location -href) (str new-url)))))
 
+(rf/reg-fx
+ :save/remove-savestate-from-url
+ (fn []
+   (let [current-url
+         (url/url (.. js/window -location -href))
+         new-url (update-in current-url
+                            [:query] #(dissoc % "savestate" "sv"))]
+     (-> js/window
+         .-history
+         (.replaceState nil nil new-url)))))
+
 (reg-sub
  :global/url
  (fn [_]
@@ -533,9 +544,9 @@
  (fn [{db :db} [_ savestate]]
    (let [savestate-string
          (serialize/serialize-and-compress savestate)]
-     {:global/set-url-query-params {:savestate savestate-string
-                                    :sv        "1"}
-      :db                          (assoc db :savestate-string savestate-string)})))
+     (cond-> {:db (assoc db :savestate-string savestate-string)}
+       (not (h/map-subset? default-db db)) (assoc :global/set-url-query-params {:savestate savestate-string
+                                                                                :sv        "1"})))))
 
 (rf/reg-event-fx
  :savestate/on-change
@@ -681,7 +692,8 @@
  ;; initializes the db
  ;; loads the default publications
  (fn-traced [_ [_ load-savestate?]]
-            {:db              default-db
-             :tech/dispatches [(when (and (cfg/feature-active? :bookmark-state)
-                                          load-savestate?)
-                                 [:save/load-savestate-from-url])]}))
+            (cond-> {:db              default-db
+                     :tech/dispatches [(when (and (cfg/feature-active? :bookmark-state)
+                                                  load-savestate?)
+                                         [:save/load-savestate-from-url])]}
+              (not load-savestate?) (assoc :save/remove-savestate-from-url true))))
