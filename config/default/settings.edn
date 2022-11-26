@@ -38,7 +38,13 @@
                                 :color   "rgb(140, 140, 140)"
                                 :fossil? true
                                 :props   {:cx 130
-                                          :cy 430}}}
+                                          :cy 430}}
+                  :minor        {:name    "Sonstige"
+                                 :icon    "symbols/coal.svg"
+                                 :color   "rgb(140, 140, 140)"
+                                 :fossil? false
+                                 :props   {:cx 380
+                                           :cy 800}}}
 
  :init-mix {:wind        {:share   28
                           :locked? false}
