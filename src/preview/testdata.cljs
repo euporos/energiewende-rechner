@@ -4,46 +4,53 @@
             [ewr.serialization :as serialize]))
 
 (def teststate
-  {:energy-needed 3000
-   :energy-sources
+  {:energy-sources
    {:wind
-    {:share             28
-     :power-density     4.56
-     :deaths            0.12
-     :co2               11
-     :resources         10260
+    {:share 28
+     :power-density 4.56
+     :deaths 0.12
+     :co2 11
+     :resources 10260
      :arealess-capacity 240}
     :solar
-    {:share             12
-     :power-density     5.2
-     :deaths            0.44
-     :co2               44
-     :resources         16447
+    {:share 12
+     :power-density 5.2
+     :deaths 0.44
+     :co2 44
+     :resources 16447
      :arealess-capacity 142}
-    :nuclear
-    {:share         15
-     :power-density 240.8
-     :deaths        0.08
-     :co2           12
-     :resources     930}
     :bio
-    {:share         2
+    {:share 2
      :power-density 0.16
-     :deaths        4.63
-     :co2           230
-     :resources     1080}
+     :deaths 4.63
+     :co2 230
+     :resources 1080}
+    :nuclear
+    {:share 15
+     :power-density 240.8
+     :deaths 0.08
+     :co2 12
+     :resources 930}
     :natural-gas
-    {:share         12
+    {:share 12
      :power-density 482.1
-     :deaths        2.82
-     :co2           490
-     :resources     572}
+     :deaths 2.82
+     :co2 490
+     :resources 572}
     :coal
-    {:share         31
+    {:share 30
      :power-density 135.1
-     :deaths        28.67
-     :co2           820
-     :resources     1185}}})
+     :deaths 28.67
+     :co2 820
+     :resources 1185}
+    :minor
+    {:share 1
+     :power-density 1
+     :deaths 20
+     :co2 100
+     :resources 1000
+     :cap 500}}
+   :energy-needed 2159})
 
 ;; (def teststate-string
 ;;   "AX9AIarI0vJik08J2F30DFHMXlVqrSiq7SsPoEdheWvO1MVwW-hF5KVZQVgXTtvoGKrRJsS0VXOjdh9ARpEOTYaUdrR0lhve8")
@@ -52,8 +59,6 @@
   (serialize/encode-savestate-huff
    (str
     (serialize/serialize teststate))))
-
-"AX9AD9WRpeTFJp4TsLvoGKOYvKrVWlFV2lYfQI7C8tedqYrgt9CLyUqygrAunbfQMVWiTYloqudG7D6AjSIcmw0o7WjpLDe94"
 
 (def test-request
   (clj->js
