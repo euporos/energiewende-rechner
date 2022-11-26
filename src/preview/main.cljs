@@ -42,13 +42,13 @@
   (let [y-text (+ 30 (* i offset))]
     [:<>
      [:text {:zindex    1000
-             :font-size "3em"}
+             :font-size "2.8em"}
       [:tspan {:x 3 :y y-text} (str name ": " (Math/round share) "%")]]
-     [:rect {:x            2  :y     (+ 15 y-text)
+     [:rect {:x            2  :y     (+ 10 y-text)
              :stroke       "black"
-             :stroke-width 2
+             :stroke-width 1.5
              :fill         color
-             :height       30 :width (* share 5)}]]))
+             :height       22 :width (* share 5)}]]))
 
 (defn energy-needed
   []
