@@ -63,13 +63,22 @@
      (apply str
             (take (.indexOf alphabet letter)  (repeat number))))))
 
+(defn compress-nils [serialized-string]
+  (str/replace serialized-string #"(nil ?)" "_"))
+
+#_(defn expand-nils [decompressed-string]
+    (str/replace decompressed-string #"_+" #(str/join " " (repeat (count %) "nil"))))
+
+(defn expand-nils [decompressed-string]
+  (str/replace decompressed-string #"_" "nil "))
+
 ;; ######################################
 ;; ######## Huffmann-Compression ########
 ;; ######################################
 
 (def code-savestate-huff
   (let [encoder (createEncoder
-                 "[1300 [[10.7n97 4.56 0.12 11 10260 240] [46 5.2 0.44 44 16447 142] [10.7n97 240.8 0.08 12 930] [10.7n97 0.16 4.63 230 1080] [10.7n97 482.1 2.82 490 572] [10.7n97 135.1 28.67 820 1185]]]")]
+                 (str alphabet "[2160 [[28 4.56 0.12 11 10260 240 _] [12 5.2 0.44 44 16447 142 _] [15 240.8 0.08 12 930 __] [2 0.16 4.63 230 1080 __] [12 482.1 2.82 490 572 __] [30 135.1 28.67 820 1185 __] [1 1 20 100 1d0 _ 500]]]"))]
     (fn [string decode?]
       (if decode?
         (decodeConfig string encoder)
@@ -147,8 +156,10 @@
   "work around bug in Huffman-Library
   see https://stackoverflow.com/questions/67273883/information-lost-in-huffman-encoding"
   [savestate-string]
-  (let [decoded (expand-floatstrings
-                 (decode-savestate-huff savestate-string))
+  (let [decoded (-> savestate-string
+                    decode-savestate-huff
+                    expand-floatstrings
+                    expand-nils)
         parsed  (try (deserialize
                       (edn/read-string (str decoded "]")))
                      (catch js/Object e
@@ -163,5 +174,6 @@
   (comp
    encode-savestate-huff
    compress-floatstrings
+   compress-nils
    str
    serialize))
