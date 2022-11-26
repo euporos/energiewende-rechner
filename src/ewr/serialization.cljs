@@ -11,7 +11,7 @@
 
 (def serializer-version 1)
 
-(def nrg-order [:wind :solar :nuclear :bio :natural-gas :coal :minor])
+(def nrg-order [:wind :solar :nuclear :bio :natural-gas :coal :minors])
 
 (def param-order [:share :power-density :deaths :co2 :resources :arealess-capacity :cap])
 
@@ -145,7 +145,7 @@
      [:natural-gas
       energy-source-spec]
      [:coal energy-source-spec]
-     [:minor energy-source-spec]]]
+     [:minors energy-source-spec]]]
    [:energy-needed float?]])
 
 ;; ############################

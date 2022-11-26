@@ -43,7 +43,7 @@
      :deaths 28.67
      :co2 820
      :resources 1185}
-    :minor
+    :minors
     {:share 1
      :power-density 1
      :deaths 20

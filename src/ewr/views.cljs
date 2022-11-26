@@ -254,15 +254,15 @@
    {:style {:margin-left  "auto"
             :margin-right "auto"}}
    [:span.has-text-weight-bold
-    {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :minor])}
+    {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :minors])}
     (with-tooltip (cfg/snippet :common-parameter-inputs
-                               :cap :name :minor))]
+                               :cap :name :minors))]
 
    [:div.columns.is-mobile.is-vcentered.mt-1
     [:div.column]
-    [:div.column.is-narrow [param-input [:energy-sources :minor] params/cap]]
-    [:div.column.is-narrow [param-dropdown :minor params/cap]]
-    [:div.column.is-narrow [param-publication-link :minor :cap]]
+    [:div.column.is-narrow [param-input [:energy-sources :minors] params/cap]]
+    [:div.column.is-narrow [param-dropdown :minors params/cap]]
+    [:div.column.is-narrow [param-publication-link :minors :cap]]
     [:div.column]]])
 
 (defn detailed-settings-tabular
@@ -279,7 +279,7 @@
                        [settings-table-top-row]]
                       [:tbody
                        (for [nrg-source (dissoc @(rf/subscribe [:nrg/get-all])
-                                                :minor)]
+                                                :minors)]
                          ^{:key (first nrg-source)}
                          [settings-table-row nrg-source])]]
 

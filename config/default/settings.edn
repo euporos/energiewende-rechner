@@ -39,12 +39,12 @@
                                 :fossil? true
                                 :props   {:cx 130
                                           :cy 430}}
-                  :minor        {:name    "Sonstige"
-                                 :icon    "symbols/minors.svg"
-                                 :color   "rgb(153, 51, 255)"
-                                 :fossil? false
-                                 :props   {:cx 380
-                                           :cy 800}}}
+                  :minors        {:name    "Sonstige"
+                                  :icon    "symbols/minors.svg"
+                                  :color   "rgb(217, 179, 255)"
+                                  :fossil? false
+                                  :props   {:cx 550
+                                            :cy 400}}}
 
  :init-mix {:wind        {:share   28
                           :locked? false}
@@ -58,5 +58,5 @@
                           :locked? false}
             :coal        {:share   30
                           :locked? false}
-            :minor        {:share   1
-                           :locked? false}}}
+            :minors        {:share   1
+                            :locked? false}}}

@@ -210,15 +210,15 @@
   :link ""
   :energy-sources
   {:co2
-   {:minor 100}
+   {:minors 100}
    :cap
-   {:minor 500}
+   {:minors 500}
    :deaths
-   {:minor 20}
+   {:minors 20}
    :power-density
-   {:minor 1}
+   {:minors 1}
    :resources
-   {:minor 1000}}}
+   {:minors 1000}}}
 
  {:id   "IPCC (2014)"
   :link "https://www.ipcc.ch/site/assets/uploads/2018/02/ipcc_wg3_ar5_annex-iii.pdf#page=7"
