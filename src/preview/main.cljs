@@ -11,18 +11,6 @@
    [reagent.dom.server :as rdom])
   (:require-macros [ewr.macros :as m]))
 
-(defn svg->png
-  [svg-string callback]
-  (let [name     "testsvg"
-        svg-name (str name ".svg")
-        png-name (str name ".png")]
-    (.writeFileSync fs svg-name svg-string)
-    (-> svg-name
-        sharp
-        (.resize (clj->js {:width 1500}))
-        .png
-        (.toFile png-name callback))))
-
 (defn svg-string->png-buf
   [svg-string callback]
   (let [svg-buf (.from js/Buffer svg-string)]
