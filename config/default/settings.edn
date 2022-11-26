@@ -40,7 +40,7 @@
                                 :props   {:cx 130
                                           :cy 430}}
                   :minor        {:name    "Sonstige"
-                                 :icon    "symbols/coal.svg"
+                                 :icon    "symbols/minors.svg"
                                  :color   "rgb(140, 140, 140)"
                                  :fossil? false
                                  :props   {:cx 380
