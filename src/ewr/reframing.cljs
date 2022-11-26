@@ -286,7 +286,10 @@
  (fn [db [_ nrg-key newval]]
    (update db :energy-sources
            #(remix/attempt-remix
-             nrg-key (* 1 (js/parseInt newval)) %))))
+             nrg-key
+             (* 1 (js/parseInt newval))
+             (:energy-needed db)
+             %)))) ;TODO: get parse-fn from config
 
 ;; ############################
 ;; ###### Derived-values ######
