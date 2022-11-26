@@ -1,5 +1,6 @@
 (ns ewr.parameters
   (:require [ewr.config :as cfg]
+            [ewr.constants :as const]
             [ewr.helpers :as h]))
 
 ;; ###########################
@@ -9,7 +10,11 @@
 (def energy-needed
   [:energy-needed {:name        "Strombedarf"
                    :unit        "TWh"
+                   :subscription
+                   [:energy-needed/get]
+                   :granularity-factor const/granularity-factor
                    :parse-fn    js/parseFloat
+                   :validation-fn #(and (int? %) (> % 0))
                    :input-attrs {:type    "number"
                                  :pattern "1"
                                  :step    "1"
@@ -26,24 +31,16 @@
          ;; Overrides with the snippets
          ;; from the config file
          [param-key (merge
+                     {:validation-fn #(> % 0)}
                      param-dfn
                      (cfg/snippet :common-parameter-inputs param-key))])
        [[:power-density {:name        "Bemessungsleistung pro m² in W"
-                         :unit        "W/m²"
+                         :unit        "W/m²granularity-factor b"
                          :parse-fn    js/parseFloat
                          :input-attrs {:type    "number"
                                        :pattern "0.00"
                                        :step    "0.01"
                                        :min     0.01}}]
-
-        ;; [:capacity-factor {:name "Kapazitätsfaktor"
-        ;;                    :unit "1=100%"
-        ;;                    :parse-fn js/parseFloat
-        ;;                    :input-attrs {:type "number"
-        ;;                                  :pattern "0.00"
-        ;;                                  :step "0.01"
-        ;;                                  :min 0.01
-        ;;                                  :max 1}}]
 
         [:deaths {:name                "Todesfälle/TWh"
                   :unit                "/TWh"
@@ -96,7 +93,9 @@
 
 (def arealess-capacity
   [:arealess-capacity {:unit        "TWh"
+                       :granularity-factor const/granularity-factor
                        :parse-fn    js/parseFloat
+                       :validation-fn (constantly true)
                        :input-attrs {:type    "number"
                                      :pattern "1"
                                      :step    "1"
@@ -109,9 +108,37 @@
                                     :arealess-capacity :name :solar)
                        "Solarkapazität auf Dächern in TWh")))
 
+(def cap
+  [:cap {:name                "Deckelung der Wasserkraft in TWh"
+         :unit                "TWh"
+         :validation-fn (constantly true)
+         :granularity-factor const/granularity-factor
+         :parse-fn            js/parseInt
+         :input-attrs         {:type    "number"
+                               :pattern "0"
+                               :step    "1"
+                               :min     1}}])
+
 (def arealess-capacity-wind
   (assoc-in arealess-capacity
             [1 :name] (or
                        (cfg/snippet :common-parameter-inputs
                                     :arealess-capacity :name :wind)
                        "Kapazität für Offshore Windkraft in TWh")))
+
+(def all-params-map
+  (into {}
+        (conj common-nrg-parameters
+              energy-needed
+              arealess-capacity-solar
+              arealess-capacity-wind
+              cap)))
+
+(defn lookup-property [param-key property-key]
+  (get-in all-params-map [param-key property-key]))
+
+(defn granularize [param-key val]
+  (* val (get-in all-params-map [param-key :granularity-factor] 1)))
+
+(defn ungranularize [param-key val]
+  (/ val (get-in all-params-map [param-key :granularity-factor] 1)))

@@ -7,6 +7,7 @@
    [ewr.config :as cfg]
    [ewr.constants :as constants]
    [ewr.constants :as const]
+   ewr.csv
    [ewr.helpers :as h]
    [ewr.parameters :as params]
    [ewr.publications :as pubs]
@@ -17,8 +18,7 @@
    [reagent.ratom :as ratom]
    [thi.ng.color.core :as col]
    [troglotit.re-frame.debounce-fx]
-   [vimsical.re-frame.cofx.inject :as inject]
-   [wrap.compress :as compress]))
+   [vimsical.re-frame.cofx.inject :as inject]))
 
 ;; ###################
 ;; #### Technical ####
@@ -60,6 +60,10 @@
                (js/document.execCommand "copy")
                (js/console.log "copied to clipboard: " val))))
 
+(rf/reg-sub :summed-shares
+            (fn [db _]
+              (remix/sum-shares (:energy-sources db))))
+
 ;; ############################
 ;; ###### Input handling ######
 ;; ############################
@@ -68,18 +72,13 @@
 ;; as defined in the ewr.parameters namespace
 
 (reg-event-db
- :param/parse-and-set
-
- (fn [db [_ prepath param
-          unparsed-newval]]
-   (let ; we take parse-fn from the parameter-definition
-    [[param-key {:keys [parse-fn]}] param]
-     (assoc-in db (conj prepath param-key)
-               (parse-fn unparsed-newval)))))
+ :param/set
+ (fn [db [_ path parsed-newval]]
+   (assoc-in db path parsed-newval)))
 
 (reg-sub :param/get
-         (fn [db [_ pre-path param-key]]
-           (h/nan->nil (get-in db (conj pre-path param-key)))))
+         (fn [db [_ path]]
+           (h/nan->nil (get-in db path))))
 
 ;; ###########################
 ;; ###### Energy Needed ######
@@ -89,25 +88,41 @@
  :energy-needed/get
  (fn [db _]
    (h/nan->nil
-    (get db :energy-needed))))
+    (remix/sum-shares (:energy-sources db)))))
+
+(defn set-energy-needed [db newval]
+  (let [current-share-sum  (remix/sum-shares (:energy-sources db))
+        delta  (- newval current-share-sum)
+        remixed-energies  (remix/distribute-energy delta (:energy-sources db))]
+    (-> db
+        (assoc :energy-sources remixed-energies))))
 
 (reg-event-db
  :energy-needed/set
  (fn [db [_ newval]]
-   (assoc db :energy-needed newval)))
+   (set-energy-needed db  (* constants/granularity-factor
+                             (js/parseInt newval)))))
 
 ;; #####################################################
 ;; ########### Energy Sources and Parameters ###########
 ;; #####################################################
 
 (reg-sub
+ :nrg/keys
+ (fn [db]
+   (keys (:energy-sources db))))
+
+(reg-sub
  :nrg/get-all
  ;; returns alls energy sources
  ;; combining variable values with constant ones
  (fn [db]
-   (merge-with merge
-               cfg/nrgs
-               (:energy-sources db))))
+   (reduce
+    (fn [sofar [nrg-key nrg-state]]
+      (assoc sofar nrg-key
+             (merge (get cfg/nrgs nrg-key) nrg-state)))
+    {}
+    (:energy-sources db))))
 
 (reg-sub
  :nrg/get
@@ -135,8 +150,9 @@
    [(rf/subscribe [:nrg/get-param nrg-key :arealess-capacity])
     (rf/subscribe [:nrg-share/get-absolute-share nrg-key])])
  (fn [[arealess-capacity twh-share] [_ nrg-key]]
-   (if (> twh-share arealess-capacity)
-     arealess-capacity twh-share)))
+   (params/ungranularize :arealess-capacity
+                         (if (> twh-share arealess-capacity)
+                           arealess-capacity twh-share))))
 
 ;; ########################
 ;; ##### Publications #####
@@ -158,15 +174,9 @@
     (first (filter #(= (:id %) last-loaded)
                    matching-pubs))))
 
-(reg-sub
- :pub/global-loaded
- ;; the publication currently loaded for :energy-needed
- ;; Returns the whole map, not just the id
- (fn [db [_ key]]
-   (let [curval        (get db key)
-         matching-pubs (pubs/matching-pubs-for-path [key] curval)
-         last-loaded   (get-in db [:ui :loaded-pubs key])]
-     (return-loaded-pub matching-pubs last-loaded))))
+(rf/reg-sub :pubs/loaded
+            (fn [db _]
+              (get-in db [:ui :loaded-pubs])))
 
 (reg-sub
  :pub/nrg-param-loaded
@@ -191,7 +201,9 @@
   [db pub nrg-key param-key]
   (-> db
       (assoc-in [:energy-sources nrg-key param-key]
-                (get-in pub [:energy-sources nrg-key param-key]))
+                (*
+                 (or (params/lookup-property param-key :granularity-factor) 1)
+                 (get-in pub [:energy-sources nrg-key param-key])))
       (assoc-in [:ui :loaded-pubs nrg-key param-key]
                 (:id pub))))
 
@@ -207,36 +219,62 @@
  (fn [db [_ nrg-key param-key pub]]
    (load-nrg-pub db nrg-key param-key pub)))
 
-(defn load-global-pub [db key pub]
-  (if (not= pub nil)
+(defn load-energy-needed-pub [db {:keys [id energy-needed] :as pub}]
+  (when-not (= pub "user-defined")
     (-> db
-        (assoc key
-               (get pub key))
-        (assoc-in [:ui :loaded-pubs key]
-                  (:id pub)))))
+        (set-energy-needed (* constants/granularity-factor energy-needed))
+        (assoc-in [:ui :loaded-pubs :energy-needed]
+                  id)) db))
+
 (reg-event-db
- :pub/load-global
- (fn [db [_ key pub]]
-   (load-global-pub db key pub)))
+ :pub/load-energy-needed
+ (fn [db [_ pub]]
+   (load-energy-needed-pub db pub)))
+
+(reg-sub
+ :pub/loaded-energy-needed
+ ;; the publication currently loaded for :energy-needed
+ ;; Returns the whole map, not just the id
+ (fn [_]
+   [(rf/subscribe [:energy-needed/get])
+    (rf/subscribe [:pubs/loaded])])
+ (fn [[energy-needed loaded-pubs] _]
+   (let [matching-pubs (pubs/matching-pubs-for-path [:energy-needed] (/ energy-needed constants/granularity-factor))
+         last-loaded   (get loaded-pubs :energy-needed)]
+     (return-loaded-pub matching-pubs last-loaded))))
 
 (defn load-default-pubs [db]
   (-> (reduce
        (fn [db [_ nrg-key param-key]]
          (load-nrg-pub db  nrg-key param-key (pubs/default-pub nrg-key param-key)))
        db
-       (for [nrg-key   cfg/nrg-keys ; … for alle combinations
+       (for [nrg-key   (keys (get db :energy-sources)) ; … for alle combinations
              param-key params/common-param-keys] ; of energy-sources and parameters
          [nil nrg-key param-key]))
-      (load-global-pub :energy-needed (first (pubs/pubs-for-global-value :energy-needed)))
+      (load-energy-needed-pub (first (pubs/pubs-for-global-value :energy-needed)))
       (load-nrg-pub :solar :arealess-capacity ; …for rooftop solar
                     (pubs/default-pub :solar :arealess-capacity))
       (load-nrg-pub :wind :arealess-capacity ; …for offshore wind
-                    (pubs/default-pub :wind :arealess-capacity))))
+                    (pubs/default-pub :wind :arealess-capacity))
+      (load-nrg-pub :hydro :cap         ; …for minors cap
+                    (pubs/default-pub :hydro :cap))))
 
 (def default-db
-  (load-default-pubs
-   {:energy-sources
-    (get cfg/settings :init-mix)}))
+  (-> cfg/latest-preset
+      ;; we load the default pubs only so the pub dropdowns show the pubs, corresponding
+      ;; to values from the savestate…
+      load-default-pubs
+      ;; then we ensure that the savestate values are used
+      ;; even if there are no correspondig pubs
+      #_(merge cfg/latest-preset))) ;; comment this out to create a new default savestate
+
+(comment
+  @(rf/subscribe [:save/savestate]))
+
+(rf/reg-event-db
+ :pub/load-defaults
+ ;; Used on initialization. Loads all default publications…
+ (fn [db _] (load-default-pubs db)))
 
 ;; ###########################
 ;; ###### Energy shares ######
@@ -253,33 +291,94 @@
  (fn [db [_ nrg-key]]
    (update-in db [:energy-sources nrg-key :locked?] not)))
 
+;; (reg-sub
+;;  :nrg-share/get-relative-share
+;;  ;; Returns the relative share of an Energy Source
+;;  ;; in the total energy needed (in percent)
+;;  (fn [db [_ nrg-key]]
+;;    (get-in db [:energy-sources nrg-key :share])))
+
 (reg-sub
- :nrg-share/get-relative-share
- ;; Returns the relative share of an Energy Source
+ :nrg-share/get-absolute-share
+ ;; Returns the absolute share of an Energy Source
  ;; in the total energy needed (in percent)
  (fn [db [_ nrg-key]]
    (get-in db [:energy-sources nrg-key :share])))
 
 (reg-sub
- :nrg-share/get-absolute-share
+ :nrg-share/get-absolute-share-ungranular
+ ;; Returns the relative share of an Energy Source
+ ;; in the total energy needed (in percent)
+ (fn [[_ nrg-key]]
+   (rf/subscribe [:nrg-share/get-absolute-share nrg-key]))
+ (fn [share _]
+   (/ share constants/granularity-factor)))
+
+(reg-sub
+ :nrg-share/get-relative-share
  ;; Returns the absolute share of an Energy Source
  ;; in the total energy needed (in TWh)
  (fn [[_ nrg-key]]
    [(rf/subscribe [:energy-needed/get])
-    (rf/subscribe [:nrg-share/get-relative-share nrg-key])])
+    (rf/subscribe [:nrg-share/get-absolute-share nrg-key])])
  (fn [[energy-needed share] [_ nrg-key]]
    (-> share
-       (/ 100)
-       (* energy-needed))))
+       (* 1.0)
+       (/ energy-needed))))
+
+#_(reg-sub
+   :nrg-share/get-absolute-share
+   ;; Returns the absolute share of an Energy Source
+   ;; in the total energy needed (in TWh)
+   (fn [[_ nrg-key]]
+     [(rf/subscribe [:energy-needed/get])
+      (rf/subscribe [:nrg-share/get-relative-share nrg-key])])
+   (fn [[energy-needed share] [_ nrg-key]]
+     (-> share
+         (/ 100)
+         (* energy-needed))))
+
+;; ######################################
+;; ######## Capping and Remixing ########
+;; ######################################
+
+(defn remove-cap-bump-notes [db]
+  (reduce
+   (fn [db key]
+     (assoc-in  db [:energy-sources key :cap-bumped] false))
+   db
+   (keys (:energy-sources db))))
+
+(defn note-bumped-into-cap [db nrg-key newval]
+  (let [cap (get-in db [:energy-sources nrg-key :cap])]
+    (cond-> db
+      (> newval cap) (assoc-in [:energy-sources nrg-key :cap-bumped] true))))
 
 (reg-event-db
  :nrg/remix-shares
  ;; Dispatched whenever the slider
  ;; associated with a energy-key is moved
  (fn [db [_ nrg-key newval]]
-   (update db :energy-sources
-           #(remix/attempt-remix
-             nrg-key (* 1 (js/parseInt newval)) %))))
+   (-> db
+       remove-cap-bump-notes
+       (note-bumped-into-cap nrg-key newval)
+       (update :energy-sources
+               #(remix/attempt-remix
+                 nrg-key
+                 (js/parseInt newval)
+                 %))))) ;TODO: get parse-fn from config
+
+(rf/reg-event-db :cap/set
+                 (fn [db [_ nrg-key newval]]
+                   (let [granularized-newval (* constants/granularity-factor newval)
+                         remix-needed? (< granularized-newval (get-in db [:energy-sources nrg-key :cap]))]
+                     (cond-> db
+                       true (assoc-in [:energy-sources nrg-key :cap] granularized-newval)
+                       remix-needed? (update :energy-sources
+                                             #(remix/attempt-remix
+                                               nrg-key
+                                               granularized-newval
+                                               %))))))
 
 ;; ############################
 ;; ###### Derived-values ######
@@ -294,20 +393,19 @@
  ;; Subscription for the map view
  ;; Adds everything needed to draw the circles
  (fn [[_ nrg-key]]
-   [(rf/subscribe [:energy-needed/get])
-    (rf/subscribe [:nrg/get nrg-key])])
- (fn [[energy-needed nrg] [_ _nrg-key]]
-   (let [{:keys [share power-density] :as nrg}
+   [(rf/subscribe [:nrg/get nrg-key])
+    (rf/subscribe [:nrg-share/get-absolute-share nrg-key])])
+ (fn [[nrg share] [_ _nrg-key]]
+   (let [{:keys [power-density] :as nrg}
          nrg
          area
-         (-> energy-needed
-             (* share)
-             (/ 100) ; share in TWh ;TODO: from constant
+         (-> share
              (- (:arealess-capacity nrg 0))
-             (* 1000000000000) ; share in Wh
+             (/ constants/granularity-factor)
+             (* 1000000000000)        ; share in Wh
              (/ const/hours-per-year) ; needed W
-             (/ power-density) ; needed m²
-             (/ 1000000)) ; needed km²
+             (/ power-density)        ; needed m²
+             (/ 1000000))             ; needed km²
          radius           (if (or (< area 0) ; area < 0 possible with arealess-capacity
                                   (js/isNaN area)) 0
                               (h/radius-from-area-circle area))]
@@ -322,12 +420,11 @@
 ;;;;;
 
 (defn enrich-data-for-indicator
-  [[energy-needed energy-sources] [_ param-key]]
+  [energy-sources [_ param-key]]
   (let [abs-added    (h/map-vals
                       #(assoc % :absolute
                               (-> (:share %)
-                                  (/ 100)            ;TODO: from const
-                                  (* energy-needed)  ; TWh of this nrg
+                                  (/ constants/granularity-factor)
                                   (* (param-key %))))
                       energy-sources)
         total        (reduce #(+ %1 (:absolute (second %2)))
@@ -348,9 +445,8 @@
 
 (reg-sub ; param-key should be :co2 or :deaths
  :deriv/data-for-indicator
- (fn [[_ param-key]]
-   [(rf/subscribe [:energy-needed/get])
-    (rf/subscribe [:nrg/get-all])])
+ (fn [[_ _param-key]]
+   (rf/subscribe [:nrg/get-all]))
  enrich-data-for-indicator)
 
 ;;;;;
@@ -364,8 +460,9 @@
    [(rf/subscribe [:deriv/data-for-indicator :co2])
     (rf/subscribe [:energy-needed/get])])
  (fn [[{:keys [param-total]} energy-needed] _] ; param total are the CO2-Emissions in kt
-   (if (and param-total (> energy-needed 0))
-     (-> param-total                            ; kt/needed-nrg
+   (when (and param-total (> energy-needed 0))
+     (-> param-total                          ; kt/needed-nrg
+         (* constants/granularity-factor)
          (/ energy-needed)))))  ; g/kWh
 
 (reg-sub
@@ -387,7 +484,7 @@
    [(rf/subscribe [:deriv/max-co-per-kwh])
     (rf/subscribe [:deriv/co2-per-kwh-mix])])
  (fn [[max-co2-intensity actual-co2-intensity]  _]
-   (if (and max-co2-intensity actual-co2-intensity)
+   (when (and max-co2-intensity actual-co2-intensity)
      (let [bg (color/share-to-color
                max-co2-intensity
                actual-co2-intensity cfg/co2-colors)]
@@ -453,6 +550,17 @@
                            [:query (str param)] (str value))]
      (set! (.. js/window -location -href) (str new-url)))))
 
+(rf/reg-fx
+ :save/remove-savestate-from-url
+ (fn []
+   (let [current-url
+         (url/url (.. js/window -location -href))
+         new-url (update-in current-url
+                            [:query] #(dissoc % "s"))]
+     (-> js/window
+         .-history
+         (.replaceState nil nil new-url)))))
+
 (reg-sub
  :global/url
  (fn [_]
@@ -467,11 +575,6 @@
            (map (fn [[key vals]]
                   [key (dissoc vals :locked?)])
                 nrgs)))))
-
-(def default-savestate-string
-  (-> default-db
-      db->savestate
-      serialize/serialize-and-compress))
 
 (reg-sub
  :save/savestate
@@ -489,13 +592,10 @@
            new-url
            (reduce-kv
             (fn [sofar k v]
-              (if (empty? v)
-                (update sofar :query #(dissoc % (name k)))
-                (assoc-in sofar
-                          [:query (name k)] v)))
+              (assoc-in sofar
+                        [:query (name k)] v))
             current-url
             query-map)]
-       (println "new-url is: " new-url)
        (-> js/window
            .-history
            (.pushState nil nil new-url))))))
@@ -510,14 +610,10 @@
  :savestate/encode-string
  (fn [{db :db} [_ savestate]]
    (let [savestate-string
-         (serialize/serialize-and-compress savestate)]
-     (if (= savestate-string default-savestate-string)
-       {:global/set-url-query-params {:savestate ""
-                                      :sv        ""}
-        :db                          (assoc db :savestate-string savestate-string)}
-       {:global/set-url-query-params {:savestate savestate-string
-                                      :sv        "1"}
-        :db                          (assoc db :savestate-string savestate-string)}))))
+         (serialize/savestate->string savestate)]
+     (cond-> {:db (assoc db :savestate-string savestate-string)}
+       (not (h/map-subset? default-db db))
+       (assoc :global/set-url-query-params {:s savestate-string})))))
 
 (rf/reg-event-fx
  :savestate/on-change
@@ -539,10 +635,7 @@
  (fn [[analysed-url savestate-string]]
    (-> analysed-url
        (assoc-in
-        [:query "sv"]
-        serialize/serializer-version)
-       (assoc-in
-        [:query "savestate"]
+        [:query "s"]
         savestate-string))))
 
 (reg-sub
@@ -558,7 +651,7 @@
  (fn []
    (rf/subscribe [:save/savestate-string]))
  (fn [savestate-string]
-   (str "?savestate=" savestate-string "&sv=" serialize/serializer-version)))
+   (str "?s=" savestate-string)))
 
 (reg-sub
  :save/querystring
@@ -573,21 +666,23 @@
  (fn [savestate _]
    (str
     "data:application/octet-stream,"
-    (serialize/savestate-to-csv savestate))))
+    (ewr.csv/savestate-to-csv savestate))))
 
 (rf/reg-event-fx
  :save/load-savestate-from-url
  [(rf/inject-cofx :global/url)]
  (fn [{:keys [url db] :as cofx} []]
    (if-let [url-savestate-string
-            (get-in url [:query "savestate"])]
-     (let [savestate (serialize/decompress-and-deserialize
+            (get-in url [:query "s"])]
+     (let [savestate (serialize/string->savestate
                       url-savestate-string)]
-       {:db         (if savestate
-                      (merge db savestate)
-                      (assoc-in db [:ui :savestate-load-failed?] true))
-        :tech/alert (when (empty? savestate)
-                      "Leider konnte der gespeicherte Energiemix nicht geladen werden\n\nRechner startet mit Standardmix")})
+       (cond-> {:db         (if savestate
+                              (merge db savestate)
+                              (assoc-in db [:ui :savestate-load-failed?] true))}
+         (empty? savestate)
+         (assoc :tech/alert "Leider konnte der gespeicherte Energiemix nicht geladen werden\n\nRechner startet mit Standardmix")
+         (empty? savestate)
+         (assoc :dispatch [:global/initialize false])))
      {})))
 
 (reg-sub
@@ -624,7 +719,6 @@
  :save/copy-link-to-clipboard
  [(rf/inject-cofx ::inject/sub [:save/url-string])]
  (fn [{:keys [:save/url-string db] :as _cofx} _]
-   (println "url-string is: " url-string)
    {:clipboard/copy-to url-string
     :dispatch          [:ui/set-copy-alert "Link zum Energiemix kopiert"]}))
 
@@ -661,7 +755,8 @@
  ;; initializes the db
  ;; loads the default publications
  (fn-traced [_ [_ load-savestate?]]
-            {:db              default-db
-             :tech/dispatches [(when (and (cfg/feature-active? :bookmark-state)
-                                          load-savestate?)
-                                 [:save/load-savestate-from-url])]}))
+            (cond-> {:db              default-db
+                     :tech/dispatches [(when (and (cfg/feature-active? :bookmark-state)
+                                                  load-savestate?)
+                                         [:save/load-savestate-from-url])]}
+              (not load-savestate?) (assoc :save/remove-savestate-from-url true))))

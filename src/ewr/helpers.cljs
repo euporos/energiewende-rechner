@@ -3,6 +3,15 @@
    [clojure.string :as str]
    [re-frame.core :as rf :refer [reg-event-db reg-sub]]))
 
+(defn map-subset? [a-map b-map]
+  (every? (fn [[k _ :as entry]] (= entry (find b-map k))) a-map))
+
+(defn relative-share-to-twh [energy-needed share]
+  (* energy-needed share 0.01))
+
+(defn twh-to-relative-share [energy-needed share-in-twh]
+  (* 100 (/ share-in-twh energy-needed)))
+
 (defn classes
   ""
   [& classstrings]

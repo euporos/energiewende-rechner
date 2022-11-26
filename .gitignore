@@ -27,3 +27,6 @@
 /.shadow-cljs/
 
 /export/
+/.sass-cache/
+
+/.clj-kondo/

@@ -10,9 +10,16 @@
             [optimus.prime :as optimus]
             [optimus.strategies :refer [serve-live-assets]]
             [selmer.parser]
+            [selmer.filters :as sf]
             [stasis.core :as stasis]))
 
 (m/def-config config)
+
+(defn as-php-var [var-name]
+  (str "<?php echo $" var-name "; ?>"))
+
+(sf/add-filter! :php-var
+                as-php-var)
 
 (def inject-php? (get-in config [:settings :inject-php?]))
 
@@ -40,12 +47,13 @@
 (defn get-html-pages []
   (let [php-snippets (if inject-php? (get-php))]
     (map-vals
-     #(selmer.parser/render % {:config          config
+     #(selmer.parser/render % {:php-script (when inject-php? (get php-snippets "/generate_vars.php"))
+                               :config          config
                                :app-hash        (hash-resource "export/main/js/compiled/app.js")
-                               :request-uri     (get php-snippets "/request-uri.php")
+                               :request-uri     (as-php-var "full_query_string")
                                :preview-image
                                (if (and inject-php? (features :dynamic-preview))
-                                 (get php-snippets "/preview-image.php")
+                                 (as-php-var "og_img_link")
                                  (str (get settings :main-site) "/imgs/rich-preview_3.png"))
                                :snippets        nil
                                :prerendered-app prerendered-app})

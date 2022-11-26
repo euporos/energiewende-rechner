@@ -48,22 +48,21 @@
     :natural-gas 2.82
     :coal        28.67}}}
 
-
- ;; ##############
+;; ##############
  ;; ### Deaths ###
  ;; ##############
-
 
  {:id   "Statista"
   :link "https://www.statista.com/statistics/494425/death-rate-worldwide-by-energy-source/"
   :energy-sources
   {:deaths
-   {:bio         12
+   {:bio         12 ;; TODO: check this
     :solar       0.44
     :wind        0.12
     :nuclear     0.09
     :natural-gas 4
-    :coal        161}}}
+    :coal        161
+    :hydro 0.14}}}
  {:id   "Our World in Data"
   :link "https://ourworldindata.org/safest-sources-of-energy"
   :energy-sources
@@ -84,24 +83,26 @@
     :natural-gas 4
     :coal        161}}}
 
-
  ;; ###########################
  ;; ###### Power Density ######
  ;; ###########################
 
+ {:id   "Our World in Data"
+  :link "https://ourworldindata.org/land-use-per-energy-source"
+  :energy-sources
+  {:power-density
+   {:hydro 8.16
+    #_(-> (/ 1 14.0)       ;; MWh/m2
+          (* 1000000)      ;; Wh/m2
+          (/ (* 24 365)))}}}
 
  {:id   "BMVI (2015)"
   :link "https://www.bbsr.bund.de/BBSR/DE/veroeffentlichungen/ministerien/bmvi/bmvi-online/2015/BMVI_Online_08_15.html"
   :energy-sources
   {:power-density
-   {:wind  4.56 ; 20 (ursprünglich fehlerhaft 4.7 berechnet)
-    :solar 5.2  ; ausgehend von 2.25 ha/MW inst.Leistung
-    :bio   0.16 ; ausgehend von 75 ha/GWh*a p.63
-    }
-   :capacity-factor
-   {:wind  1 ; 0.23
-    :solar 1 ; 0.11
-    :bio   1 ; 0.06
+   {:wind  4.56           ; 20 (ursprünglich fehlerhaft 4.7 berechnet)
+    :solar 5.2            ; ausgehend von 2.25 ha/MW inst.Leistung
+    :bio   0.16           ; ausgehend von 75 ha/GWh*a p.63
     }}}
 
  {:id   "Energy Policy (inkl. Infrastruktur)"
@@ -112,24 +113,25 @@
     :solar       6.63
     :nuclear     240.8
     :natural-gas 482.1
-    :coal        135.1}
-   :capacity-factor
-   {:bio         1 ; 0.53
-    :solar       1
-    :wind        1 ; 0.3
-    :nuclear     1 ; 0.93
-    :natural-gas 1}}}
+    :coal        135.1
+    :hydro 0.14}}}
 
  {:id   "Plos One (inkl. Infrastruktur)"
   :link "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0270155#sec004"
   :energy-sources
   {:power-density
+   ;; (-> 7.1              ; ha/TWh/y
+   ;;  (* 10000)        ; → m²/TWh/y
+   ;;  (/ 1000000000000); → m²/Wh/y
+   ;;  (* 24 365)       ; m²/W
+   ;;  (->> (/ 1)))     ; W/m²
    {:solar 5.71
     :wind 0.95
     :bio 0.2
     :nuclear 1607.82
     :natural-gas 27.84
-    :coal 11.42}}}
+    :coal 11.42
+    :hydro 17.56}}}
 
  {:id   "Energy Policy (ohne Infrastruktur)"
   :link "https://doi.org/10.1016/j.enpol.2018.08.023"
@@ -170,12 +172,18 @@
     :wind    0.15
     :nuclear 0.04}
    :power-density
+   ;; (-> 50.0 ; km²/TWh
+   ;;  (* 1000000) ; m²/TWh
+   ;;  (/ 1000000000000) ; m²/W
+   ;;  (* 24 365)
+   ;;  (->> (/ 1))) ; W/m²
    {:solar       20.03
     :wind        2.48
     :bio         1.2
     :nuclear     1141.55
     :natural-gas 103.78
-    :coal        51.89}}}
+    :coal        51.89
+    :hydro 2.28}}}
  ;; {:id "Öko-Institut"
  ;;  :link "https://www.oeko.de/fileadmin/oekodoc/Stromsystem-II-Regionalisierung-der-erneuerbaren-Stromerzeugung.pdf"
  ;;  :energy-sources
@@ -185,8 +193,7 @@
  ;;    :bio 0.16 ; ausgehend von 75 ha/GWh*a p.63
  ;;    }}}
 
-
- ;;
+;;
  ;; Einzelanlagen
  ;;
 
@@ -206,6 +213,12 @@
  ;; ## CO2 ##
  ;; #########
 
+ {:id "BMU"
+  :link "https://www.erneuerbare-energien.de/EE/Redaktion/DE/Downloads/Berichte/schlussbericht-potentialermittlung-wasserkraftnutzung.pdf;jsessionid=5467C3A3763745145C41065DAE98A574?__blob=publicationFile&v=3#page=161"
+  :energy-sources
+  {:cap
+   {:hydro 42}}}
+
  {:id   "IPCC (2014)"
   :link "https://www.ipcc.ch/site/assets/uploads/2018/02/ipcc_wg3_ar5_annex-iii.pdf#page=7"
   :energy-sources
@@ -215,7 +228,8 @@
     :nuclear     12
     :bio         230
     :coal        820
-    :natural-gas 490}}}
+    :natural-gas 490
+    :hydro 24}}}
  {:id   "Deutscher Bundestag (2007)"
   :link "https://www.bundestag.de/resource/blob/406432/70f77c4c170d9048d88dcc3071b7721c/wd-8-056-07-pdf-data.pdf"
   :energy-sources
@@ -276,4 +290,5 @@
     :nuclear     (+ 760 3 5 2 160)
     :coal        (+ 3 870 1 1 310)
     :natural-gas (+ 1 400 1 170)
-    :bio         (+ 6 760 4 310)}}}]
+    :bio         (+ 6 760 4 310)
+    :hydro (+ 14000 1 67)}}}]

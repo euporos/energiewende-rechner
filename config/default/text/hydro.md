@@ -1,0 +1,1 @@
+Auf den ersten Blick vereint Wasserkraft die Vorzüge erneuerbarer Energien mit denjenigen der fossilen. Sie ist CO<sub>2</sub>-arm und regelbar. Allerdings ist ihr Ausbaupotential in Deutschland bereits heute zur Hälfte ausgeschöpft. Der Rechner deckelt daher den maximalen Anteil, den Wasserkraft zur Gesamtstrommenge beitragen kann. Aber auch diesen Grenzwert kannst du anpassen.

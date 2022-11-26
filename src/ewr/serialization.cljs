@@ -1,167 +1,184 @@
 (ns ewr.serialization
   (:require
-   ["huffman-url-compressor" :as huff :refer [createEncoder encodeConfig decodeConfig]] [wrap.compress :as compress]
-   [clojure.edn :as edn]
+   ["huffman-url-compressor" :as huff :refer [createEncoder encodeConfig decodeConfig]]
+   ["number-to-base64" :refer [ntob bton]]
+   [clojure.data :as cd]
    [clojure.string :as str]
-   [malli.core :as m]))
+   [ewr.config :as cfg]))
 
-;; ######################################
-;; ######## Manual Serialization ########
-;; ######################################
+(def test-state
+  {:energy-sources
+   {:wind
+    {:share 604000
+     ;; :cap 604000
+     :power-density 4.56
+     :deaths 0.12
+     :co2 11
+     :resources 10260
+     :arealess-capacity 240}
+    :solar
+    {:share 259000
+     :power-density 5.2
+     :deaths 0.44
+     :co2 44
+     :resources 16447
+     :arealess-capacity 142}
+    :bio
+    {:share 43000
+     :power-density 0.16
+     :deaths 4.63
+     :co2 230
+     :resources 1080}
+    :nuclear
+    {:share 324000
+     :power-density 240.8
+     :deaths 0.08
+     :co2 12
+     :resources 930}
+    :natural-gas
+    {:share 259000
+     :power-density 482.1
+     :deaths 2.82
+     :co2 490
+     :resources 572}
+    :coal
+    {:share 648000
+     :power-density 135.1
+     :deaths 28.67
+     :co2 820
+     :resources 1185}
+    :hydro
+    {:cap 42000
+     :share 22000
+     :power-density 2.28
+     :deaths 0.14
+     :co2 24
+     :resources 14068}}
+   :energy-needed 2159000})
 
-(def serializer-version 1)
+;; ########################
+;; ##### Delta-making ##### 
+;; ########################
 
-(def nrg-order [:wind :solar :nuclear :bio :natural-gas :coal])
+(defn deep-merge
+  [& maps]
+  (if (every? map? maps)
+    (apply merge-with deep-merge maps)
+    (last maps)))
 
-(def param-order [:share :power-density :deaths :co2 :resources :arealess-capacity])
+(defn delta [savestate preset]
+  (first (cd/diff savestate preset)))
 
-(defn serialize
-  ""
-  [savestate]
-  (let [{:keys [energy-needed energy-sources]} savestate]
-    [energy-needed
-     (mapv
-      (fn [nrg-key]
-        (vec
-         (keep
-          (fn [param-key]
-            (get-in energy-sources [nrg-key param-key]))
-          param-order))) nrg-order)]))
+;; ###########################
+;; ###### Serialization ######
+;; ###########################
 
-(defn deserialize
-  ""
-  [[energy-needed nrgs]]
-  {:energy-needed energy-needed
-   :energy-sources
-   (zipmap
-    nrg-order
-    (map
-     (partial zipmap param-order)
-     nrgs))})
+(def level-1
+  [:hydro
+   :coal
+   :natural-gas
+   :nuclear
+   :bio
+   :solar
+   :wind])
 
-;; #################################
-;; ####### Float-compression #######
-;; #################################
+(def level-2
+  ['(:share :int)
+   '(:power-density :float)
+   '(:deaths :float)
+   '(:co2 :float)
+   '(:resources :int)
+   '(:arealess-capacity :int)
+   '(:cap :int)])
+
+(def nesteds
+  (for [l-1-item level-1
+        l-2-item level-2]
+    (vec (conj l-2-item l-1-item :energy-sources))))
+
+(def globals
+  [[:energy-needed :int]
+   nil
+   nil
+   nil
+   nil])
+
+(def codenda
+  (into globals nesteds))
+
+(defn codendum->char [codendum]
+  (ntob (.indexOf codenda codendum)))
+
+(defn char->codendum [char]
+  (nth codenda (bton char)))
+
+(defn serialize [savestate]
+  (keep-indexed
+   (fn [i codendum]
+     (when codendum
+       (let [path (pop codendum)
+             type (peek codendum)
+             value (get-in savestate path)]
+         (when value
+           (str (ntob i)
+                (case type
+                  :int (ntob value)
+                  :float value))))))
+   codenda))
+
+(defn deserialize [serialized-savestate]
+  (reduce
+   (fn [result next]
+     (let [[index-char & stringified] next
+           stringified (apply str stringified)
+           index (bton index-char)
+           codendum (nth codenda index)
+           path (pop codendum)
+           type (peek codendum)]
+       (assoc-in result  path
+                 (case type
+                   :int (bton stringified)
+                   :float (js/parseFloat stringified)))))
+   {}
+   serialized-savestate))
+
+;; #######################
+;; ##### Compression #####
+;; #######################
 
 (def alphabet
-  "abcdefghijklmn")
+  (apply str "          " "1234567890." (map ntob (range 64))))
 
-(defn compress-floatstrings
-  [instring]
-  (str/replace
-   instring
-   #"([0-9])\1{2,}"
-   (fn [[m1 m2]]
-     (str (get alphabet (count m1)) m2))))
+(def encoder
+  (createEncoder alphabet))
 
-(defn expand-floatstrings
-  [compressed-string]
-  (str/replace
-   compressed-string
-   #"([a-z])([0-9])"
-   (fn [[full letter number]]
-     (apply str
-            (take (.indexOf alphabet letter)  (repeat number))))))
+(defn huff-encode [string]
+  ;; padding is needed so base64 will work
+  (let [needed-padding (- 3 (mod (count string) 3))
+        padding (apply str (repeat needed-padding " "))]
+    (when string (encodeConfig (str string padding) encoder))))
 
-(expand-floatstrings
- (compress-floatstrings "8.600000000000001"))
+(defn huff-decode [string]
+  (decodeConfig string encoder))
 
-;; ######################################
-;; ######## Huffmann-Compression ########
-;; ######################################
+(defn encode  [savestate]
+  (huff-encode
+   (str/join " " (serialize savestate))))
 
-(def code-savestate-huff
-  (let [encoder (createEncoder
-                 (str alphabet "[1300 [[28 4.56 0.12 11 10260 240] [12 5.2 0.44 44 16447 142] [15 240.8 0.08 12 930] [2 0.16 4.63 230 1080] [12 482.1 2.82 490 572] [31 135.1 28.67 820 1185]]]"))]
-    (fn [string decode?]
-      (if decode?
-        (decodeConfig string encoder)
-        (encodeConfig string encoder)))))
+(defn decode [encoded-savestate]
+  (deserialize (str/split
+                (huff-decode encoded-savestate) " ")))
 
-(defn encode-savestate-huff
-  ""
-  [string]
-  (code-savestate-huff string nil))
+(defn savestate->string [savestate]
+  (let [preset cfg/latest-preset
+        preset-index (dec (count cfg/presets))
+        delta (delta  savestate preset)]
+    (str preset-index "~" (encode delta))))
 
-(defn decode-savestate-huff
-  ""
-  [string]
-  (code-savestate-huff string true))
+(defn string->savestate [encoded]
+  (let [[preset-index encoded-delta] (str/split encoded "~")
+        preset-index (js/parseInt preset-index)
+        preset (nth cfg/presets preset-index)
+        decoded-delta (decode encoded-delta)]
+    (deep-merge preset decoded-delta)))
 
-;; #################################
-;; ####### CSV-serialization #######
-;; #################################
-
-(defn savestate-to-csv
-  ""
-  [savestate]
-  (str
-   ":energy-needed," (get savestate :energy-needed) "\n"
-   "energy-source\\Parameter," (str/join "," param-order) "\n"
-   (str/join "\n"
-             (map
-              (fn [nrg-key]
-                (str nrg-key ","
-                     (str/join ","
-                               (map
-                                (fn [param-key]
-                                  (get-in savestate
-                                          [:energy-sources nrg-key param-key]))
-                                param-order))))
-              nrg-order))))
-
-;; ###############################################
-;; ########## Application to savestates ##########
-;; ###############################################
-
-(def energy-source-spec
-  [:map
-   [:share float?]
-   [:power-density float?]
-   [:deaths float?]
-   [:co2 float?]
-   [:resources float?]
-   [:arealess-capacity {:optional true} float?]])
-
-(def savestate-spec
-  [:map
-   [:energy-sources
-    [:map
-     [:wind
-      energy-source-spec]
-     [:solar
-      energy-source-spec]
-     [:nuclear
-      energy-source-spec]
-     [:bio
-      energy-source-spec]
-     [:natural-gas
-      energy-source-spec]
-     [:coal energy-source-spec]]]
-   [:energy-needed float?]])
-
-;; ############################
-;; ###### Main Functions ######
-;; ############################
-
-(defn decompress-and-deserialize
-  "work around bug in Huffman-Library
-  see https://stackoverflow.com/questions/67273883/information-lost-in-huffman-encoding"
-  [savestate-string]
-  (let [decoded (expand-floatstrings
-                 (decode-savestate-huff savestate-string))
-        parsed  (try (deserialize
-                      (edn/read-string (str decoded "]")))
-                     (catch js/Object e
-                       (js/console.log "Error reading savestate… not loading")
-                       nil))]
-
-    (if (and parsed (m/validate savestate-spec parsed))
-      parsed)))
-
-(def serialize-and-compress
-  (comp
-   encode-savestate-huff
-   compress-floatstrings
-   str
-   serialize))

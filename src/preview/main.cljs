@@ -3,25 +3,15 @@
    ["fs" :as fs]
    ["nodejs-base64-converter" :as nodeBase64]
    ["sharp" :as sharp]
+   [ewr.config :as cfg]
+   [ewr.constants :as constants]
    [ewr.reframing :refer [default-db]]
    [ewr.serialization :as serialize]
+   [ewr.testdata :as testdata]
    [ewr.views :as views]
-   [preview.testdata :as testdata]
    [re-frame.core :as rf]
    [reagent.dom.server :as rdom])
   (:require-macros [ewr.macros :as m]))
-
-(defn svg->png
-  [svg-string callback]
-  (let [name     "testsvg"
-        svg-name (str name ".svg")
-        png-name (str name ".png")]
-    (.writeFileSync fs svg-name svg-string)
-    (-> svg-name
-        sharp
-        (.resize (clj->js {:width 1500}))
-        .png
-        (.toFile png-name callback))))
 
 (defn svg-string->png-buf
   [svg-string callback]
@@ -38,21 +28,22 @@
    (merge default-db savestate)))
 
 (defn energy-text
-  [offset i  [_key {:keys [name color share] :as nrg}]]
-  (let [y-text (+ 30 (* i offset))]
+  [offset i  [key {:keys [name color] :as nrg}]]
+  (let [y-text (+ 30 (* i offset))
+        share (Math/round (* 100 @(rf/subscribe [:nrg-share/get-relative-share key])))]
     [:<>
      [:text {:zindex    1000
-             :font-size "3em"}
-      [:tspan {:x 3 :y y-text} (str name ": " (Math/round share) "%")]]
-     [:rect {:x            2  :y     (+ 15 y-text)
+             :font-size "2.8em"}
+      [:tspan {:x 3 :y y-text} (str name ": " share "%")]]
+     [:rect {:x            2  :y     (+ 10 y-text)
              :stroke       "black"
-             :stroke-width 2
+             :stroke-width 1.5
              :fill         color
-             :height       30 :width (* share 5)}]]))
+             :height       22 :width (* share 5)}]]))
 
 (defn energy-needed
   []
-  (let [energy-needed @(rf/subscribe [:energy-needed/get])]
+  (let [energy-needed (/ @(rf/subscribe [:energy-needed/get]) constants/granularity-factor)]
     [:text {:zindex    1000
             :font-size "3em"}
      [:tspan {:x 3 :y 540} energy-needed " TWh"]]))
@@ -61,7 +52,6 @@
   []
   (let [co2-intensity         @(rf/subscribe [:deriv/co2-per-kwh-mix])
         [bg-color font-color] @(rf/subscribe [:ui/decab-color])]
-
     [:g
      [:rect {:x            200 :y     505
              :stroke       "black"
@@ -85,15 +75,16 @@
                        (into
                         (filter
                          (fn [[_ {:keys [share]}]]
-                           (> (Math/round share) 0))
+                           (> share 0))
                          @(rf/subscribe [:nrg/get-all])))))))
 
 (defn savestate-string->svg
   [savestate-string]
   (when savestate-string
     (let [savestate
-          (serialize/decompress-and-deserialize
-           savestate-string)]
+          (or (serialize/string->savestate
+               savestate-string)
+              cfg/latest-preset)]
       (rf/dispatch-sync [:save/savestate-into-db savestate])))
 
   (let [svg (rdom/render-to-string
@@ -111,7 +102,7 @@
 (defn handler
   [event _context callback]
   (let [request          (js->clj event :keywordize-keys true)
-        savestate-string (get-in request [:queryStringParameters :savestate])
+        savestate-string (get-in request [:queryStringParameters :s])
         svg-string       (savestate-string->svg savestate-string)]
 
     (when js/goog.DEBUG
@@ -126,6 +117,16 @@
                                      :headers         {"Content-Type" "image/png"}
                                      :isBase64Encoded true})))))
 
-(defn ^:dev/after-load test-img-output
-  []
-  (handler testdata/test-request nil testdata/dummy-callback))
+;; #######################
+;; ##### Development #####
+;; #######################
+
+(defn dummy-callback
+  [_ response]
+  (let [png-buffer (.decode nodeBase64 (get (js->clj response) "body"))]
+    (.writeFileSync fs "test.png" png-buffer)))
+
+(defn ^:dev/after-load test-img-output []
+  (handler testdata/test-request nil dummy-callback))
+
+

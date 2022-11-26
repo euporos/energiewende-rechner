@@ -3,15 +3,14 @@
    [clojure.edn :as edn]
    [clojure.string :as str]
    [ewr.config :as cfg :refer [snippet]]
+   [ewr.config :as config]
    [ewr.constants :as constants]
    [ewr.helpers :as h]
-   [ewr.icons :as icons]
    [ewr.parameters :as params]
    [ewr.publications :as pubs]
    [md5.core :as md5]
    [re-frame.core :as rf]
-   [reagent.core :as r])
-  (:require-macros [ewr.macros :as m]))
+   [reagent.core :as r]))
 
 ;; ########################
 ;; ##### Common Stuff #####
@@ -64,7 +63,7 @@
        heading]
       [:div
        {:style {:overflow   (if open? "visible" "hidden")
-                :max-height (if (not open?) 0)}}
+                :max-height (when (not open?) 0)}}
        (into [:div.block.pt-3.pb-3.pr-3.pl-3] comps)]]]))
 
 ;;
@@ -77,18 +76,35 @@
   Pre-path indicates where in the DB the parameter-dfn can be found."
   ;; I have tried to avoid this tight coupling with the DB
   ;; but solutions were unsatisfactory
-  [pre-path parameter-dfn width show-unit?]
-  (let [[param-key {:keys [unit input-attrs]}] parameter-dfn]
-    [:div.field.is-horizontal
-     [:div.field-body
-      [:div.field
-       {:style {:width width}}
-       [:p.control.is-expanded
-        [:input.input
-         (merge input-attrs
-                {:value     @(rf/subscribe [:param/get pre-path param-key])
-                 :on-change (h/dispatch-on-x
-                             [:param/parse-and-set pre-path parameter-dfn])})]]]]]))
+  [{:keys [partial-event subscription parameter-dfn]}]
+  (let [{:keys [_unit input-attrs granularity-factor validation-fn parse-fn]} (second parameter-dfn)
+        get-value-from-db #(/ @(rf/subscribe subscription) (or granularity-factor 1))
+        entered-value (r/atom nil)
+        focused? (r/atom false)]
+    (r/create-class
+     {:display-name (str "input-" (str/join "-" (str/join "-" subscription)) "-" (first parameter-dfn))
+      :component-did-mount #(reset! entered-value (get-value-from-db))
+      :reagent-render
+      (fn [{:keys [partial-event subscription parameter-dfn]}]
+        (let [db-val (get-value-from-db)]
+          [:div.field.is-horizontal
+           [:div.field-body
+            [:div.field
+             [:p.control.is-expanded
+              [:input.input
+               (merge input-attrs
+                      {:value     (if @focused? @entered-value
+                                      (get-value-from-db))
+                       :on-focus #(do (reset! focused? true)
+                                      (reset! entered-value db-val))
+                       :on-blur #(do (reset! focused? false)
+                                     (reset! entered-value db-val))
+                       :on-change (fn [e]
+                                    (let [newval (-> e .-target .-value)]
+                                      (.preventDefault e)
+                                      (reset! entered-value newval)
+                                      (when  (validation-fn (parse-fn newval))
+                                        (rf/dispatch (conj partial-event (parse-fn newval))))))})]]]]]))})))
 
 (defn publication-dropdown
   [{:keys [value-subscription publications partial-event]}]
@@ -99,13 +115,13 @@
       [:select.input
        {:value     (str value-subscription)
         :on-change (h/dispatch-on-x
-                    false ; not synchronously
-                    edn/read-string ; parse back into data structure
-                    partial-event)} ; before dispatch
-       [:option {:value nil}  "Benutzerdefiniert"]
+                    false             ; not synchronously
+                    edn/read-string   ; parse back into data structure
+                    partial-event)}   ; before dispatch
+       [:option {:value "user-defined"}  "Benutzerdefiniert"]
        (for [pub publications]
          ^{:key (:id pub)}
-         [:option {:value (str pub)} ; only strings can be values ;(
+         [:option {:value (str pub)}   ; only strings can be values ;(
           (:id pub)])]]]]])
 
 ;; ############################
@@ -131,8 +147,9 @@
   the arealess capacity,
   i.e. rooftop solar or offshore wind"
   [nrg-key]
-  [param-input [:energy-sources nrg-key]
-   params/arealess-capacity])
+  [param-input {:parameter-dfn params/arealess-capacity
+                :subscription [:param/get [:energy-sources nrg-key :arealess-capacity]]
+                :partial-event [:param/set [:energy-sources nrg-key :arealess-capacity]]}])
 
 ;; ########################
 ;; ##### Energy Needed ####
@@ -141,8 +158,8 @@
 (defn energy-needed-dropdown
   []
   [publication-dropdown
-   {:value-subscription @(rf/subscribe [:pub/global-loaded :energy-needed])
-    :partial-event      [:pub/load-global :energy-needed]
+   {:value-subscription @(rf/subscribe [:pub/loaded-energy-needed])
+    :partial-event      [:pub/load-energy-needed]
     :publications       (pubs/pubs-for-global-value :energy-needed)}])
 
 (defn energy-needed
@@ -151,8 +168,10 @@
          [:div.block
           [:div.columns.is-mobile.is-vcentered.mb-0
            [:div.column
-            [param-input [] params/energy-needed]]
-           (if-let [href (:link @(rf/subscribe [:pub/global-loaded  :energy-needed]))]
+            [param-input {:parameter-dfn params/energy-needed
+                          :subscription [:energy-needed/get]
+                          :partial-event [:energy-needed/set]}]]
+           (when-let [href (:link @(rf/subscribe [:pub/loaded-energy-needed]))]
              [:div.column.is-narrow.has-text-centered
               [:a {:target "_blank"
                    :href   href} " → Quelle"]])]
@@ -163,7 +182,7 @@
 ;; ############## Parameter-Inputs »Profi-Einstellungen« ##############
 ;; ####################################################################
 
-;; These are for parameters as defined in ewr.constants
+;; These are for parameters as defined in ewr.constants 
 
 (defn param-dropdown
   ""
@@ -193,14 +212,17 @@
   for one combination
   of energy-source and parameter"
   [nrg-key parameter-dfn]
-  [:div
-   {:key (str nrg-key (first parameter-dfn))}
-   [:div
-    [:div.columns.is-vcentered.is-mobile
-     [:div.column
-      [param-input [:energy-sources nrg-key] parameter-dfn]]
-     [:div.column [param-publication-link nrg-key (first parameter-dfn)]]]]
-   [:div.mt-1 [param-dropdown nrg-key parameter-dfn]]])
+  (let [param-key (first parameter-dfn)]
+    [:div
+     {:key (str nrg-key param-key)}
+     [:div
+      [:div.columns.is-vcentered.is-mobile
+       [:div.column
+        [param-input {:parameter-dfn parameter-dfn
+                      :subscription [:param/get [:energy-sources nrg-key param-key]]
+                      :partial-event [:param/set [:energy-sources nrg-key param-key]]}]]
+       [:div.column [param-publication-link nrg-key param-key]]]]
+     [:div.mt-1 [param-dropdown nrg-key parameter-dfn]]]))
 
 (defn settings-table-row
   "Standard parameters for one Energy source"
@@ -249,6 +271,25 @@
     [:div.column.is-narrow [param-publication-link nrg-key :arealess-capacity]]
     [:div.column]]])
 
+(defn minor-cap []
+  [:div.has-text-centered.mt-3
+   {:style {:margin-left  "auto"
+            :margin-right "auto"}}
+   [:span.has-text-weight-bold
+    {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :hydro])}
+    (with-tooltip (cfg/snippet :common-parameter-inputs
+                               :cap :name :hydro))]
+
+   [:div.columns.is-mobile.is-vcentered.mt-1
+    [:div.column]
+    [:div.column.is-narrow
+     [param-input {:parameter-dfn params/cap
+                   :subscription [:param/get [:energy-sources :hydro :cap]]
+                   :partial-event [:cap/set :hydro]}]]
+    [:div.column.is-narrow [param-dropdown :hydro params/cap]]
+    [:div.column.is-narrow [param-publication-link :hydro :cap]]
+    [:div.column]]])
+
 (defn detailed-settings-tabular
   "The table of Parameters settings.
   Shown only on larger Screens."
@@ -267,25 +308,31 @@
                          [settings-table-row nrg-source])]]
 
                      [arealess-settings :solar]
-                     [arealess-settings :wind])])
+                     [arealess-settings :wind]
+                     [minor-cap])])
 
 ;; ########################
 ;; ##### Explanations #####
 ;; ########################
 
 (defn param-settings-pair-explanations
-  "Publication Dropdown and Input for nrg-parameter"
+  "Publication dropdown and Input for nrg-parameter"
   [nrg-key parameter-dfn]
-  [:div.block
-   {:key (str nrg-key (first parameter-dfn))}
-   [:div.has-text-weight-bold.mb-1
-    (:name (second parameter-dfn)) " "
-    [param-publication-link nrg-key (first parameter-dfn)]]
-   [:div.columns.is-mobile
-    [:div.column
-     [param-dropdown nrg-key parameter-dfn]]
-    [:div.column.is-narrow
-     [param-input [:energy-sources nrg-key] parameter-dfn]]]])
+  (let [param-key (first parameter-dfn)]
+    [:div.block
+     {:key (str nrg-key param-key)}
+     [:div.has-text-weight-bold.mb-1
+      (:name (second parameter-dfn)) " "
+      [param-publication-link nrg-key param-key]]
+     [:div.columns.is-mobile
+      [:div.column
+       [param-dropdown nrg-key parameter-dfn]]
+      [:div.column.is-narrow
+       [param-input {:parameter-dfn parameter-dfn
+                     :subscription [:param/get [:energy-sources nrg-key param-key]]
+                     :partial-event [:param/set [:energy-sources nrg-key param-key]]}
+
+        [:energy-sources nrg-key] parameter-dfn]]]]))
 
 (defn params-for-nrg-explanations
   "On mobile " ;TODO:
@@ -300,7 +347,11 @@
 
           (when (= nrg-key :wind) ; special case Wind: Inputs for capacity
             [param-settings-pair-explanations
-             nrg-key params/arealess-capacity-wind])]
+             nrg-key params/arealess-capacity-wind])
+
+          (when (= nrg-key :hydro) ; special case Wind: Inputs for capacity
+            [param-settings-pair-explanations
+             nrg-key params/cap])]
          (map
           (fn [parameter-dfn]
             [param-settings-pair-explanations nrg-key parameter-dfn])
@@ -332,7 +383,7 @@
      [:h3.title.is-3 "Energiequellen"]
      (map-indexed (fn [i [nrg-key nrg]]
                     (format-explanation
-                     i nrg-key (params-for-nrg-explanations nrg-key nrg))) cfg/nrgs)]
+                     i nrg-key (params-for-nrg-explanations nrg-key nrg))) @(rf/subscribe [:nrg/get-all]))]
     [:h3.title.is-3 "Parameter"]
     (map-indexed
      format-explanation params/common-param-keys)]])
@@ -357,34 +408,46 @@
 (defn energy-slider
   "Single Slider to adjust the share of an Energy.
   Also renders: Lock Button, Icon and Text."
-  [[nrg-key {:keys [name props share color]}]]
-  [:div.eslider.pt-1 {:style {:background-color color
-                              :width            "100%"}}
+  [nrg-key]
+  (let [{:keys [name color cap-bumped]} @(rf/subscribe [:nrg/get nrg-key])]
+    [:div.eslider.pt-1 {:style {:background-color color
+                                :width            "100%"}}
 
    ;; Above Slider
-   [:div.columns.is-vcentered.is-gapless.mb-0.is-mobile
+     [:div.columns.is-vcentered.is-gapless.mb-0.is-mobile
     ;; Lock-Button
-    [:div.column.is-narrow
-     [lock-button nrg-key]]
+      [:div.column.is-narrow
+       [lock-button nrg-key]]
 
     ;; Icon
-    [:div.column.is-narrow.mr-2.ml-1.mt-1
-     [:img {:src   (cfg/icon-for-nrg nrg-key)
-            :style {:height "1.5rem"}}]]
+      [:div.column.is-narrow.mr-2.ml-1.mt-1
+       [:img {:src   (cfg/icon-for-nrg nrg-key)
+              :style {:height "1.5rem"}}]]
     ;; Text
-    [:div.column.is-narrow
-     [:label
-      [:strong name " "
-       (Math/round share) " % | "
-       (Math/round
-        @(rf/subscribe [:nrg-share/get-absolute-share nrg-key])) " TWh"]]]]
+      [:div.column.is-narrow
+       [:label
+        [:strong name
+         " "
+         (Math/round
+          (*
+           100
+           @(rf/subscribe [:nrg-share/get-relative-share nrg-key]))) " % | "
+         (Math/round
+          (/
+           @(rf/subscribe [:nrg-share/get-absolute-share nrg-key])
+           constants/granularity-factor)) " TWh"
+         (when cap-bumped (when (= nrg-key :hydro)
+                            [:span.has-text-weight-bold
+                             {:style {:color "#8B0000"}
+                              :on-click (h/dispatch-on-x [:ui/scroll-to-explanation :hydro])}
+                             (with-tooltip  " ausgeschöpft!")]))]]]]
 
    ;; Actual Slider
-   [:input {:type      "range" :min 0 :max 100
-            :style     {:width "100%"}
-            :value     (str share)
-            :on-change (h/dispatch-on-x
-                        [:nrg/remix-shares nrg-key])}]])
+     [:input {:type      "range" :min 0 :max @(rf/subscribe [:energy-needed/get])
+              :style     {:width "100%"}
+              :value     (str @(rf/subscribe [:nrg-share/get-absolute-share nrg-key]))
+              :on-change (h/dispatch-on-x
+                          [:nrg/remix-shares nrg-key])}]]))
 
 (defn energy-mix
   "Panel with Sliders to mix Energies"
@@ -414,9 +477,9 @@
                  :width "40rem"}] [:br]
           "Reset"]]]
 
-       (for [nrg-source @(rf/subscribe [:nrg/get-all])]
-         ^{:key (first nrg-source)}
-         [:div [energy-slider nrg-source]])]]]))
+       (for [nrg-key config/nrg-keys]
+         ^{:key nrg-key}
+         [:div [energy-slider nrg-key]])]]]))
 
 ;; #########
 ;; ## Map ##
@@ -581,7 +644,7 @@
                                         :color "yellow"}]])]
          ;; Circles and labels
         (doall (map (partial energy-on-map opts)
-                    cfg/nrg-keys))))
+                    @(rf/subscribe [:nrg/keys])))))
 
 (defn mapview
   "The actual SVG displaying the Content on the map.
@@ -650,12 +713,12 @@
   [{:keys [href download icon height event label]}]
   [:div.column.share-icon
    [:a {:href     href
+        :download download
         :on-click (when event (h/dispatch-on-x event))}
     [:div {:style    {:display     "block"
                       :height      "5rem"
                       :padding-top (when height
-                                     (str (/ (- 5 height) 2) "rem"))}
-           :download download}
+                                     (str (/ (- 5 height) 2) "rem"))}}
      [:img {:src   icon
             :style {:height (str (or height 5) "rem")}}]]
     label]])
