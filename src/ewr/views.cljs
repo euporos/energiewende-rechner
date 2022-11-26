@@ -249,6 +249,22 @@
     [:div.column.is-narrow [param-publication-link nrg-key :arealess-capacity]]
     [:div.column]]])
 
+(defn minor-cap []
+  [:div.has-text-centered.mt-3
+   {:style {:margin-left  "auto"
+            :margin-right "auto"}}
+   [:span.has-text-weight-bold
+    {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :minor])}
+    (with-tooltip (cfg/snippet :common-parameter-inputs
+                               :cap :name :minor))]
+
+   [:div.columns.is-mobile.is-vcentered.mt-1
+    [:div.column]
+    [:div.column.is-narrow [param-input [:energy-sources :minor] params/cap]]
+    [:div.column.is-narrow [param-dropdown :minor params/cap]]
+    [:div.column.is-narrow [param-publication-link :minor :cap]]
+    [:div.column]]])
+
 (defn detailed-settings-tabular
   "The table of Parameters settings.
   Shown only on larger Screens."
@@ -262,12 +278,14 @@
                       [:thead
                        [settings-table-top-row]]
                       [:tbody
-                       (for [nrg-source @(rf/subscribe [:nrg/get-all])]
+                       (for [nrg-source (dissoc @(rf/subscribe [:nrg/get-all])
+                                                :minor)]
                          ^{:key (first nrg-source)}
                          [settings-table-row nrg-source])]]
 
                      [arealess-settings :solar]
-                     [arealess-settings :wind])])
+                     [arealess-settings :wind]
+                     [minor-cap])])
 
 ;; ########################
 ;; ##### Explanations #####
