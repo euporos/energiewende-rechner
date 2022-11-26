@@ -11,9 +11,9 @@
 
 (def serializer-version 1)
 
-(def nrg-order [:wind :solar :nuclear :bio :natural-gas :coal])
+(def nrg-order [:wind :solar :nuclear :bio :natural-gas :coal :minor])
 
-(def param-order [:share :power-density :deaths :co2 :resources :arealess-capacity])
+(def param-order [:share :power-density :deaths :co2 :resources :arealess-capacity :cap])
 
 (defn serialize
   ""
@@ -23,7 +23,7 @@
      (mapv
       (fn [nrg-key]
         (vec
-         (keep
+         (map
           (fn [param-key]
             (get-in energy-sources [nrg-key param-key]))
           param-order))) nrg-order)]))
@@ -118,7 +118,8 @@
    [:deaths float?]
    [:co2 float?]
    [:resources float?]
-   [:arealess-capacity {:optional true} float?]])
+   [:arealess-capacity {:optional true} [:maybe float?]]
+   [:cap {:optional true} [:maybe float?]]])
 
 (def savestate-spec
   [:map
@@ -134,7 +135,8 @@
       energy-source-spec]
      [:natural-gas
       energy-source-spec]
-     [:coal energy-source-spec]]]
+     [:coal energy-source-spec]
+     [:minor energy-source-spec]]]
    [:energy-needed float?]])
 
 ;; ############################
@@ -154,7 +156,8 @@
                        nil))]
 
     (if (and parsed (m/validate savestate-spec parsed))
-      parsed)))
+      parsed
+      (js/console.error  (m/explain savestate-spec parsed)))))
 
 (def serialize-and-compress
   (comp
