@@ -13,16 +13,10 @@
       (>= (count (filter #(get (second %) :locked?) nrg-sources))
           (dec (count nrg-sources)))))
 
-(defn relative-share-to-twh [energy-needed share]
-  (* energy-needed share 0.01))
-
-(defn twh-to-relative-share [energy-needed share-in-twh]
-  (* 100 (/ share-in-twh energy-needed)))
-
 (defn cap-exceeded? [energy-needed [_ {:keys [cap share]} :as nrg]]
   (when
    (and cap
-        (< cap (relative-share-to-twh energy-needed share)))
+        (< cap (h/relative-share-to-twh energy-needed share)))
     nrg))
 
 (defn ensure-caps [remix-fn energy-needed nrgs]
@@ -32,7 +26,7 @@
       (recur remix-fn energy-needed
              (remix-fn
               (first exceeding-nrg)
-              (twh-to-relative-share energy-needed (:cap (second exceeding-nrg)))
+              (h/twh-to-relative-share energy-needed (:cap (second exceeding-nrg)))
               energy-needed nrgs))
       nrgs)))
 
