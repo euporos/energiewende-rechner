@@ -65,7 +65,7 @@
    {"version"               "2.0"
     "routeKey"              "GET /preview"
     "rawPath"               "/test/preview"
-    "rawQueryString"        "savestate=AX9AD9WRpeTFJp4TsLvoGKOYvKrVWlFV2lYfQI7C8tedqYrgt9CLyUqygrAunbfQMVWiTYloqudG7D6AjSIcmw0o7WjpLDe94"
+    "rawQueryString"        "savestate=" teststate-string "&sv=1"
     "headers"               {"sec-fetch-site"            "none"
                              "host"                      "9xcjcr4b4m.execute-api.eu-central-1.amazonaws.com"
                              "user-agent"                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"
@@ -84,7 +84,9 @@
                              "dnt"                       "1"
                              "sec-gpc"                   "1"
                              "cache-control"             "max-age=0"}
-    "queryStringParameters" {"savestate" teststate-string}
+    "queryStringParameters" {"savestate" teststate-string
+                             ;; "36x2N77dp7FTiw5XiQn9mfTI0bZifHNUVQrVVwq8jRtn054OXwXnbpkRo2xyrFTbo_pifGRGjbK58o-eeV2Zi7yI0bYusSj-Ta457EuYIjRtiPYmxd7Iw3rWg"
+                             }
     "requestContext"        {"accountId"    "012791859856"
                              "routeKey"     "GET /preview"
                              "domainName"   "9xcjcr4b4m.execute-api.eu-central-1.amazonaws.com"
