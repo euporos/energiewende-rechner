@@ -1,6 +1,6 @@
 (ns ewr.serialization-test
-  (:require [ewr.serialization :as sut]
-            [cljs.test :as t :include-macros true]))
+  (:require [cljs.test :as t :include-macros true]
+            [ewr.serialization :as sut]))
 
 (def teststate-badfloats
   {:energy-sources
