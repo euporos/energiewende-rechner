@@ -16,7 +16,11 @@
 (defn cap-exceeded? [energy-needed [_ {:keys [cap share]} :as nrg]]
   (when
    (and cap
-        (< cap (h/relative-share-to-twh energy-needed share)))
+        (< cap
+           ;; Subtracting 0.01 here avoids a bug, where ensure-caps
+           ;; recurs indefinitely dure to float imprecision
+           (- (h/relative-share-to-twh energy-needed share)
+              0.01)))
     nrg))
 
 (defn remix-energy-shares-float
