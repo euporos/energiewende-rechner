@@ -13,6 +13,18 @@
       (>= (count (filter #(get (second %) :locked?) nrg-sources))
           (dec (count nrg-sources)))))
 
+(defn relative-share-to-twh [energy-needed share]
+  (* energy-needed share 0.01))
+
+(defn twh-to-relative-share [energy-needed share-in-twh]
+  (* 100 (/ share-in-twh energy-needed)))
+
+(defn cap-exceeded? [energy-needed [_ {:keys [cap share]} :as nrg]]
+  (when
+   (and cap
+        (< cap (relative-share-to-twh energy-needed share)))
+    nrg))
+
 (defn remix-energy-shares-float
   "Takes a set of energy shares (NRGS) and returns
   a new one with the share of CHANGED-NRG-KEY
@@ -56,11 +68,14 @@
                                            scalefactor))))
                           (assoc-in nrgs [changed-nrg-key :share] newval) ; update the nrg changed by user
                           reacting-nrgs)]
-
-    reacted-energies
-
-    ;; (js/console.log "unlocked share is " unlocked-share)
-    ))
+    (let [exceeding-nrg (some (partial cap-exceeded? energy-needed)
+                              reacted-energies)]
+      (if exceeding-nrg
+        (remix-energy-shares-float
+         (first exceeding-nrg)
+         (twh-to-relative-share energy-needed (:cap (second exceeding-nrg)))
+         energy-needed reacted-energies)
+        reacted-energies))))
 
 (defn attempt-remix
   "If remix is blocked, reurns thes energy-sources unchanged.
