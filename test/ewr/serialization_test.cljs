@@ -1,6 +1,7 @@
 (ns ewr.serialization-test
   (:require [cljs.test :as t :include-macros true]
-            [ewr.serialization :as sut]))
+            [ewr.serialization :as sut]
+            [ewr.serialization-presets :as sutpres]))
 
 (def teststate-badfloats
   {:energy-sources
@@ -102,3 +103,160 @@
 (count "CrvgA6xjekzTyqlbpx2xgU8vLzLNGaUjNZKZxgVfHbKzOsp5b3YwHmaSMUuj3crXGBTxlc1HKvGt-X2OMC6pV15qOpSyK_KpbxEQ")
 
 "[1300 [[28 4.56 0.12 11 10260 240] [12 5.2 0.44 44 16447 142] [15 240.8 0.08 12 930] [2 0.16 4.63 230 1080] [12 482.1 2.82 490 572] [31 135.1 28.67 820 1185]]]"
+
+(def common-savestate (first sutpres/presets))
+
+(def teststate-delta-nrgs-only
+  {:energy-sources
+   {:wind
+    {:share 51
+     :power-density 4.56
+     :deaths 0.12
+     :co2 11
+     :resources 10260
+     :arealess-capacity 240}
+    :solar
+    {:share 8.166666666666668
+     :power-density 5.2
+     :deaths 0.44
+     :co2 44
+     :resources 16447
+     :arealess-capacity 142}
+    :bio
+    {:share 1.3611111111111107
+     :power-density 0.16
+     :deaths 4.63
+     :co2 230
+     :resources 1080}
+    :nuclear
+    {:share 10.20833333333333
+     :power-density 240.8
+     :deaths 0.08
+     :co2 12
+     :resources 930}
+    :natural-gas
+    {:share 8.166666666666668
+     :power-density 482.1
+     :deaths 2.82
+     :co2 490
+     :resources 572}
+    :coal
+    {:share 20.41666666666666
+     :power-density 135.1
+     :deaths 28.67
+     :co2 820
+     :resources 1185}
+    :minors
+    {:share 0.6805555555555554
+     :power-density 1
+     :deaths 20
+     :co2 100
+     :resources 1000
+     :cap 500}}
+   :energy-needed 2159})
+
+(def teststate-delta-both
+  {:energy-sources
+   {:wind
+    {:share 51
+     :power-density 4.56
+     :deaths 0.12
+     :co2 11
+     :resources 10260
+     :arealess-capacity 240}
+    :solar
+    {:share 8.166666666666668
+     :power-density 5.2
+     :deaths 0.44
+     :co2 44
+     :resources 16447
+     :arealess-capacity 142}
+    :bio
+    {:share 1.3611111111111107
+     :power-density 0.16
+     :deaths 4.63
+     :co2 230
+     :resources 1080}
+    :nuclear
+    {:share 10.20833333333333
+     :power-density 240.8
+     :deaths 0.08
+     :co2 12
+     :resources 930}
+    :natural-gas
+    {:share 8.166666666666668
+     :power-density 482.1
+     :deaths 2.82
+     :co2 490
+     :resources 572}
+    :coal
+    {:share 20.41666666666666
+     :power-density 135.1
+     :deaths 28.67
+     :co2 820
+     :resources 1185}
+    :minors
+    {:share 0.6805555555555554
+     :power-density 1
+     :deaths 20
+     :co2 100
+     :resources 1000
+     :cap 500}}
+   :energy-needed 2160})
+
+(def teststate-delta-energy-needed-only
+  {:energy-sources
+   {:wind
+    {:share             28
+     :power-density     4.56
+     :deaths            0.12
+     :co2               11
+     :resources         10260
+     :arealess-capacity 240}
+    :solar
+    {:share             12
+     :power-density     5.2
+     :deaths            0.44
+     :co2               44
+     :resources         16447
+     :arealess-capacity 142}
+    :bio
+    {:share         2
+     :power-density 0.16
+     :deaths        4.63
+     :co2           230
+     :resources     1080}
+    :nuclear
+    {:share         15
+     :power-density 240.8
+     :deaths        0.08
+     :co2           12
+     :resources     930}
+    :natural-gas
+    {:share         12
+     :power-density 482.1
+     :deaths        2.82
+     :co2           490
+     :resources     572}
+    :coal
+    {:share         30
+     :power-density 135.1
+     :deaths        28.67
+     :co2           820
+     :resources     1185}
+    :minors
+    {:share         1
+     :power-density 1
+     :deaths        20
+     :co2           100
+     :resources     1000
+     :cap           500}}
+   :energy-needed 215})
+
+(sutpres/encode-delta (sutpres/delta teststate-delta-both common-savestate))
+
+(sutpres/decode-delta
+ "2160m0.680k54c20.41k6g8.1l68n10.208j3b1.36k107s8.1l68w51")
+
+(sutpres/decode
+ (sutpres/encode teststate-delta-both))
