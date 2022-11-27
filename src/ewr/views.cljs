@@ -318,7 +318,11 @@
 
           (when (= nrg-key :wind) ; special case Wind: Inputs for capacity
             [param-settings-pair-explanations
-             nrg-key params/arealess-capacity-wind])]
+             nrg-key params/arealess-capacity-wind])
+
+          (when (= nrg-key :minors) ; special case Wind: Inputs for capacity
+            [param-settings-pair-explanations
+             nrg-key params/cap])]
          (map
           (fn [parameter-dfn]
             [param-settings-pair-explanations nrg-key parameter-dfn])

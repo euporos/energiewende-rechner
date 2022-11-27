@@ -11,7 +11,8 @@
                         :nuclear       "Kernenergie"
                         :bio           "Biomasse"
                         :natural-gas   "Erdgas"
-                        :coal          "Kohle"}
+                        :coal          "Kohle"
+                        :minors          "Sonstige Energien"}
 
  :common-parameter-inputs {:power-density     {:name "Bemessungsleistung pro m² in W"}
                            ;; :capacity-factor {:name "Kapazitätsfaktor"}
