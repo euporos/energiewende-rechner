@@ -12,6 +12,7 @@
    [ewr.publications :as pubs]
    [ewr.remix :as remix]
    [ewr.serialization :as serialize]
+   [ewr.serialization-general]
    [re-frame.core :as rf :refer [reg-event-db reg-sub]]
    [reagent.core :as r]
    [reagent.ratom :as ratom]
@@ -602,7 +603,7 @@
  (fn [savestate _]
    (str
     "data:application/octet-stream,"
-    (serialize/savestate-to-csv savestate))))
+    (ewr.serialization-general/savestate-to-csv savestate))))
 
 (rf/reg-event-fx
  :save/load-savestate-from-url
