@@ -56,9 +56,7 @@
 ;;   "AX9AIarI0vJik08J2F30DFHMXlVqrSiq7SsPoEdheWvO1MVwW-hF5KVZQVgXTtvoGKrRJsS0VXOjdh9ARpEOTYaUdrR0lhve8")
 
 (def teststate-string
-  (serialize/encode-savestate-huff
-   (str
-    (serialize/serialize teststate))))
+  "0~WRLDYuOzWE-oo")
 
 (def test-request
   (clj->js
