@@ -396,7 +396,11 @@
     ;; Text
     [:div.column.is-narrow
      [:label
-      [:strong name " "
+      [:strong name
+       (when (= nrg-key :minors)
+         [:span.has-text-weight-bold
+          {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :minors])}
+          (with-tooltip "")]) " "
        (Math/round share) " % | "
        (Math/round
         @(rf/subscribe [:nrg-share/get-absolute-share nrg-key])) " TWh"]]]]
