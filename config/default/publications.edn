@@ -206,6 +206,12 @@
  ;; ## CO2 ##
  ;; #########
 
+ {:id "BMU"
+  :link "https://www.erneuerbare-energien.de/EE/Redaktion/DE/Downloads/Berichte/schlussbericht-potentialermittlung-wasserkraftnutzung.pdf;jsessionid=5467C3A3763745145C41065DAE98A574?__blob=publicationFile&v=3#page=161"
+  :energy-sources
+  {:cap
+   {:hydro 42}}}
+
  {:id   "minors-testpub"
   :link ""
   :energy-sources
