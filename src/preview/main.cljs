@@ -99,7 +99,7 @@
 (defn handler
   [event _context callback]
   (let [request          (js->clj event :keywordize-keys true)
-        savestate-string (get-in request [:queryStringParameters :savestate])
+        savestate-string (get-in request [:queryStringParameters :s])
         svg-string       (savestate-string->svg savestate-string)]
 
     (when js/goog.DEBUG
