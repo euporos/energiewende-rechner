@@ -278,8 +278,7 @@
                       [:thead
                        [settings-table-top-row]]
                       [:tbody
-                       (for [nrg-source (dissoc @(rf/subscribe [:nrg/get-all])
-                                                :minors)]
+                       (for [nrg-source @(rf/subscribe [:nrg/get-all])]
                          ^{:key (first nrg-source)}
                          [settings-table-row nrg-source])]]
 
