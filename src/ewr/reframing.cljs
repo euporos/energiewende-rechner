@@ -490,7 +490,7 @@
    (let [current-url
          (url/url (.. js/window -location -href))
          new-url (update-in current-url
-                            [:query] #(dissoc % "savestate" "sv"))]
+                            [:query] #(dissoc % "s"))]
      (-> js/window
          .-history
          (.replaceState nil nil new-url)))))
@@ -546,8 +546,8 @@
    (let [savestate-string
          (serialize/serialize-and-compress savestate)]
      (cond-> {:db (assoc db :savestate-string savestate-string)}
-       (not (h/map-subset? default-db db)) (assoc :global/set-url-query-params {:savestate savestate-string
-                                                                                :sv        "1"})))))
+       (not (h/map-subset? default-db db))
+       (assoc :global/set-url-query-params {:s savestate-string})))))
 
 (rf/reg-event-fx
  :savestate/on-change
@@ -569,10 +569,7 @@
  (fn [[analysed-url savestate-string]]
    (-> analysed-url
        (assoc-in
-        [:query "sv"]
-        serialize/serializer-version)
-       (assoc-in
-        [:query "savestate"]
+        [:query "s"]
         savestate-string))))
 
 (reg-sub
@@ -588,7 +585,7 @@
  (fn []
    (rf/subscribe [:save/savestate-string]))
  (fn [savestate-string]
-   (str "?savestate=" savestate-string "&sv=" serialize/serializer-version)))
+   (str "?s=" savestate-string)))
 
 (reg-sub
  :save/querystring
@@ -610,7 +607,7 @@
  [(rf/inject-cofx :global/url)]
  (fn [{:keys [url db] :as cofx} []]
    (if-let [url-savestate-string
-            (get-in url [:query "savestate"])]
+            (get-in url [:query "s"])]
      (let [savestate (serialize/decompress-and-deserialize
                       url-savestate-string)]
        {:db         (if savestate
