@@ -16,7 +16,7 @@
                                 :icon          "symbols/solar.svg"
                                 :color         "rgba(255, 255, 0)"
                                 :props         {:cx 380
-                                                :cy 700}}
+                                                :cy 650}}
                   :nuclear     {:name  "Kernenergie"
                                 :icon  "symbols/nuclear.svg"
                                 :color "rgba(250, 147, 38)"
@@ -32,7 +32,7 @@
                                 :fossil? true
                                 :color   "rgb(170, 120, 70)"
                                 :props   {:cx 200
-                                          :cy 750}}
+                                          :cy 680}}
                   :coal        {:name    "Kohle"
                                 :icon    "symbols/coal.svg"
                                 :color   "rgb(140, 140, 140)"
@@ -43,5 +43,5 @@
                                   :icon    "symbols/minors.svg"
                                   :color   "rgb(217, 179, 255)"
                                   :fossil? false
-                                  :props   {:cx 550
-                                            :cy 400}}}}
+                                  :props   {:cx 200
+                                            :cy 800}}}}
