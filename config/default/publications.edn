@@ -58,12 +58,13 @@
   :link "https://www.statista.com/statistics/494425/death-rate-worldwide-by-energy-source/"
   :energy-sources
   {:deaths
-   {:bio         12
+   {:bio         12 ;; check this
     :solar       0.44
     :wind        0.12
     :nuclear     0.09
     :natural-gas 4
-    :coal        161}}}
+    :coal        161
+    :hydro 0.14}}}
  {:id   "Our World in Data"
   :link "https://ourworldindata.org/safest-sources-of-energy"
   :energy-sources
@@ -112,7 +113,8 @@
     :solar       6.63
     :nuclear     240.8
     :natural-gas 482.1
-    :coal        135.1}
+    :coal        135.1
+    :hydro 0.14}
    :capacity-factor
    {:bio         1 ; 0.53
     :solar       1
@@ -212,20 +214,6 @@
   {:cap
    {:hydro 42}}}
 
- {:id   "minors-testpub"
-  :link ""
-  :energy-sources
-  {:co2
-   {:hydro 100}
-   :cap
-   {:hydro 500}
-   :deaths
-   {:hydro 20}
-   :power-density
-   {:hydro 1}
-   :resources
-   {:hydro 1000}}}
-
  {:id   "IPCC (2014)"
   :link "https://www.ipcc.ch/site/assets/uploads/2018/02/ipcc_wg3_ar5_annex-iii.pdf#page=7"
   :energy-sources
@@ -235,7 +223,8 @@
     :nuclear     12
     :bio         230
     :coal        820
-    :natural-gas 490}}}
+    :natural-gas 490
+    :hydro 24}}}
  {:id   "Deutscher Bundestag (2007)"
   :link "https://www.bundestag.de/resource/blob/406432/70f77c4c170d9048d88dcc3071b7721c/wd-8-056-07-pdf-data.pdf"
   :energy-sources
@@ -296,4 +285,5 @@
     :nuclear     (+ 760 3 5 2 160)
     :coal        (+ 3 870 1 1 310)
     :natural-gas (+ 1 400 1 170)
-    :bio         (+ 6 760 4 310)}}}]
+    :bio         (+ 6 760 4 310)
+    :hydro (+ 14000 1 67)}}}]
