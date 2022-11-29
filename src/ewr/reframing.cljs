@@ -121,13 +121,21 @@
 ;; #####################################################
 
 (reg-sub
+ :nrg/keys
+ (fn [db]
+   (keys (:energy-sources db))))
+
+(reg-sub
  :nrg/get-all
  ;; returns alls energy sources
  ;; combining variable values with constant ones
  (fn [db]
-   (merge-with merge
-               cfg/nrgs
-               (:energy-sources db))))
+   (reduce
+    (fn [sofar [nrg-key nrg-state]]
+      (assoc sofar nrg-key
+             (merge (get cfg/nrgs nrg-key) nrg-state)))
+    {}
+    (:energy-sources db))))
 
 (reg-sub
  :nrg/get

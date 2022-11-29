@@ -353,7 +353,7 @@
      [:h3.title.is-3 "Energiequellen"]
      (map-indexed (fn [i [nrg-key nrg]]
                     (format-explanation
-                     i nrg-key (params-for-nrg-explanations nrg-key nrg))) cfg/nrgs)]
+                     i nrg-key (params-for-nrg-explanations nrg-key nrg))) @(rf/subscribe [:nrg/get-all]))]
     [:h3.title.is-3 "Parameter"]
     (map-indexed
      format-explanation params/common-param-keys)]])
@@ -606,7 +606,7 @@
                                         :color "yellow"}]])]
          ;; Circles and labels
         (doall (map (partial energy-on-map opts)
-                    cfg/nrg-keys))))
+                    @(rf/subscribe [:nrg/keys])))))
 
 (defn mapview
   "The actual SVG displaying the Content on the map.
