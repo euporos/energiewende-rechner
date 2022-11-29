@@ -110,7 +110,7 @@
                        "Solarkapazität auf Dächern in TWh")))
 
 (def cap
-  [:cap {:name                "Deckelung sonstiger Energien in TWh"
+  [:cap {:name                "Deckelung der Wasserkraft in TWh"
          :unit                "TWh"
          :parse-fn            js/parseInt
          :input-attrs         {:type    "number"

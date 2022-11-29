@@ -43,7 +43,7 @@
      :deaths 28.67
      :co2 820
      :resources 1185}
-    :minors
+    :hydro
     {:share 1
      :power-density 1
      :deaths 20
@@ -63,7 +63,7 @@
    {"version"               "2.0"
     "routeKey"              "GET /preview"
     "rawPath"               "/test/preview"
-    "rawQueryString"        (str"s=" teststate-string)
+    "rawQueryString"        (str "s=" teststate-string)
     "headers"               {"sec-fetch-site"            "none"
                              "host"                      "9xcjcr4b4m.execute-api.eu-central-1.amazonaws.com"
                              "user-agent"                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"

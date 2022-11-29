@@ -39,7 +39,7 @@
                                 :fossil? true
                                 :props   {:cx 130
                                           :cy 430}}
-                  :minors        {:name    "Sonstige"
+                  :hydro        {:name    "Wasser"
                                   :icon    "symbols/minors.svg"
                                   :color   "rgb(217, 179, 255)"
                                   :fossil? false

@@ -254,15 +254,15 @@
    {:style {:margin-left  "auto"
             :margin-right "auto"}}
    [:span.has-text-weight-bold
-    {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :minors])}
+    {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :hydro])}
     (with-tooltip (cfg/snippet :common-parameter-inputs
-                               :cap :name :minors))]
+                               :cap :name :hydro))]
 
    [:div.columns.is-mobile.is-vcentered.mt-1
     [:div.column]
-    [:div.column.is-narrow [param-input [:energy-sources :minors] params/cap]]
-    [:div.column.is-narrow [param-dropdown :minors params/cap]]
-    [:div.column.is-narrow [param-publication-link :minors :cap]]
+    [:div.column.is-narrow [param-input [:energy-sources :hydro] params/cap]]
+    [:div.column.is-narrow [param-dropdown :hydro params/cap]]
+    [:div.column.is-narrow [param-publication-link :hydro :cap]]
     [:div.column]]])
 
 (defn detailed-settings-tabular
@@ -319,7 +319,7 @@
             [param-settings-pair-explanations
              nrg-key params/arealess-capacity-wind])
 
-          (when (= nrg-key :minors) ; special case Wind: Inputs for capacity
+          (when (= nrg-key :hydro) ; special case Wind: Inputs for capacity
             [param-settings-pair-explanations
              nrg-key params/cap])]
          (map
@@ -396,9 +396,9 @@
     [:div.column.is-narrow
      [:label
       [:strong name
-       (when (= nrg-key :minors)
+       (when (= nrg-key :hydro)
          [:span.has-text-weight-bold
-          {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :minors])}
+          {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :hydro])}
           (with-tooltip "")]) " "
        (Math/round share) " % | "
        (Math/round

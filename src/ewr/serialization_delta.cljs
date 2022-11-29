@@ -18,7 +18,7 @@
   (first (cd/diff savestate common-savestate)))
 
 (def mappings-l1
-  {"m" :minors
+  {"m" :hydro
    "c" :coal
    "g" :natural-gas
    "n" :nuclear

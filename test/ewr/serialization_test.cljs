@@ -147,7 +147,7 @@
      :deaths 28.67
      :co2 820
      :resources 1185}
-    :minors
+    :hydro
     {:share 0.6805555555555554
      :power-density 1
      :deaths 20
@@ -196,7 +196,7 @@
      :deaths 28.67
      :co2 820
      :resources 1185}
-    :minors
+    :hydro
     {:share 0.6805555555555554
      :power-density 1
      :deaths 20
@@ -245,7 +245,7 @@
      :deaths        28.67
      :co2           820
      :resources     1185}
-    :minors
+    :hydro
     {:share         1
      :power-density 1
      :deaths        20

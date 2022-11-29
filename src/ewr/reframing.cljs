@@ -260,8 +260,8 @@
                     (pubs/default-pub :solar :arealess-capacity))
       (load-nrg-pub :wind :arealess-capacity ; …for offshore wind
                     (pubs/default-pub :wind :arealess-capacity))
-      (load-nrg-pub :minors :cap ; …for minors cap
-                    (pubs/default-pub :minors :cap))))
+      (load-nrg-pub :hydro :cap ; …for minors cap
+                    (pubs/default-pub :hydro :cap))))
 
 (def default-db
   (first cfg/savestates))
