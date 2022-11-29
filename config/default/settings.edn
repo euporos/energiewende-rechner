@@ -44,19 +44,4 @@
                                   :color   "rgb(217, 179, 255)"
                                   :fossil? false
                                   :props   {:cx 550
-                                            :cy 400}}}
-
- :init-mix {:wind        {:share   28
-                          :locked? false}
-            :solar       {:share   12
-                          :locked? false}
-            :bio         {:share   2
-                          :locked? false}
-            :nuclear     {:share   15
-                          :locked? false}
-            :natural-gas {:share   12
-                          :locked? false}
-            :coal        {:share   30
-                          :locked? false}
-            :minors        {:share   1
-                            :locked? false}}}
+                                            :cy 400}}}}

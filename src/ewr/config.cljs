@@ -35,6 +35,8 @@
 
 (m/def-config config)
 
+(def savestates (:savestates config))
+
 ;; (def config {:snippets {:subtitle "boo me too"}})
 
 (def settings  (:settings config))

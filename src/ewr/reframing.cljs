@@ -265,8 +265,7 @@
 
 (def default-db
   (load-default-pubs
-   {:energy-sources
-    (get cfg/settings :init-mix)}))
+   (first cfg/savestates)))
 
 (rf/reg-event-db
  :pub/load-defaults
