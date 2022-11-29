@@ -1,8 +1,9 @@
-(ns ewr.serialization-presets
+(ns ewr.serialization-delta
   (:require
    ["huffman-url-compressor" :as huff :refer [createEncoder encodeConfig decodeConfig]]
    [clojure.data :as cd]
    [clojure.set :as cs]
+   [ewr.config :as cfg]
    [ewr.serialization-common :as sercom]))
 
 (defn deep-merge
@@ -12,55 +13,6 @@
   (if (every? map? maps)
     (apply merge-with deep-merge maps)
     (last maps)))
-
-(def presets
-  [{:energy-sources
-    {:wind
-     {:share             28
-      :power-density     4.56
-      :deaths            0.12
-      :co2               11
-      :resources         10260
-      :arealess-capacity 240}
-     :solar
-     {:share             12
-      :power-density     5.2
-      :deaths            0.44
-      :co2               44
-      :resources         16447
-      :arealess-capacity 142}
-     :bio
-     {:share         2
-      :power-density 0.16
-      :deaths        4.63
-      :co2           230
-      :resources     1080}
-     :nuclear
-     {:share         15
-      :power-density 240.8
-      :deaths        0.08
-      :co2           12
-      :resources     930}
-     :natural-gas
-     {:share         12
-      :power-density 482.1
-      :deaths        2.82
-      :co2           490
-      :resources     572}
-     :coal
-     {:share         30
-      :power-density 135.1
-      :deaths        28.67
-      :co2           820
-      :resources     1185}
-     :minors
-     {:share         1
-      :power-density 1
-      :deaths        20
-      :co2           100
-      :resources     1000
-      :cap           500}}
-    :energy-needed 2159}])
 
 (defn delta [savestate common-savestate]
   (first (cd/diff savestate common-savestate)))
@@ -150,7 +102,7 @@
                (str n "~" (huff-encode
                            (encode-delta
                             (delta savestate preset)))))
-             presets))))
+             cfg/savestates))))
 
 (defn decode-energy-source [sofar [_ l1 l2 value split-encoded-nrg]]
   (assoc-in sofar
@@ -176,5 +128,5 @@
 (defn decode [encoded-string]
   (when-let [[_ preset-n encoded-delta] (re-find #"^([0-9]+)~(.+$)" encoded-string)]
     (deep-merge
-     (get presets (js/parseInt preset-n))
+     (get cfg/savestates (js/parseInt preset-n))
      (decode-delta (huff-decode encoded-delta)))))
