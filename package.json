@@ -1,5 +1,5 @@
 {
-        "name": "stromrechner",
+        "name": "Energiewende-Rechner der Nuklearia",
         "dependencies": {
                 "highlight.js": "9.18.1",
                 "huffman-url-compressor": "^1.0.2",
