@@ -27,3 +27,4 @@
 /.shadow-cljs/
 
 /export/
+/.sass-cache/
