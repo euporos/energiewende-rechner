@@ -264,8 +264,7 @@
                     (pubs/default-pub :minors :cap))))
 
 (def default-db
-  (load-default-pubs
-   (first cfg/savestates)))
+  (first cfg/savestates))
 
 (rf/reg-event-db
  :pub/load-defaults
