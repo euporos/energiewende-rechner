@@ -11,6 +11,10 @@
        first))
 
 (defn decompress-and-deserialize [compressed-savestate]
-  (if-let [preset-decoding (presets/decode compressed-savestate)]
-    preset-decoding
-    (general/decompress-and-deserialize compressed-savestate)))
+  (try
+    (if-let [preset-decoding (presets/decode compressed-savestate)]
+      preset-decoding
+      (general/decompress-and-deserialize compressed-savestate))
+    (catch js/Object _e
+      (js/console.log "Error reading savestate… not loading")
+      nil)))
