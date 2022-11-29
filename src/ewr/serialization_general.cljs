@@ -1,6 +1,6 @@
 (ns ewr.serialization-general
   (:require
-   ["huffman-url-compressor" :as huff :refer [createEncoder encodeConfig decodeConfig]] [wrap.compress :as compress]
+   ["huffman-url-compressor" :as huff :refer [createEncoder encodeConfig decodeConfig]]
    [clojure.edn :as edn]
    [clojure.string :as str]
    [ewr.serialization-common :as sercom]

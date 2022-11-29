@@ -18,8 +18,7 @@
    [reagent.ratom :as ratom]
    [thi.ng.color.core :as col]
    [troglotit.re-frame.debounce-fx]
-   [vimsical.re-frame.cofx.inject :as inject]
-   [wrap.compress :as compress]))
+   [vimsical.re-frame.cofx.inject :as inject]))
 
 (def ensure-caps
   (rf/->interceptor

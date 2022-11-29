@@ -80,8 +80,9 @@
   [savestate-string]
   (when savestate-string
     (let [savestate
-          (serialize/decompress-and-deserialize
-           savestate-string)]
+          (or (serialize/decompress-and-deserialize
+               savestate-string)
+              "0~1OI")] ;TODO: derive this from a default-state
       (rf/dispatch-sync [:save/savestate-into-db savestate])))
 
   (let [svg (rdom/render-to-string
