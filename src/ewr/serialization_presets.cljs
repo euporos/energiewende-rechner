@@ -96,7 +96,7 @@
         "2160m0.680k54c20.41k6g8.1l68n10.208j3b1.36k107s8.1l68w51")))
 
 (defn huff-encode [string]
-  (encodeConfig string encoder))
+  (when string (encodeConfig string encoder)))
 
 (defn huff-decode [string]
   (decodeConfig string encoder))
@@ -137,9 +137,10 @@
 (defn encode-energy-sources [nrgs]
   (apply str (map encode-energy-source nrgs)))
 
-(defn encode-delta [{:keys [energy-needed energy-sources] :as _savestate}]
-  (str energy-needed
-       (when energy-sources (encode-energy-sources energy-sources))))
+(defn encode-delta [{:keys [energy-needed energy-sources] :as savestate}]
+  (when savestate
+    (str energy-needed
+         (when energy-sources (encode-energy-sources energy-sources)))))
 
 (defn encode [savestate]
   (first
