@@ -50,16 +50,18 @@
   `(def ~var
      (~f ~(slurp file))))
 
-(def default-config-dirs ["config/default" "config/default_stage" "config/default_test" "config/default_dev"])
+(def default-config-dirs ["config/default"
+                          "config/default_stage"
+                          "config/default_test"
+                          "config/default_dev"])
 
 (defn get-config-dirs
   []
   (if-let [config-var (System/getenv "EWR_CONFIG_DIRS")]
 
     (let [config-dirs (str/split config-var #" +")]
-      (do
-        (println "got config dirs from Environment: " config-dirs)
-        config-dirs))
+      (println "got config dirs from Environment: " config-dirs)
+      config-dirs)
     (do
       (println "using standard config dirs: " default-config-dirs)
       default-config-dirs)))
