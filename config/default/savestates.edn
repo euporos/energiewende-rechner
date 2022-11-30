@@ -39,10 +39,10 @@
       :co2           820
       :resources     1185}
      :hydro
-     {:share         1
-      :power-density 1
-      :deaths        20
-      :co2           100
-      :resources     1000
-      :cap           500}}
+     {:cap           42
+      :share         1
+      :power-density 0.14
+      :deaths        0.14
+      :co2           24
+      :resources     14068}}
   :energy-needed 2159}]
