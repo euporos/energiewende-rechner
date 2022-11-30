@@ -252,7 +252,7 @@
        (fn [db [_ nrg-key param-key]]
          (load-nrg-pub db  nrg-key param-key (pubs/default-pub nrg-key param-key)))
        db
-       (for [nrg-key   cfg/nrg-keys ; … for alle combinations
+       (for [nrg-key   (keys (get db :energy-sources)) ; … for alle combinations
              param-key params/common-param-keys] ; of energy-sources and parameters
          [nil nrg-key param-key]))
       (load-global-pub :energy-needed (first (pubs/pubs-for-global-value :energy-needed)))
@@ -264,7 +264,13 @@
                     (pubs/default-pub :hydro :cap))))
 
 (def default-db
-  (first cfg/savestates))
+  (-> cfg/savestates
+      first
+      ;; load-default-pubs
+)) ;; uncomment to create a new default savestate
+
+(comment
+  @(rf/subscribe [:save/savestate]))
 
 (rf/reg-event-db
  :pub/load-defaults
