@@ -58,7 +58,7 @@
   :link "https://www.statista.com/statistics/494425/death-rate-worldwide-by-energy-source/"
   :energy-sources
   {:deaths
-   {:bio         12 ;; check this
+   {:bio         12 ;; TODO: check this
     :solar       0.44
     :wind        0.12
     :nuclear     0.09
@@ -126,12 +126,19 @@
   :link "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0270155#sec004"
   :energy-sources
   {:power-density
+   ;; (-> 7.1              ; ha/TWh/y
+   ;;  (* 10000)        ; → m²/TWh/y
+   ;;  (/ 1000000000000); → m²/Wh/y
+   ;;  (* 24 365)       ; m²/W
+   ;;  (->> (/ 1)))     ; W/m²
    {:solar 5.71
     :wind 0.95
     :bio 0.2
     :nuclear 1607.82
     :natural-gas 27.84
-    :coal 11.42}}}
+    :coal 11.42
+    :hydro 17.56}}}
+
 
  {:id   "Energy Policy (ohne Infrastruktur)"
   :link "https://doi.org/10.1016/j.enpol.2018.08.023"
