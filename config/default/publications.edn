@@ -179,12 +179,18 @@
     :wind    0.15
     :nuclear 0.04}
    :power-density
+   ;; (-> 50.0 ; km²/TWh
+   ;;  (* 1000000) ; m²/TWh
+   ;;  (/ 1000000000000) ; m²/W
+   ;;  (* 24 365)
+   ;;  (->> (/ 1))) ; W/m²
    {:solar       20.03
     :wind        2.48
     :bio         1.2
     :nuclear     1141.55
     :natural-gas 103.78
-    :coal        51.89}}}
+    :coal        51.89
+    :hydro 2.28}}}
  ;; {:id "Öko-Institut"
  ;;  :link "https://www.oeko.de/fileadmin/oekodoc/Stromsystem-II-Regionalisierung-der-erneuerbaren-Stromerzeugung.pdf"
  ;;  :energy-sources
