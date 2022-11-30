@@ -41,7 +41,7 @@
      :hydro
      {:cap           42
       :share         1
-      :power-density 0.14
+      :power-density 17.56
       :deaths        0.14
       :co2           24
       :resources     14068}}
