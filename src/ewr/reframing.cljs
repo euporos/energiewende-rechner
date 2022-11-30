@@ -264,8 +264,8 @@
                     (pubs/default-pub :hydro :cap))))
 
 (def default-db
-  (-> cfg/savestates
-      first
+  (-> cfg/default-savestate
+      identity
       ;; load-default-pubs
 )) ;; uncomment to create a new default savestate
 

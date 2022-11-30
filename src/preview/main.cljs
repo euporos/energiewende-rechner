@@ -8,7 +8,8 @@
    [ewr.views :as views]
    [preview.testdata :as testdata]
    [re-frame.core :as rf]
-   [reagent.dom.server :as rdom])
+   [reagent.dom.server :as rdom]
+   [ewr.config :as cfg])
   (:require-macros [ewr.macros :as m]))
 
 (defn svg-string->png-buf
@@ -82,7 +83,7 @@
     (let [savestate
           (or (serialize/decompress-and-deserialize
                savestate-string)
-              "0~1OI")] ;TODO: derive this from a default-state
+              cfg/default-savestate)]
       (rf/dispatch-sync [:save/savestate-into-db savestate])))
 
   (let [svg (rdom/render-to-string

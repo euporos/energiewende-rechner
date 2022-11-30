@@ -37,6 +37,8 @@
 
 (def savestates (:savestates config))
 
+(def default-savestate (last savestates))
+
 ;; (def config {:snippets {:subtitle "boo me too"}})
 
 (def settings  (:settings config))
