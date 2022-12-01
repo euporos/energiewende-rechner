@@ -24,6 +24,10 @@ prepare-dev:
 	lein build-site
 	npx scss --update --force scss:export/main/css
 
+.PHONY: run-php
+run-php:
+	cd export/main && php -S localhost:5002
+
 .PHONY: prod-export-main-project
 prod-export-main-project:
 	EWR_CONFIG_DIRS="config/default" make export-main-project
