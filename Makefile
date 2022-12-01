@@ -5,6 +5,8 @@ dev-setup:
 	mkdir -p export/preview >/dev/null
 	mkdir -p export/other >/dev/null
 	npx shadow-cljs release prerender
+	lein build-site
+	npx scss --update --force scss:export/main/css
 
 .PHONY: export-main-project
 export-main-project:
