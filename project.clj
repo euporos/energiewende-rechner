@@ -22,6 +22,9 @@
                  [re-frame-utils "0.1.0"]
                  [metosin/malli "0.4.0"]
                  [thedavidmeister/cljc-md5 "0.0.2"]]
+  :plugins [[lein-auto "0.1.3"]]
+  :auto {"build-site" {:paths ["src" "resources"]
+                       :file-pattern #"\.(clj|html|svg|php)$"}}
   :ring {:handler site.process/live-view}
   :aliases {"build-site" ["run" "-m" "site.process/export"]}
   :profiles {:dev {:plugins [[lein-ring "0.12.6"]]}})
