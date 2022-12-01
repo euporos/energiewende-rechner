@@ -1,2 +1,2 @@
-{:inject-php? false
+{:inject-php? true
  :test-version? false}
