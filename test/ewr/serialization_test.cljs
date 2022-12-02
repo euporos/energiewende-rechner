@@ -105,7 +105,7 @@
 
 "[1300 [[28 4.56 0.12 11 10260 240] [12 5.2 0.44 44 16447 142] [15 240.8 0.08 12 930] [2 0.16 4.63 230 1080] [12 482.1 2.82 490 572] [31 135.1 28.67 820 1185]]]"
 
-(def common-savestate (first cfg/savestates))
+(def common-preset (first cfg/presets))
 
 (def teststate-delta-nrgs-only
   {:energy-sources
@@ -254,7 +254,7 @@
      :cap           500}}
    :energy-needed 215})
 
-(serdelta/encode-delta (serdelta/delta teststate-delta-both common-savestate))
+(serdelta/encode-delta (serdelta/delta teststate-delta-both common-preset))
 
 (serdelta/decode-delta
  "2160m0.680k54c20.41k6g8.1l68n10.208j3b1.36k107s8.1l68w51")

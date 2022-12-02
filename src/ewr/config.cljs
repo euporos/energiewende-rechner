@@ -35,9 +35,9 @@
 
 (m/def-config config)
 
-(def savestates (:savestates config))
+(def presets (:presets config))
 
-(def default-savestate (last savestates))
+(def latest-preset (last presets))
 
 ;; (def config {:snippets {:subtitle "boo me too"}})
 

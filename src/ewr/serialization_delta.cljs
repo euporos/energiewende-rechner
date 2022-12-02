@@ -95,11 +95,11 @@
          (when energy-sources (encode-energy-sources energy-sources)))))
 
 (defn encode [savestate]
-  (str (dec (count cfg/savestates))
+  (str (dec (count cfg/presets))
        "~"
        (huff-encode
         (encode-delta
-         (delta savestate (last cfg/savestates))))))
+         (delta savestate cfg/latest-preset)))))
 
 (defn decode-energy-source [sofar [_ l1 l2 value split-encoded-nrg]]
   (assoc-in sofar
@@ -125,5 +125,5 @@
 (defn decode [encoded-string]
   (when-let [[_ preset-n encoded-delta] (re-find #"^([0-9]+)~(.+$)" encoded-string)]
     (deep-merge
-     (get cfg/savestates (js/parseInt preset-n))
+     (get cfg/presets (js/parseInt preset-n))
      (decode-delta (huff-decode encoded-delta)))))

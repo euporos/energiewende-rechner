@@ -264,13 +264,13 @@
                     (pubs/default-pub :hydro :cap))))
 
 (def default-db
-  (-> cfg/default-savestate
+  (-> cfg/latest-preset
       ;; we load the default pubs only so the pub dropdowns show the pubs, corresponding
       ;; to values from the savestate…
       load-default-pubs
       ;; then we ensure that the savestate values are used
       ;; even if there are no correspondig pubs
-      (merge cfg/default-savestate))) ;; comment this out to create a new default savestate
+      (merge cfg/latest-preset))) ;; comment this out to create a new default savestate
 
 (comment
   @(rf/subscribe [:save/savestate]))

@@ -83,7 +83,7 @@
     (let [savestate
           (or (serialize/decompress-and-deserialize
                savestate-string)
-              cfg/default-savestate)]
+              cfg/latest-preset)]
       (rf/dispatch-sync [:save/savestate-into-db savestate])))
 
   (let [svg (rdom/render-to-string
