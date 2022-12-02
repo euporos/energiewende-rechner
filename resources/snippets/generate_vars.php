@@ -24,11 +24,10 @@ if (empty($bare_query_string)) {
 
     if (! file_exists($savestate_img_filename_absolute)) {
         file_put_contents($savestate_img_filename, file_get_contents($dynamic_img_link));
-        $og_img_link = $dynamic_img_link;
     }
-    else {
+
         $static_image_link = "https://$_SERVER[HTTP_HOST]/$savestate_img_filename";
         $og_img_link = $static_image_link;
-    }
+
 }
 ?>
