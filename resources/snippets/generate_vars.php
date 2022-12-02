@@ -1,4 +1,13 @@
 <?php
+
+$preview_dir = "previews";
+
+if (! file_exists($preview_dir)) {
+    mkdir(
+    $preview_dir
+    );
+}
+
 $bare_query_string = $_SERVER['QUERY_STRING'];
 $full_query_string = "?".$bare_query_string;
 $full_url = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
@@ -20,6 +29,5 @@ if (empty($bare_query_string)) {
     else {
         $og_img_link = $savestate_img_filename;
     }
-
 }
 ?>
