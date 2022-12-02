@@ -27,7 +27,8 @@ if (empty($bare_query_string)) {
         $og_img_link = $dynamic_img_link;
     }
     else {
-        $og_img_link = $savestate_img_filename;
+        $static_image_link = "https://$_SERVER[HTTP_HOST]/$savestate_img_filename";
+        $og_img_link = $static_image_link;
     }
 }
 ?>
