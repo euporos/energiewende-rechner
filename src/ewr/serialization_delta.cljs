@@ -95,14 +95,11 @@
          (when energy-sources (encode-energy-sources energy-sources)))))
 
 (defn encode [savestate]
-  (first
-   (sort-by count
-            (map-indexed
-             (fn [n preset]
-               (str n "~" (huff-encode
-                           (encode-delta
-                            (delta savestate preset)))))
-             cfg/savestates))))
+  (str (dec (count cfg/savestates))
+       "~"
+       (huff-encode
+        (encode-delta
+         (delta savestate (last cfg/savestates))))))
 
 (defn decode-energy-source [sofar [_ l1 l2 value split-encoded-nrg]]
   (assoc-in sofar
