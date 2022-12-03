@@ -13,15 +13,16 @@
       (>= (count (filter #(get (second %) :locked?) nrg-sources))
           (dec (count nrg-sources)))))
 
-(defn cap-exceeded? [energy-needed [_ {:keys [cap share]} :as nrg]]
-  (when
-   (and cap
-        (< cap
-           ;; Subtracting 0.01 here avoids a bug, where ensure-caps
-           ;; recurs indefinitely dure to float imprecision
-           (- (h/relative-share-to-twh energy-needed share)
-              0.01)))
-    nrg))
+(defn cap-exceeded? [energy-needed cap share]
+  (when cap
+    (< cap
+      ;; Subtracting 0.01 here avoids a bug, where ensure-caps
+      ;; recurs indefinitely dure to float imprecision
+       (- (h/relative-share-to-twh energy-needed share)
+          0.01))))
+
+(defn cap-of-nrg-exceeded? [energy-needed [_ {:keys [cap share]} :as nrg]]
+  (cap-exceeded? energy-needed cap share))
 
 (defn remix-energy-shares-float
   "Takes a set of energy shares (NRGS) and returns
@@ -69,8 +70,8 @@
     reacted-energies))
 
 (defn ensure-caps [energy-needed nrgs]
-  (let [exceeding-nrg (some (partial cap-exceeded? energy-needed)
-                            nrgs)]
+  (let [exceeding-nrg (first (filter (partial cap-of-nrg-exceeded? energy-needed)
+                                     nrgs))]
     (if exceeding-nrg
       (recur energy-needed
              (remix-energy-shares-float
@@ -83,9 +84,12 @@
   "If remix is blocked, reurns thes energy-sources unchanged.
   Otherwise performs the remix"
   [changed-nrg-key newval energy-needed nrg-sources]
-  (if (remix-blocked? changed-nrg-key newval nrg-sources)
-    nrg-sources
-    (remix-energy-shares-float changed-nrg-key newval energy-needed  nrg-sources)))
+  (cond
+    (remix-blocked? changed-nrg-key newval nrg-sources) nrg-sources
+    (cap-exceeded? energy-needed (get-in nrg-sources [changed-nrg-key :cap]) newval)
+    (remix-energy-shares-float changed-nrg-key (get-in nrg-sources [changed-nrg-key :cap])
+                               energy-needed  nrg-sources)
+    :else (remix-energy-shares-float changed-nrg-key newval energy-needed  nrg-sources)))
 
 ;; ##############
 ;; ### Legacy ###
