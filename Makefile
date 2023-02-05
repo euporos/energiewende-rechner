@@ -24,10 +24,6 @@ prepare-dev:
 	lein build-site
 	npx scss --update --force scss:export/main/css
 
-.PHONY: run-php
-run-php:
-	cd export/main && php -S localhost:5002
-
 .PHONY: prod-export-main-project
 prod-export-main-project:
 	EWR_CONFIG_DIRS="config/default" make export-main-project
@@ -50,3 +46,27 @@ build-aws-preview:
 	#Shadow-cljs is unneeded for AWS and removed to keep the zip small
 	rm -r export/preview/node_modules/shadow-cljs-jar
 	cd export/preview/ && zip -r lambda.zip node_modules index.js fonts
+
+## #######################
+## ##### Development #####
+## #######################
+
+.PHONY: dev-watch-site
+dev-watch-site:
+	lein auto build-site
+
+.PHONY: dev-watch-cljs
+dev-watch-cljs:
+	npx shadow-cljs watch app
+
+.PHONY: dev-watch-scss
+dev-watch-scss:
+	npx scss --watch scss:export/main/css
+
+.PHONY: dev-watch-all
+dev-watch-all:
+	 make dev-watch-scss & make dev-watch-site & make dev-watch-cljs
+
+.PHONY: dev-run-php
+dev-run-php:
+	cd export/main && php -S localhost:5002
