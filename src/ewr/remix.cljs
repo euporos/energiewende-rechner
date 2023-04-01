@@ -87,7 +87,8 @@
   (cond
     (remix-blocked? changed-nrg-key newval nrg-sources) nrg-sources
     (cap-exceeded? energy-needed (get-in nrg-sources [changed-nrg-key :cap]) newval)
-    (remix-energy-shares-float changed-nrg-key (get-in nrg-sources [changed-nrg-key :cap])
+    (remix-energy-shares-float changed-nrg-key (h/twh-to-relative-share
+                                                energy-needed (get-in nrg-sources [changed-nrg-key :cap]))
                                energy-needed  nrg-sources)
     :else (remix-energy-shares-float changed-nrg-key newval energy-needed  nrg-sources)))
 
@@ -156,3 +157,4 @@
   [f coll]
   (reduce (fn [sofar [key val]]
             (assoc sofar key (f val))) {} coll))
+
