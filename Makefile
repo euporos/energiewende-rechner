@@ -53,6 +53,7 @@ build-aws-preview:
 
 .PHONY: dev-watch-site
 dev-watch-site:
+	lein build-site
 	lein auto build-site
 
 .PHONY: dev-watch-cljs
