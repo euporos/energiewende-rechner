@@ -624,11 +624,13 @@
             (get-in url [:query "s"])]
      (let [savestate (serialize/decompress-and-deserialize
                       url-savestate-string)]
-       {:db         (if savestate
-                      (merge db savestate)
-                      (assoc-in db [:ui :savestate-load-failed?] true))
-        :tech/alert (when (empty? savestate)
-                      "Leider konnte der gespeicherte Energiemix nicht geladen werden\n\nRechner startet mit Standardmix")})
+       (cond-> {:db         (if savestate
+                              (merge db savestate)
+                              (assoc-in db [:ui :savestate-load-failed?] true))}
+         (empty? savestate)
+         (assoc :tech/alert "Leider konnte der gespeicherte Energiemix nicht geladen werden\n\nRechner startet mit Standardmix")
+         (empty? savestate)
+         (assoc :dispatch [:global/initialize false])))
      {})))
 
 (reg-sub
