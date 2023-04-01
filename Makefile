@@ -10,8 +10,9 @@ dev-setup:
 
 .PHONY: export-main-project
 export-main-project:
-	rm -r .shadow-cljs
-	rm -r export/*
+	rm -rf export 2> /dev/null || true
+	mkdir export
+	rm -rf .shadow-cljs 2> /dev/null || true
 	echo "CLEAN SLATE – Export dir emptied"
 	npx shadow-cljs release prerender
 	npx scss  --style compressed --update --force scss:export/main/css
@@ -38,8 +39,8 @@ test-export-main-project:
 
 .PHONY: build-aws-preview
 build-aws-preview:
-	rm -r .shadow-cljs
-	rm -rf export/preview/*
+	rm -r .shadow-cljs 2> /dev/null || true
+	rm -rf export/preview/* 2> /dev/null || true
 	cp -r resources/preview/* export/preview/
 	npx shadow-cljs release aws-preview
 	cp -r node_modules export/preview/node_modules
