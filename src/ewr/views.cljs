@@ -1,17 +1,13 @@
 (ns ewr.views
   (:require
    [clojure.edn :as edn]
-   [clojure.string :as str]
    [ewr.config :as cfg :refer [snippet]]
-   [ewr.constants :as constants]
    [ewr.helpers :as h]
-   [ewr.icons :as icons]
    [ewr.parameters :as params]
    [ewr.publications :as pubs]
    [md5.core :as md5]
    [re-frame.core :as rf]
-   [reagent.core :as r])
-  (:require-macros [ewr.macros :as m]))
+   [reagent.core :as r]))
 
 ;; ########################
 ;; ##### Common Stuff #####
