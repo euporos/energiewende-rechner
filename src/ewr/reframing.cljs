@@ -364,15 +364,26 @@
 
 (reg-sub
  :nrg-share/get-absolute-share
- ;; Returns the relative share of an Energy Source
+ ;; Returns the absolute share of an Energy Source
  ;; in the total energy needed (in percent)
  (fn [db [_ nrg-key]]
    (get-in db [:energy-sources nrg-key :share])))
 
 (reg-sub
+ :nrg-share/get-absolute-share-ungranular
+ ;; Returns the relative share of an Energy Source
+ ;; in the total energy needed (in percent)
+ (fn [[_ nrg-key]]
+   (rf/subscribe [:nrg-share/get-absolute-share nrg-key]))
+ (fn [share _]
+   (/
+    share
+    (constants/granularity-factor))))
+
+(reg-sub
  :nrg-share/get-relative-share
-   ;; Returns the absolute share of an Energy Source
-   ;; in the total energy needed (in TWh)
+ ;; Returns the absolute share of an Energy Source
+ ;; in the total energy needed (in TWh)
  (fn [[_ nrg-key]]
    [(rf/subscribe [:energy-needed/granular])
     (rf/subscribe [:nrg-share/get-absolute-share nrg-key])])
@@ -418,14 +429,13 @@
  ;; Subscription for the map view
  ;; Adds everything needed to draw the circles
  (fn [[_ nrg-key]]
-   [(rf/subscribe [:energy-needed/get])
-    (rf/subscribe [:nrg/get nrg-key])])
- (fn [[energy-needed nrg] [_ _nrg-key]]
+   [(rf/subscribe [:nrg/get nrg-key])
+    (rf/subscribe [:nrg-share/get-absolute-share-ungranular nrg-key])])
+ (fn [[energy-needed nrg share] [_ _nrg-key]]
    (let [{:keys [share power-density] :as nrg}
          nrg
          area
-         (-> energy-needed
-             (* share)
+         (-> share
              (/ 100) ; share in TWh ;TODO: from constant
              (- (:arealess-capacity nrg 0))
              (* 1000000000000) ; share in Wh
