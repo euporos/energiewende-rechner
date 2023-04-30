@@ -1,2 +1,3 @@
 {:inject-php? true
+ :features       #{}
  :test-version? false}
