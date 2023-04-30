@@ -2,6 +2,7 @@
   (:require
    [clojure.edn :as edn]
    [ewr.config :as cfg :refer [snippet]]
+   [ewr.constants :as constants]
    [ewr.helpers :as h]
    [ewr.parameters :as params]
    [ewr.publications :as pubs]
@@ -374,7 +375,7 @@
 (defn energy-slider
   "Single Slider to adjust the share of an Energy.
   Also renders: Lock Button, Icon and Text."
-  [[nrg-key {:keys [name props share color]}]]
+  [[nrg-key {:keys [name props color]}]]
   [:div.eslider.pt-1 {:style {:background-color color
                               :width            "100%"}}
 
@@ -396,14 +397,19 @@
          [:span.has-text-weight-bold
           {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :hydro])}
           (with-tooltip "")]) " "
-       (Math/round share) " % | "
        (Math/round
-        @(rf/subscribe [:nrg-share/get-absolute-share nrg-key])) " TWh"]]]]
+        (*
+         100
+         @(rf/subscribe [:nrg-share/get-relative-share nrg-key]))) " % | "
+       (Math/round
+        (/
+         @(rf/subscribe [:nrg-share/get-absolute-share nrg-key])
+         constants/granularity-factor)) " TWh"]]]]
 
    ;; Actual Slider
-   [:input {:type      "range" :min 0 :max 100
+   [:input {:type      "range" :min 0 :max @(rf/subscribe [:energy-needed/granular])
             :style     {:width "100%"}
-            :value     (str share)
+            :value     (str @(rf/subscribe [:nrg-share/get-absolute-share nrg-key]))
             :on-change (h/dispatch-on-x
                         [:nrg/remix-shares nrg-key])}]])
 

@@ -111,6 +111,12 @@
    (h/nan->nil
     (get db :energy-needed))))
 
+(reg-sub
+ :energy-needed/granular
+ (fn [db _]
+   (h/nan->nil
+    (* constants/granularity-factor (get db :energy-needed)))))
+
 (reg-event-db
  :energy-needed/set
  (fn [db [_ newval]]
@@ -260,18 +266,15 @@
                     (pubs/default-pub :solar :arealess-capacity))
       (load-nrg-pub :wind :arealess-capacity ; …for offshore wind
                     (pubs/default-pub :wind :arealess-capacity))
-      (load-nrg-pub :hydro :cap ; …for minors cap
+      (load-nrg-pub :hydro :cap; …for minors cap
                     (pubs/default-pub :hydro :cap))))
-
-(def granularity-factor 1000)
 
 (defn process-saved-db [init-db]
   (->
    init-db
    (update :energy-sources
            #(reduce (fn [sofar [nrg-key {:keys [share] :as nrg-state}]]
-                      (assoc sofar nrg-key (assoc nrg-state :share (* share granularity-factor)))) {} %))
-   (update :energy-needed (partial * granularity-factor))))
+                      (assoc sofar nrg-key (assoc nrg-state :share (* share constants/granularity-factor)))) {} %))))
 
 (def default-db
   (-> {:energy-sources
@@ -352,24 +355,43 @@
  (fn [db [_ nrg-key]]
    (update-in db [:energy-sources nrg-key :locked?] not)))
 
+;; (reg-sub
+;;  :nrg-share/get-relative-share
+;;  ;; Returns the relative share of an Energy Source
+;;  ;; in the total energy needed (in percent)
+;;  (fn [db [_ nrg-key]]
+;;    (get-in db [:energy-sources nrg-key :share])))
+
 (reg-sub
- :nrg-share/get-relative-share
+ :nrg-share/get-absolute-share
  ;; Returns the relative share of an Energy Source
  ;; in the total energy needed (in percent)
  (fn [db [_ nrg-key]]
    (get-in db [:energy-sources nrg-key :share])))
 
 (reg-sub
- :nrg-share/get-absolute-share
- ;; Returns the absolute share of an Energy Source
- ;; in the total energy needed (in TWh)
+ :nrg-share/get-relative-share
+   ;; Returns the absolute share of an Energy Source
+   ;; in the total energy needed (in TWh)
  (fn [[_ nrg-key]]
-   [(rf/subscribe [:energy-needed/get])
-    (rf/subscribe [:nrg-share/get-relative-share nrg-key])])
+   [(rf/subscribe [:energy-needed/granular])
+    (rf/subscribe [:nrg-share/get-absolute-share nrg-key])])
  (fn [[energy-needed share] [_ nrg-key]]
    (-> share
-       (/ 100)
-       (* energy-needed))))
+       (* 1.0)
+       (/ energy-needed))))
+
+#_(reg-sub
+   :nrg-share/get-absolute-share
+   ;; Returns the absolute share of an Energy Source
+   ;; in the total energy needed (in TWh)
+   (fn [[_ nrg-key]]
+     [(rf/subscribe [:energy-needed/get])
+      (rf/subscribe [:nrg-share/get-relative-share nrg-key])])
+   (fn [[energy-needed share] [_ nrg-key]]
+     (-> share
+         (/ 100)
+         (* energy-needed))))
 
 (reg-event-db
  :nrg/remix-shares
@@ -762,7 +784,9 @@
  ;; loads the default publications
  (fn-traced [_ [_ load-savestate?]]
             (cond-> {:db              default-db
-                     :tech/dispatches [(when (and (cfg/feature-active? :bookmark-state)
-                                                  load-savestate?)
-                                         [:save/load-savestate-from-url])]}
-              (not load-savestate?) (assoc :save/remove-savestate-from-url true))))
+                     ;; :tech/dispatches [(when (and (cfg/feature-active? :bookmark-state)
+                     ;;                              load-savestate?)
+                     ;;                     [:save/load-savestate-from-url])]
+                     }
+              ;(not load-savestate?) (assoc :save/remove-savestate-from-url true)
+              )))
