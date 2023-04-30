@@ -376,9 +376,7 @@
  (fn [[_ nrg-key]]
    (rf/subscribe [:nrg-share/get-absolute-share nrg-key]))
  (fn [share _]
-   (/
-    share
-    (constants/granularity-factor))))
+   (/ share constants/granularity-factor)))
 
 (reg-sub
  :nrg-share/get-relative-share
@@ -431,12 +429,11 @@
  (fn [[_ nrg-key]]
    [(rf/subscribe [:nrg/get nrg-key])
     (rf/subscribe [:nrg-share/get-absolute-share-ungranular nrg-key])])
- (fn [[energy-needed nrg share] [_ _nrg-key]]
-   (let [{:keys [share power-density] :as nrg}
+ (fn [[nrg share] [_ _nrg-key]]
+   (let [{:keys [power-density] :as nrg}
          nrg
          area
-         (-> share
-             (/ 100) ; share in TWh ;TODO: from constant
+         (-> #p share
              (- (:arealess-capacity nrg 0))
              (* 1000000000000) ; share in Wh
              (/ const/hours-per-year) ; needed W
