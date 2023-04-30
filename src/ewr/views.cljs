@@ -410,17 +410,18 @@
 (defn energy-mix
   "Panel with Sliders to mix Energies"
   []
-  (let [[bg-color font-color] @(rf/subscribe [:ui/decab-color])]
+  (let [;; [bg-color font-color] @(rf/subscribe [:ui/decab-color])
+        ]
     [:div
      [:nav.panel
       ;; Headings with CO2-Indicator
-      [:div.panel-heading {:style {:background-color bg-color
-                                   :color            font-color}}
-       [:div.columns.is-mobile [:div.column "Strommix"]
-        [:div.column.has-text-right
-         (if-let [co2-intensity @(rf/subscribe [:deriv/co2-per-kwh-mix])]
-           (Math/round co2-intensity) "???")
-         " g" co2 "/kWh"]]]
+      ;; [:div.panel-heading {:style {:background-color bg-color
+      ;;                              :color            font-color}}
+      ;;  [:div.columns.is-mobile [:div.column "Strommix"]
+      ;;   [:div.column.has-text-right
+      ;;    (if-let [co2-intensity @(rf/subscribe [:deriv/co2-per-kwh-mix])]
+      ;;      (Math/round co2-intensity) "???")
+      ;;    " g" co2 "/kWh"]]]
 
       ;; Sliders
       [:div.pt-3.pb-3.pr-3.pl-3

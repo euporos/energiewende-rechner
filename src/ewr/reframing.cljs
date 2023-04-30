@@ -489,10 +489,10 @@
    [(rf/subscribe [:deriv/max-co-per-kwh])
     (rf/subscribe [:deriv/co2-per-kwh-mix])])
  (fn [[max-co2-intensity actual-co2-intensity]  _]
-   (if (and max-co2-intensity actual-co2-intensity)
+   (when (and max-co2-intensity actual-co2-intensity)
      (let [bg (color/share-to-color
                max-co2-intensity
-               actual-co2-intensity cfg/co2-colors)]
+               #p actual-co2-intensity cfg/co2-colors)]
        [(:col bg)
         (color/contrasty-bw bg)]))))
 
@@ -752,11 +752,9 @@
  (fn [db]
    (get-in db [:ui :copy-alert :show?])))
 
-
 ;; ########################
 ;; ##### Global Stuff #####
 ;; ########################
-
 
 (rf/reg-event-fx
  :global/initialize
