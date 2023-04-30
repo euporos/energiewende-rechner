@@ -263,14 +263,71 @@
       (load-nrg-pub :hydro :cap ; …for minors cap
                     (pubs/default-pub :hydro :cap))))
 
+(def granularity-factor 1000)
+
+(defn process-saved-db [init-db]
+  (->
+   init-db
+   (update :energy-sources
+           #(reduce (fn [sofar [nrg-key {:keys [share] :as nrg-state}]]
+                      (assoc sofar nrg-key (assoc nrg-state :share (* share granularity-factor)))) {} %))
+   (update :energy-needed (partial * granularity-factor))))
+
 (def default-db
-  (-> cfg/latest-preset
+  (-> {:energy-sources
+       {:wind
+        {:share 604
+         :power-density 4.56
+         :deaths 0.12
+         :co2 11
+         :resources 10260
+         :arealess-capacity 240}
+        :solar
+        {:share 259
+         :power-density 5.2
+         :deaths 0.44
+         :co2 44
+         :resources 16447
+         :arealess-capacity 142}
+        :bio
+        {:share 43
+         :power-density 0.16
+         :deaths 4.63
+         :co2 230
+         :resources 1080}
+        :nuclear
+        {:share 324
+         :power-density 240.8
+         :deaths 0.08
+         :co2 12
+         :resources 930}
+        :natural-gas
+        {:share 259
+         :power-density 482.1
+         :deaths 2.82
+         :co2 490
+         :resources 572}
+        :coal
+        {:share 648
+         :power-density 135.1
+         :deaths 28.67
+         :co2 820
+         :resources 1185}
+        :hydro
+        {:cap 42
+         :share 22
+         :power-density 2.28
+         :deaths 0.14
+         :co2 24
+         :resources 14068}}
+       :energy-needed 2159}
+      process-saved-db
       ;; we load the default pubs only so the pub dropdowns show the pubs, corresponding
       ;; to values from the savestate…
       load-default-pubs
       ;; then we ensure that the savestate values are used
       ;; even if there are no correspondig pubs
-      (merge cfg/latest-preset))) ;; comment this out to create a new default savestate
+      #_(merge cfg/latest-preset))) ;; comment this out to create a new default savestate
 
 (comment
   @(rf/subscribe [:save/savestate]))
