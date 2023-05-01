@@ -407,7 +407,7 @@
          constants/granularity-factor)) " TWh"]]]]
 
    ;; Actual Slider
-   [:input {:type      "range" :min 0 :max @(rf/subscribe [:energy-needed/granular])
+   [:input {:type      "range" :min 0 :max @(rf/subscribe [:energy-needed/get])
             :style     {:width "100%"}
             :value     (str @(rf/subscribe [:nrg-share/get-absolute-share nrg-key]))
             :on-change (h/dispatch-on-x

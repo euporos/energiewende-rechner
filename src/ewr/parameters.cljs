@@ -10,6 +10,7 @@
 (def energy-needed
   [:energy-needed {:name        "Strombedarf"
                    :unit        "TWh"
+                   :granularity-factor const/granularity-factor
                    :parse-fn    js/parseFloat
                    :input-attrs {:type    "number"
                                  :pattern "1"
@@ -122,9 +123,16 @@
 (def all-params-map
   (into {}
         (conj common-nrg-parameters
+              energy-needed
               arealess-capacity-solar
               arealess-capacity-wind
               cap)))
 
 (defn lookup-property [param-key property-key]
   (get-in all-params-map [param-key property-key]))
+
+(defn granularize [param-key val]
+  (* val (get-in all-params-map [param-key :granularity-factor] 1)))
+
+(defn ungranularize [param-key val]
+  (/ val (get-in all-params-map [param-key :granularity-factor] 1)))

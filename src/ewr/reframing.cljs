@@ -73,9 +73,9 @@
  (fn [db [_ prepath param
           unparsed-newval]]
    (let               ; we take parse-fn from the parameter-definition
-    [[param-key {:keys [parse-fn granularity-factor]}] param]
+    [[param-key {:keys [parse-fn]}] param]
      (assoc-in db (conj prepath param-key)
-               (* (or granularity-factor 1) (parse-fn unparsed-newval))))))
+               (params/granularize param-key (parse-fn unparsed-newval))))))
 
 (reg-sub :param/get
          (fn [db [_ pre-path param-key]]
@@ -90,12 +90,6 @@
  (fn [db _]
    (h/nan->nil
     (get db :energy-needed))))
-
-(reg-sub
- :energy-needed/granular
- (fn [db _]
-   (h/nan->nil
-    (* constants/granularity-factor (get db :energy-needed)))))
 
 (reg-event-db
  :energy-needed/set
@@ -227,8 +221,7 @@
   (if (not= pub nil)
     (-> db
         (assoc key
-
-               (get pub key))
+               #p (params/granularize key (get pub key)))
         (assoc-in [:ui :loaded-pubs key]
                   (:id pub)))))
 (reg-event-db
@@ -306,7 +299,7 @@
          :deaths 0.14
          :co2 24
          :resources 14068}}
-       :energy-needed 2159}
+       :energy-needed 2159000}
       process-saved-db
       ;; we load the default pubs only so the pub dropdowns show the pubs, corresponding
       ;; to values from the savestate…
@@ -366,7 +359,7 @@
  ;; Returns the absolute share of an Energy Source
  ;; in the total energy needed (in TWh)
  (fn [[_ nrg-key]]
-   [(rf/subscribe [:energy-needed/granular])
+   [(rf/subscribe [:energy-needed/get])
     (rf/subscribe [:nrg-share/get-absolute-share nrg-key])])
  (fn [[energy-needed share] [_ nrg-key]]
    (-> share
