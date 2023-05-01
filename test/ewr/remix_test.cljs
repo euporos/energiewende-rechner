@@ -54,6 +54,18 @@
 
   (t/is (= (remix/remix-energy-shares-int
             :coal
+            300
+            {:coal {:share 300}
+             :wind {:share 0}
+             :solar {:share 0}
+             :nuclear {:share 0}})
+           {:coal {:share 300}
+            :wind {:share 0}
+            :solar {:share 0}
+            :nuclear {:share 0}}))
+
+  (t/is (= (remix/remix-energy-shares-int
+            :coal
             40
             {:coal {:share 100}
              :wind {:share 100}

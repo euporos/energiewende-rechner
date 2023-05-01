@@ -28,7 +28,9 @@
       processed-nrgs
       (let [[next-nrg-key {:keys [share cap] :as next-nrg}] (first unprocessed-nrgs)
             cumulated-shares (reduce #(+ %1 (:share (second %2))) 0 unprocessed-nrgs)
-            relative-share (/ share cumulated-shares)
+            relative-share (if (> cumulated-shares 0)
+                             (/ share cumulated-shares)
+                             (/ 1 (count unprocessed-nrgs)))
             share-delta (min (Math/round (* relative-share remaining-amount))
                              (- (or cap js/Infinity) share))
             new-share (+ share share-delta)
@@ -63,9 +65,11 @@
   "If remix is blocked, returns the energy-sources unchanged.
   Otherwise performs the remix"
   [changed-nrg-key newval energy-needed nrg-sources]
-  (cond
-    (remix-blocked? changed-nrg-key newval nrg-sources) nrg-sources
-    (cap-exceeded? newval (get nrg-sources changed-nrg-key))
-    (remix-energy-shares-int changed-nrg-key (get-in nrg-sources [changed-nrg-key :cap]) nrg-sources)
-    :else (remix-energy-shares-int changed-nrg-key newval nrg-sources)))
+  (let [changed-nrg (get nrg-sources changed-nrg-key)]
+    (cond
+      (remix-blocked? changed-nrg-key newval nrg-sources) nrg-sources
+      (cap-exceeded? newval changed-nrg)
+      (remix-energy-shares-int changed-nrg-key (get changed-nrg :cap) nrg-sources)
+      :else (remix-energy-shares-int changed-nrg-key newval nrg-sources))))
+
 
