@@ -80,13 +80,13 @@
 
  (fn [db [_ prepath param
           unparsed-newval]]
-   (let               ; we take parse-fn from the parameter-definition
-    [[param-key {:keys [parse-fn]}] param]
-     (let [newval (params/granularize param-key (parse-fn unparsed-newval))]
-       (cond-> db
-         true (assoc-in (conj prepath param-key)
-                        newval)
-         (= param-key :energy-needed) (rebalance-nrgs-after-needed-change newval))))))
+   (let              ; we take parse-fn from the parameter-definition
+    [[param-key {:keys [parse-fn]}] param
+     newval (params/granularize param-key (parse-fn unparsed-newval))]
+     (cond-> db
+       true (assoc-in (conj prepath param-key)
+                      newval)
+       (= param-key :energy-needed) (rebalance-nrgs-after-needed-change newval)))))
 
 (reg-sub :param/get
          (fn [db [_ pre-path param-key]]
