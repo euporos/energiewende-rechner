@@ -99,15 +99,20 @@
 ;; These functions were used in previous versions of the program
 ;; and are left here for future reference.
 
-(defn distribute-energy [amount nrgs]
+(defn- delta-to-cap [nrg]
+  (- (:share (second nrg)) (:cap (second nrg))))
 
-  (loop [unprocessed-nrgs (seq nrgs) remaining-amount amount processed-nrgs {}]
+(defn distribute-energy [amount nrgs]
+  (loop [unprocessed-nrgs (sort-by delta-to-cap nrgs)
+         remaining-amount amount
+         processed-nrgs {}]
     (if-not (seq unprocessed-nrgs)
       processed-nrgs
-      (let [[next-nrg-key {:keys [share] :as next-nrg}] (first unprocessed-nrgs)
+      (let [[next-nrg-key {:keys [share cap] :as next-nrg}] (first unprocessed-nrgs)
             cumulated-shares (reduce #(+ %1 (:share (second %2))) 0 unprocessed-nrgs)
             relative-share (/ share cumulated-shares)
-            share-delta (Math/round (* relative-share remaining-amount))
+            share-delta (min (Math/round (* relative-share remaining-amount))
+                             (- (or cap js/Infinity) share))
             new-share (+ share share-delta)
             new-nrg (assoc next-nrg :share new-share)
             remaining-amount* (- remaining-amount share-delta)
