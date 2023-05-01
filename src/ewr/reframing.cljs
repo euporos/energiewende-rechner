@@ -20,26 +20,6 @@
    [troglotit.re-frame.debounce-fx]
    [vimsical.re-frame.cofx.inject :as inject]))
 
-(def ensure-caps
-  (rf/->interceptor
-   :id :ensure-caps
-   :after (fn [context]
-            (let [energy-needed (-> context
-                                    :coeffects
-                                    :db
-                                    :energy-needed)
-                  nrgs (get-in context [:effects :db :energy-sources])]
-              (if (and energy-needed nrgs)
-                (update-in context [:effects :db :energy-sources]
-                           (partial remix/ensure-caps
-                                    (-> context
-                                        :coeffects
-                                        :db
-                                        :energy-needed)))
-                context)))))
-
-(rf/reg-global-interceptor ensure-caps)
-
 ;; ###################
 ;; #### Technical ####
 ;; ###################
@@ -433,12 +413,12 @@
    (let [{:keys [power-density] :as nrg}
          nrg
          area
-         (-> #p share
+         (-> share
              (- (:arealess-capacity nrg 0))
-             (* 1000000000000) ; share in Wh
-             (/ const/hours-per-year) ; needed W
-             (/ power-density) ; needed m²
-             (/ 1000000)) ; needed km²
+             (* 1000000000000)          ; share in Wh
+             (/ const/hours-per-year)   ; needed W
+             (/ power-density)          ; needed m²
+             (/ 1000000))               ; needed km²
          radius           (if (or (< area 0) ; area < 0 possible with arealess-capacity
                                   (js/isNaN area)) 0
                               (h/radius-from-area-circle area))]
@@ -521,7 +501,7 @@
    (when (and max-co2-intensity actual-co2-intensity)
      (let [bg (color/share-to-color
                max-co2-intensity
-               #p actual-co2-intensity cfg/co2-colors)]
+               actual-co2-intensity cfg/co2-colors)]
        [(:col bg)
         (color/contrasty-bw bg)]))))
 
