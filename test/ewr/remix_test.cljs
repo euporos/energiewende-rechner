@@ -64,4 +64,20 @@
             :wind {:share 140}
             :solar {:share 50
                     :locked? true}
-            :nuclear {:share 70}})))
+            :nuclear {:share 70}}))
+
+  (t/is (= (remix/remix-energy-shares-int
+            :coal
+            40
+            {:coal {:share 100}
+             :wind {:share 100
+                    :cap 110}
+             :solar {:share 50
+                     :locked? true}
+             :nuclear {:share 50}})
+           {:coal {:share 40}
+            :wind {:share 110
+                   :cap 110}
+            :solar {:share 50
+                    :locked? true}
+            :nuclear {:share 100}})))
