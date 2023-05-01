@@ -99,7 +99,26 @@
 ;; These functions were used in previous versions of the program
 ;; and are left here for future reference.
 
-(defn distribute-energy [amount nrgs])
+(defn distribute-energy [amount nrgs]
+  (last
+   (take-while (comp seq first)
+               (iterate
+                (fn [[unprocessed-nrgs remaining-amount processed-nrgs]]
+                  (let [[next-nrg-key {:keys [share] :as next-nrg}] (first unprocessed-nrgs)
+                        cumulated-shares (reduce #(+ %1 (:share (second %2))) 0 unprocessed-nrgs)
+                        relative-share (/ share cumulated-shares)
+                        share-delta (Math/round (* relative-share remaining-amount))
+                        new-share (+ share share-delta)
+                        new-nrg (assoc next-nrg :share new-share)
+                        remaining-amount* (- remaining-amount share-delta)]
+
+                    (print "rshare " relative-share)
+                    (print "nshare " new-share)
+
+                    [(dissoc unprocessed-nrgs next-nrg-key)
+                     remaining-amount*
+                     (assoc processed-nrgs next-nrg-key new-nrg)]))
+                [nrgs amount {}]))))
 
 (defn remix-energy-shares-int
   "Remix-function based on a representation of shares
