@@ -75,7 +75,7 @@
   ;; I have tried to avoid this tight coupling with the DB
   ;; but solutions were unsatisfactory
   [pre-path parameter-dfn width show-unit?]
-  (let [[param-key {:keys [unit input-attrs]}] parameter-dfn]
+  (let [[param-key {:keys [unit input-attrs granularity-factor]}] parameter-dfn]
     [:div.field.is-horizontal
      [:div.field-body
       [:div.field
@@ -83,7 +83,7 @@
        [:p.control.is-expanded
         [:input.input
          (merge input-attrs
-                {:value     @(rf/subscribe [:param/get pre-path param-key])
+                {:value     (/ @(rf/subscribe [:param/get pre-path param-key]) (or granularity-factor 1))
                  :on-change (h/dispatch-on-x
                              [:param/parse-and-set pre-path parameter-dfn])})]]]]]))
 
@@ -149,7 +149,7 @@
           [:div.columns.is-mobile.is-vcentered.mb-0
            [:div.column
             [param-input [] params/energy-needed]]
-           (if-let [href (:link @(rf/subscribe [:pub/global-loaded  :energy-needed]))]
+           (when-let [href (:link @(rf/subscribe [:pub/global-loaded  :energy-needed]))]
              [:div.column.is-narrow.has-text-centered
               [:a {:target "_blank"
                    :href   href} " → Quelle"]])]

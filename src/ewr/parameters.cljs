@@ -1,5 +1,6 @@
 (ns ewr.parameters
   (:require [ewr.config :as cfg]
+            [ewr.constants :as const]
             [ewr.helpers :as h]))
 
 ;; ###########################
@@ -29,21 +30,12 @@
                      param-dfn
                      (cfg/snippet :common-parameter-inputs param-key))])
        [[:power-density {:name        "Bemessungsleistung pro m² in W"
-                         :unit        "W/m²"
+                         :unit        "W/m²granularity-factor b"
                          :parse-fn    js/parseFloat
                          :input-attrs {:type    "number"
                                        :pattern "0.00"
                                        :step    "0.01"
                                        :min     0.01}}]
-
-        ;; [:capacity-factor {:name "Kapazitätsfaktor"
-        ;;                    :unit "1=100%"
-        ;;                    :parse-fn js/parseFloat
-        ;;                    :input-attrs {:type "number"
-        ;;                                  :pattern "0.00"
-        ;;                                  :step "0.01"
-        ;;                                  :min 0.01
-        ;;                                  :max 1}}]
 
         [:deaths {:name                "Todesfälle/TWh"
                   :unit                "/TWh"
@@ -96,6 +88,7 @@
 
 (def arealess-capacity
   [:arealess-capacity {:unit        "TWh"
+                       :granularity-factor const/granularity-factor
                        :parse-fn    js/parseFloat
                        :input-attrs {:type    "number"
                                      :pattern "1"
@@ -112,6 +105,7 @@
 (def cap
   [:cap {:name                "Deckelung der Wasserkraft in TWh"
          :unit                "TWh"
+         :granularity-factor const/granularity-factor
          :parse-fn            js/parseInt
          :input-attrs         {:type    "number"
                                :pattern "0"
@@ -124,3 +118,13 @@
                        (cfg/snippet :common-parameter-inputs
                                     :arealess-capacity :name :wind)
                        "Kapazität für Offshore Windkraft in TWh")))
+
+(def all-params-map
+  (into {}
+        (conj common-nrg-parameters
+              arealess-capacity-solar
+              arealess-capacity-wind
+              cap)))
+
+(defn lookup-property [param-key property-key]
+  (get-in all-params-map [param-key property-key]))

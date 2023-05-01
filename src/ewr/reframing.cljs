@@ -72,10 +72,10 @@
 
  (fn [db [_ prepath param
           unparsed-newval]]
-   (let ; we take parse-fn from the parameter-definition
-    [[param-key {:keys [parse-fn]}] param]
+   (let               ; we take parse-fn from the parameter-definition
+    [[param-key {:keys [parse-fn granularity-factor]}] param]
      (assoc-in db (conj prepath param-key)
-               (parse-fn unparsed-newval)))))
+               (* (or granularity-factor 1) (parse-fn unparsed-newval))))))
 
 (reg-sub :param/get
          (fn [db [_ pre-path param-key]]
@@ -205,7 +205,9 @@
   [db pub nrg-key param-key]
   (-> db
       (assoc-in [:energy-sources nrg-key param-key]
-                (get-in pub [:energy-sources nrg-key param-key]))
+                (*
+                 (or (params/lookup-property param-key :granularity-factor) 1)
+                 (get-in pub [:energy-sources nrg-key param-key])))
       (assoc-in [:ui :loaded-pubs nrg-key param-key]
                 (:id pub))))
 
@@ -225,6 +227,7 @@
   (if (not= pub nil)
     (-> db
         (assoc key
+
                (get pub key))
         (assoc-in [:ui :loaded-pubs key]
                   (:id pub)))))
