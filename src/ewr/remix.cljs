@@ -20,6 +20,9 @@
 (defn- delta-to-cap [nrg]
   (- (:share (second nrg)) (:cap (second nrg))))
 
+(defn sum-shares [nrgs]
+  (reduce #(+ %1 (:share (second %2))) 0 nrgs))
+
 (defn distribute-energy [amount nrgs]
   (loop [unprocessed-nrgs (sort-by delta-to-cap nrgs)
          remaining-amount amount
@@ -27,7 +30,7 @@
     (if-not (seq unprocessed-nrgs)
       processed-nrgs
       (let [[next-nrg-key {:keys [share cap] :as next-nrg}] (first unprocessed-nrgs)
-            cumulated-shares (reduce #(+ %1 (:share (second %2))) 0 unprocessed-nrgs)
+            cumulated-shares (sum-shares unprocessed-nrgs)
             relative-share (if (> cumulated-shares 0)
                              (/ share cumulated-shares)
                              (/ 1 (count unprocessed-nrgs)))

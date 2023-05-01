@@ -91,10 +91,18 @@
    (h/nan->nil
     (get db :energy-needed))))
 
+(defn set-energy-needed [db newval]
+  (let [current-share-sum (remix/sum-shares (:energy-sources db))
+        delta (- newval current-share-sum)
+        remixed-energies (remix/distribute-energy delta (:energy-sources db))]
+    (-> db
+        (assoc :energy-needed newval)
+        (assoc :energy-sources remixed-energies))))
+
 (reg-event-db
  :energy-needed/set
  (fn [db [_ newval]]
-   (assoc db :energy-needed newval)))
+   (set-energy-needed db newval)))
 
 ;; #####################################################
 ;; ########### Energy Sources and Parameters ###########
