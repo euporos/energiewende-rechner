@@ -1,6 +1,6 @@
-(ns stromrechner.helpers-test
-  (:require [stromrechner.helpers :as h]
-            [cljs.test :as t :include-macros true]))
+(ns ewr.helpers-test
+  (:require [cljs.test :as t :include-macros true]
+            [ewr.helpers :as h]))
 
 (t/deftest reverse-paths-test
   (t/is (= {:biogas

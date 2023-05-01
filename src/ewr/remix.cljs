@@ -93,11 +93,13 @@
     :else (remix-energy-shares-float changed-nrg-key newval energy-needed  nrg-sources)))
 
 ;; ##############
-;; ### Legacy ###
+;; ### Legacy ### 
 ;; ##############
 
 ;; These functions were used in previous versions of the program
 ;; and are left here for future reference.
+
+(defn distribute-energy [amount nrgs])
 
 (defn remix-energy-shares-int
   "Remix-function based on a representation of shares
@@ -115,8 +117,53 @@
         reacting-share                    (transduce (map (comp :share second))
                                                      + reacting-nrgs)]
     (if (> newval unlocked-share)
-      nrgs ; return unchanged
-      (first ; extract only the remixed energies
+      nrgs                         ; return unchanged
+      (first                       ; extract only the remixed energies
+       (reduce
+        (fn [[nrgs
+              rem-free-share
+              rem-reacting-nrgs] next-nrg-key]
+          (let [rem-reacting-share (transduce (map (comp :share second))
+                                              + rem-reacting-nrgs)
+                old-share          (get-in nrgs [next-nrg-key :share])
+                difference         (cond
+                                     (= 0 rem-reacting-share)
+                                     (Math/round (/ rem-free-share
+                                                    (count rem-reacting-nrgs)))
+                                     :else
+                                     (Math/round
+                                      (* rem-free-share
+                                         (/ old-share
+                                            rem-reacting-share))))
+                new-share          (+ old-share difference)]
+            [(assoc-in nrgs [next-nrg-key :share]
+                       new-share)
+             (- rem-free-share difference)
+             (dissoc rem-reacting-nrgs next-nrg-key)]))
+        [(assoc-in nrgs [changed-nrg-key :share]
+                   newval)
+         freed-share
+         reacting-nrgs]
+        (keys reacting-nrgs))))))
+
+(defn remix-energy-shares-int-old
+  "Remix-function based on a representation of shares
+  as integers."
+  [changed-nrg-key newval nrgs]
+  (let [unlocked-nrgs                     (into {}
+                                                (filter
+                                                 #(not (:locked? (second %)))
+                                                 nrgs))
+        unlocked-share                    (transduce (map (comp :share second))
+                                                     + unlocked-nrgs)
+        reacting-nrgs                     (dissoc unlocked-nrgs changed-nrg-key)
+        freed-share                       (- (get-in nrgs [changed-nrg-key :share]) ; if negative
+                                             newval) ; would more adequately be called "grabbed share"
+        reacting-share                    (transduce (map (comp :share second))
+                                                     + reacting-nrgs)]
+    (if (> newval unlocked-share)
+      nrgs                         ; return unchanged
+      (first                       ; extract only the remixed energies
        (reduce
         (fn [[nrgs
               rem-free-share

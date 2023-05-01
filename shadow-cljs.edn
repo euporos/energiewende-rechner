@@ -54,7 +54,9 @@
                          :infer-externs      :auto}}
           :node-test
           {:target    :node-test
+           :modules {:tests {:preloads [hashp.core]}}
            :output-to "out/node-tests.js"
-           ;; :ns-regexp "-test$"
+
+           :ns-regexp "-test$"
            :autorun   true}}
  :lein false}
