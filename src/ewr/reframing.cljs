@@ -67,6 +67,14 @@
 ;; These are used for the direct Inputs of Parameters
 ;; as defined in the ewr.parameters namespace
 
+(defn rebalance-nrgs-after-needed-change [db newval]
+  (let [current-share-sum (remix/sum-shares (:energy-sources db))
+        delta (- newval current-share-sum)
+        remixed-energies (remix/distribute-energy delta (:energy-sources db))]
+    (-> db
+        (assoc :energy-needed newval)
+        (assoc :energy-sources remixed-energies))))
+
 (reg-event-db
  :param/parse-and-set
 
@@ -74,8 +82,11 @@
           unparsed-newval]]
    (let               ; we take parse-fn from the parameter-definition
     [[param-key {:keys [parse-fn]}] param]
-     (assoc-in db (conj prepath param-key)
-               (params/granularize param-key (parse-fn unparsed-newval))))))
+     (let [newval (params/granularize param-key (parse-fn unparsed-newval))]
+       (cond-> db
+         true (assoc-in (conj prepath param-key)
+                        newval)
+         (= param-key :energy-needed) (rebalance-nrgs-after-needed-change newval))))))
 
 (reg-sub :param/get
          (fn [db [_ pre-path param-key]]
@@ -229,7 +240,7 @@
   (if (not= pub nil)
     (-> db
         (assoc key
-               #p (params/granularize key (get pub key)))
+               (params/granularize key (get pub key)))
         (assoc-in [:ui :loaded-pubs key]
                   (:id pub)))))
 (reg-event-db
