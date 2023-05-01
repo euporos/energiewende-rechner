@@ -162,8 +162,9 @@
    [(rf/subscribe [:nrg/get-param nrg-key :arealess-capacity])
     (rf/subscribe [:nrg-share/get-absolute-share nrg-key])])
  (fn [[arealess-capacity twh-share] [_ nrg-key]]
-   (if (> twh-share arealess-capacity)
-     arealess-capacity twh-share)))
+   (params/ungranularize :arealess-capacity
+                         (if (> twh-share arealess-capacity)
+                           arealess-capacity twh-share))))
 
 ;; ########################
 ;; ##### Publications #####
@@ -423,17 +424,19 @@
  ;; Adds everything needed to draw the circles
  (fn [[_ nrg-key]]
    [(rf/subscribe [:nrg/get nrg-key])
-    (rf/subscribe [:nrg-share/get-absolute-share-ungranular nrg-key])])
+    (rf/subscribe [:nrg-share/get-absolute-share nrg-key])])
  (fn [[nrg share] [_ _nrg-key]]
+   #p _nrg-key
    (let [{:keys [power-density] :as nrg}
          nrg
          area
-         (-> share
-             (- (:arealess-capacity nrg 0))
-             (* 1000000000000)          ; share in Wh
-             (/ const/hours-per-year)   ; needed W
-             (/ power-density)          ; needed m²
-             (/ 1000000))               ; needed km²
+         #p (-> #p share
+                (- #p (:arealess-capacity nrg 0))
+                (/ constants/granularity-factor)
+                (* 1000000000000)        ; share in Wh
+                (/ const/hours-per-year) ; needed W
+                (/ power-density)        ; needed m²
+                (/ 1000000))             ; needed km²
          radius           (if (or (< area 0) ; area < 0 possible with arealess-capacity
                                   (js/isNaN area)) 0
                               (h/radius-from-area-circle area))]
