@@ -59,5 +59,14 @@
            :output-to "out/node-tests.js"
 
            :ns-regexp "-test$"
+           :autorun   true}
+          :browser-test
+          {:target    :browser-test
+           ; :modules {:tests {:preloads [hashp.core]}}
+           ;; :output-to "out/node-tests.js"
+           :test-dir "out/test"
+
+           :ns-regexp "-test$"
            :autorun   true}}
+ :dev-http {3006 "out/test"}
  :lein false}
