@@ -191,7 +191,7 @@
  ;; the publication currently loaded for :energy-needed
  ;; Returns the whole map, not just the id
  (fn [db [_ key]]
-   (let [curval        (get db key)
+   (let [curval        (params/ungranularize key (get db key))
          matching-pubs (pubs/matching-pubs-for-path [key] curval)
          last-loaded   (get-in db [:ui :loaded-pubs key])]
      (return-loaded-pub matching-pubs last-loaded))))
