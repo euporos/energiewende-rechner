@@ -64,7 +64,7 @@
 (def nrgs (enrich-nrg-constants
            (:nrg-constants settings)))
 
-(def nrg-keys (map first (get settings :init-mix)))
+(def nrg-keys (map first nrgs))
 
 (def total-landmass (:total-landmass settings))
 

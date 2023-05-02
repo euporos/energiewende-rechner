@@ -2,6 +2,7 @@
   (:require
    [clojure.edn :as edn]
    [ewr.config :as cfg :refer [snippet]]
+   [ewr.config :as config]
    [ewr.constants :as constants]
    [ewr.helpers :as h]
    [ewr.parameters :as params]
@@ -375,43 +376,44 @@
 (defn energy-slider
   "Single Slider to adjust the share of an Energy.
   Also renders: Lock Button, Icon and Text."
-  [[nrg-key {:keys [name props color]}]]
-  [:div.eslider.pt-1 {:style {:background-color color
-                              :width            "100%"}}
+  [nrg-key]
+  (let [{:keys [name color]} @(rf/subscribe [:nrg/get nrg-key])]
+    [:div.eslider.pt-1 {:style {:background-color color
+                                :width            "100%"}}
 
    ;; Above Slider
-   [:div.columns.is-vcentered.is-gapless.mb-0.is-mobile
+     [:div.columns.is-vcentered.is-gapless.mb-0.is-mobile
     ;; Lock-Button
-    [:div.column.is-narrow
-     [lock-button nrg-key]]
+      [:div.column.is-narrow
+       [lock-button nrg-key]]
 
     ;; Icon
-    [:div.column.is-narrow.mr-2.ml-1.mt-1
-     [:img {:src   (cfg/icon-for-nrg nrg-key)
-            :style {:height "1.5rem"}}]]
+      [:div.column.is-narrow.mr-2.ml-1.mt-1
+       [:img {:src   (cfg/icon-for-nrg nrg-key)
+              :style {:height "1.5rem"}}]]
     ;; Text
-    [:div.column.is-narrow
-     [:label
-      [:strong name
-       (when (= nrg-key :hydro)
-         [:span.has-text-weight-bold
-          {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :hydro])}
-          (with-tooltip "")]) " "
-       (Math/round
-        (*
-         100
-         @(rf/subscribe [:nrg-share/get-relative-share nrg-key]))) " % | "
-       (Math/round
-        (/
-         @(rf/subscribe [:nrg-share/get-absolute-share nrg-key])
-         constants/granularity-factor)) " TWh"]]]]
+      [:div.column.is-narrow
+       [:label
+        [:strong name
+         (when (= nrg-key :hydro)
+           [:span.has-text-weight-bold
+            {:on-click (h/dispatch-on-x [:ui/scroll-to-explanation :hydro])}
+            (with-tooltip "")]) " "
+         (Math/round
+          (*
+           100
+           @(rf/subscribe [:nrg-share/get-relative-share nrg-key]))) " % | "
+         (Math/round
+          (/
+           @(rf/subscribe [:nrg-share/get-absolute-share nrg-key])
+           constants/granularity-factor)) " TWh"]]]]
 
    ;; Actual Slider
-   [:input {:type      "range" :min 0 :max @(rf/subscribe [:energy-needed/get])
-            :style     {:width "100%"}
-            :value     (str @(rf/subscribe [:nrg-share/get-absolute-share nrg-key]))
-            :on-change (h/dispatch-on-x
-                        [:nrg/remix-shares nrg-key])}]])
+     [:input {:type      "range" :min 0 :max @(rf/subscribe [:energy-needed/get])
+              :style     {:width "100%"}
+              :value     (str @(rf/subscribe [:nrg-share/get-absolute-share nrg-key]))
+              :on-change (h/dispatch-on-x
+                          [:nrg/remix-shares nrg-key])}]]))
 
 (defn energy-mix
   "Panel with Sliders to mix Energies"
@@ -442,9 +444,9 @@
                  :width "40rem"}] [:br]
           "Reset"]]]
 
-       (for [nrg-source @(rf/subscribe [:nrg/get-all])]
-         ^{:key (first nrg-source)}
-         [:div [energy-slider nrg-source]])]]]))
+       (for [nrg-key #p config/nrg-keys]
+         ^{:key nrg-key}
+         [:div [energy-slider #p nrg-key]])]]]))
 
 ;; #########
 ;; ## Map ##
