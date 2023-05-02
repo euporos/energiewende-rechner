@@ -239,11 +239,13 @@
 
 (defn load-global-pub [db key pub]
   (if (not= pub nil)
-    (-> db
-        (assoc key
-               (params/granularize key (get pub key)))
-        (assoc-in [:ui :loaded-pubs key]
-                  (:id pub)))))
+    (cond-> db
+      true (assoc key
+                  (params/granularize key (get pub key)))
+      (= :energy-needed key) (rebalance-nrgs-after-needed-change
+                              (params/granularize key (get pub key)))
+      true (assoc-in [:ui :loaded-pubs key]
+                     (:id pub)))))
 (reg-event-db
  :pub/load-global
  (fn [db [_ key pub]]
