@@ -426,17 +426,16 @@
    [(rf/subscribe [:nrg/get nrg-key])
     (rf/subscribe [:nrg-share/get-absolute-share nrg-key])])
  (fn [[nrg share] [_ _nrg-key]]
-   #p _nrg-key
    (let [{:keys [power-density] :as nrg}
          nrg
          area
-         #p (-> #p share
-                (- #p (:arealess-capacity nrg 0))
-                (/ constants/granularity-factor)
-                (* 1000000000000)        ; share in Wh
-                (/ const/hours-per-year) ; needed W
-                (/ power-density)        ; needed m²
-                (/ 1000000))             ; needed km²
+         (-> share
+             (- (:arealess-capacity nrg 0))
+             (/ constants/granularity-factor)
+             (* 1000000000000)        ; share in Wh
+             (/ const/hours-per-year) ; needed W
+             (/ power-density)        ; needed m²
+             (/ 1000000))             ; needed km²
          radius           (if (or (< area 0) ; area < 0 possible with arealess-capacity
                                   (js/isNaN area)) 0
                               (h/radius-from-area-circle area))]
