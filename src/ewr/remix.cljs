@@ -36,6 +36,7 @@
                              (/ 1 (count unprocessed-nrgs)))
             share-delta (min (Math/round (* relative-share remaining-amount))
                              (- (or cap js/Infinity) share))
+            share-delta (if (or (zero? remaining-amount) (not (int? remaining-amount))) 0 share-delta)
             new-share (+ share share-delta)
             new-nrg (assoc next-nrg :share new-share)
             remaining-amount* (- remaining-amount share-delta)
