@@ -60,6 +60,20 @@
                (js/document.execCommand "copy")
                (js/console.log "copied to clipboard: " val))))
 
+(def scale-nrgs-after-energy-needed-change
+  (rf/->interceptor
+   :id :scale-nrgs-after-energy-needed-change
+   :after (fn [context]
+            (let [db (get-in context [:effects :db])
+                  energy-needed (:energy-needed db)
+                  current-share-sum (remix/sum-shares (:energy-sources db))
+                  delta (- energy-needed current-share-sum)
+                  new-db (if (zero? #p delta) db
+                             (assoc db :energy-sources
+                                    (remix/distribute-energy delta (:energy-sources db))))]
+
+              (assoc-in context [:effects :db] new-db)))))
+
 ;; ############################
 ;; ###### Input handling ######
 ;; ############################
@@ -67,26 +81,15 @@
 ;; These are used for the direct Inputs of Parameters
 ;; as defined in the ewr.parameters namespace
 
-(defn rebalance-nrgs-after-needed-change [db newval]
-  (let [current-share-sum (remix/sum-shares (:energy-sources db))
-        delta (- newval current-share-sum)
-        remixed-energies (remix/distribute-energy delta (:energy-sources db))]
-    (-> db
-        (assoc :energy-needed newval)
-        (assoc :energy-sources remixed-energies))))
-
 (reg-event-db
  :param/parse-and-set
-
+ [scale-nrgs-after-energy-needed-change]
  (fn [db [_ prepath param
           unparsed-newval]]
    (let              ; we take parse-fn from the parameter-definition
     [[param-key {:keys [parse-fn]}] param
      newval (params/granularize param-key (parse-fn unparsed-newval))]
-     (cond-> db
-       true (assoc-in (conj prepath param-key)
-                      newval)
-       (= param-key :energy-needed) (rebalance-nrgs-after-needed-change newval)))))
+     (assoc-in db (conj prepath param-key) newval))))
 
 (reg-sub :param/get
          (fn [db [_ pre-path param-key]]
@@ -239,15 +242,14 @@
 
 (defn load-global-pub [db key pub]
   (if (not= pub nil)
-    (cond-> db
-      true (assoc key
-                  (params/granularize key (get pub key)))
-      (= :energy-needed key) (rebalance-nrgs-after-needed-change
-                              (params/granularize key (get pub key)))
-      true (assoc-in [:ui :loaded-pubs key]
-                     (:id pub)))))
+    (-> db
+        (assoc key
+               (params/granularize key (get pub key)))
+        (assoc-in [:ui :loaded-pubs key]
+                  (:id pub)))))
 (reg-event-db
  :pub/load-global
+ [scale-nrgs-after-energy-needed-change]
  (fn [db [_ key pub]]
    (load-global-pub db key pub)))
 
