@@ -64,14 +64,13 @@
   (rf/->interceptor
    :id :scale-nrgs-after-energy-needed-change
    :after (fn [context]
-            (let [db (get-in context [:effects :db])
+            (let [original-energy-needed (get-in context [:coeffects :db :energy-needed])
+                  db (get-in context [:effects :db])
                   energy-needed (:energy-needed db)
-                  current-share-sum (remix/sum-shares (:energy-sources db))
-                  delta (- energy-needed current-share-sum)
-                  new-db (if (zero? #p delta) db
+                  delta (- energy-needed original-energy-needed)
+                  new-db (if (zero? delta) db
                              (assoc db :energy-sources
                                     (remix/distribute-energy delta (:energy-sources db))))]
-
               (assoc-in context [:effects :db] new-db)))))
 
 ;; ############################
