@@ -1,6 +1,7 @@
 (ns ewr.views
   (:require
    [clojure.edn :as edn]
+   [clojure.string :as str]
    [ewr.config :as cfg :refer [snippet]]
    [ewr.config :as config]
    [ewr.constants :as constants]
@@ -75,18 +76,34 @@
   Pre-path indicates where in the DB the parameter-dfn can be found."
   ;; I have tried to avoid this tight coupling with the DB
   ;; but solutions were unsatisfactory
-  [pre-path parameter-dfn width show-unit?]
-  (let [[param-key {:keys [unit input-attrs granularity-factor]}] parameter-dfn]
-    [:div.field.is-horizontal
-     [:div.field-body
-      [:div.field
-       {:style {:width width}}
-       [:p.control.is-expanded
-        [:input.input
-         (merge input-attrs
-                {:value     (/ @(rf/subscribe [:param/get pre-path param-key]) (or granularity-factor 1))
-                 :on-change (h/dispatch-on-x
-                             [:param/parse-and-set pre-path parameter-dfn])})]]]]]))
+  [pre-path [param-key {:keys [unit input-attrs granularity-factor validation-fn parse-fn] :as parameter-dfn}] width show-unit?]
+  (let [get-value-from-db #(/ @(rf/subscribe [:param/get pre-path param-key]) (or granularity-factor 1))
+        entered-value (r/atom nil)
+        focused? (r/atom false)]
+    (r/create-class
+     {:display-name (str "input-" (str/join "-" pre-path) "-" (first parameter-dfn))
+      :reagent-render
+      (fn [pre-path parameter-dfn width show-unit?]
+        (let [db-val (get-value-from-db)]
+          [:div.field.is-horizontal
+           [:div.field-body
+            [:div.field
+             {:style {:width width}}
+             [:p.control.is-expanded
+              [:input.input
+               (merge input-attrs
+                      {:value     (if @focused? @entered-value
+                                      (get-value-from-db))
+                       :on-focus #(do (reset! focused? true)
+                                      (reset! entered-value db-val))
+                       :on-blur #(do (reset! focused? false)
+                                     (reset! entered-value db-val))
+                       :on-change (fn [e]
+                                    (let [newval (-> e .-target .-value)]
+                                      (.preventDefault e)
+                                      (reset! entered-value newval)
+                                      (when  (validation-fn (parse-fn  newval))
+                                        (rf/dispatch [:param/parse-and-set pre-path parameter-dfn newval]))))})]]]]]))})))
 
 (defn publication-dropdown
   [{:keys [value-subscription publications partial-event]}]
@@ -161,7 +178,7 @@
 ;; ############## Parameter-Inputs »Profi-Einstellungen« ##############
 ;; ####################################################################
 
-;; These are for parameters as defined in ewr.constants
+;; These are for parameters as defined in ewr.constants 
 
 (defn param-dropdown
   ""
@@ -444,9 +461,9 @@
                  :width "40rem"}] [:br]
           "Reset"]]]
 
-       (for [nrg-key #p config/nrg-keys]
+       (for [nrg-key config/nrg-keys]
          ^{:key nrg-key}
-         [:div [energy-slider #p nrg-key]])]]]))
+         [:div [energy-slider nrg-key]])]]]))
 
 ;; #########
 ;; ## Map ##

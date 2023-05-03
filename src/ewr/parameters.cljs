@@ -12,6 +12,7 @@
                    :unit        "TWh"
                    :granularity-factor const/granularity-factor
                    :parse-fn    js/parseFloat
+                   :validation-fn #(and (int? %) (> % 0))
                    :input-attrs {:type    "number"
                                  :pattern "1"
                                  :step    "1"
@@ -28,6 +29,7 @@
          ;; Overrides with the snippets
          ;; from the config file
          [param-key (merge
+                     {:validation-fn (constantly true)}
                      param-dfn
                      (cfg/snippet :common-parameter-inputs param-key))])
        [[:power-density {:name        "Bemessungsleistung pro m² in W"
@@ -91,6 +93,7 @@
   [:arealess-capacity {:unit        "TWh"
                        :granularity-factor const/granularity-factor
                        :parse-fn    js/parseFloat
+                       :validation-fn (constantly true)
                        :input-attrs {:type    "number"
                                      :pattern "1"
                                      :step    "1"
@@ -106,6 +109,7 @@
 (def cap
   [:cap {:name                "Deckelung der Wasserkraft in TWh"
          :unit                "TWh"
+         :validation-fn (constantly true)
          :granularity-factor const/granularity-factor
          :parse-fn            js/parseInt
          :input-attrs         {:type    "number"
