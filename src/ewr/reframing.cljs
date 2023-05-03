@@ -493,8 +493,9 @@
    [(rf/subscribe [:deriv/data-for-indicator :co2])
     (rf/subscribe [:energy-needed/get])])
  (fn [[{:keys [param-total]} energy-needed] _] ; param total are the CO2-Emissions in kt
-   (if (and param-total (> energy-needed 0))
-     (-> param-total                            ; kt/needed-nrg
+   (when (and param-total (> energy-needed 0))
+     (-> param-total                          ; kt/needed-nrg
+         (* constants/granularity-factor)
          (/ energy-needed)))))  ; g/kWh
 
 (reg-sub
