@@ -409,45 +409,58 @@
   "Single Slider to adjust the share of an Energy.
   Also renders: Lock Button, Icon and Text."
   [nrg-key]
-  (let [{:keys [name color cap-bumped]} @(rf/subscribe [:nrg/get nrg-key])]
-    [:div.eslider.pt-1 {:style {:background-color color
-                                :width            "100%"}}
+  (let [show-bump-color? (r/atom false)
+        bumped? (r/atom false)]
+    (fn [nrg-key]
+      (let [{:keys [name color cap-bumped cap]} @(rf/subscribe [:nrg/get nrg-key])
+            cap (or cap js/Infinity)]
+        [:div.eslider.pt-1 {:style {:background-color (if @show-bump-color? "red" color)
+                                    :transition "background-color 0.2s"
+                                    :width            "100%"}}
 
-   ;; Above Slider
-     [:div.columns.is-vcentered.is-gapless.mb-0.is-mobile
-    ;; Lock-Button
-      [:div.column.is-narrow
-       [lock-button nrg-key]]
+        ;; Above Slider 
+         [:div.columns.is-vcentered.is-gapless.mb-0.is-mobile
+         ;; Lock-Button
+          [:div.column.is-narrow
+           [lock-button nrg-key]]
 
-    ;; Icon
-      [:div.column.is-narrow.mr-2.ml-1.mt-1
-       [:img {:src   (cfg/icon-for-nrg nrg-key)
-              :style {:height "1.5rem"}}]]
-    ;; Text
-      [:div.column.is-narrow
-       [:label
-        [:strong name
-         " "
-         (Math/round
-          (*
-           100
-           @(rf/subscribe [:nrg-share/get-relative-share nrg-key]))) " % | "
-         (Math/round
-          (/
-           @(rf/subscribe [:nrg-share/get-absolute-share nrg-key])
-           constants/granularity-factor)) " TWh"
-         (when cap-bumped (when (= nrg-key :hydro)
-                            [:span.has-text-weight-bold
-                             {:style {:color "#8B0000"}
-                              :on-click (h/dispatch-on-x [:ui/scroll-to-explanation :hydro])}
-                             (with-tooltip  " ausgeschöpft!")]))]]]]
+         ;; Icon
+          [:div.column.is-narrow.mr-2.ml-1.mt-1
+           [:img {:src   (cfg/icon-for-nrg nrg-key)
+                  :style {:height "1.5rem"}}]]
+         ;; Text
+          [:div.column.is-narrow
+           [:label
+            [:strong name
+             " "
+             (Math/round
+              (*
+               100
+               @(rf/subscribe [:nrg-share/get-relative-share nrg-key]))) " % | "
+             (Math/round
+              (/
+               @(rf/subscribe [:nrg-share/get-absolute-share nrg-key])
+               constants/granularity-factor)) " TWh"
+             (when cap-bumped (when (= nrg-key :hydro)
+                                [:span.has-text-weight-bold
+                                 {:style {:color "#8B0000"}
+                                  :on-click (h/dispatch-on-x [:ui/scroll-to-explanation :hydro])}
+                                 (with-tooltip  " ausgeschöpft!")]))]]]]
 
-   ;; Actual Slider
-     [:input {:type      "range" :min 0 :max @(rf/subscribe [:energy-needed/get])
-              :style     {:width "100%"}
-              :value     (str @(rf/subscribe [:nrg-share/get-absolute-share nrg-key]))
-              :on-change (h/dispatch-on-x
-                          [:nrg/remix-shares nrg-key])}]]))
+        ;; Actual Slider
+         [:input {:type      "range" :min 0 :max @(rf/subscribe [:energy-needed/get])
+                  :style     {:width "100%"}
+                  :value     (str @(rf/subscribe [:nrg-share/get-absolute-share nrg-key]))
+                  :on-change (fn [e]
+                               (let [newval (-> e .-target .-value js/parseInt)
+                                     exceeds-cap? (> newval #p cap)
+                                     newval* (if exceeds-cap? cap newval)]
+                                 (when exceeds-cap?
+                                   (reset! bumped? true)
+                                   (reset! show-bump-color? true)
+                                   (js/setTimeout #(reset! show-bump-color? false) 500))
+                                 (.preventDefault e)
+                                 (rf/dispatch [:nrg/remix-shares nrg-key newval*])))}]]))))
 
 (defn energy-mix
   "Panel with Sliders to mix Energies"

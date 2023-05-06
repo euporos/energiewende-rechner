@@ -365,7 +365,7 @@
        (update :energy-sources
                #(remix/attempt-remix
                  nrg-key
-                 (js/parseInt newval)
+                 newval
                  %))))) ;TODO: get parse-fn from config
 
 (rf/reg-event-db :cap/set
