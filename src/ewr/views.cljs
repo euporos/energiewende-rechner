@@ -409,13 +409,10 @@
   "Single Slider to adjust the share of an Energy.
   Also renders: Lock Button, Icon and Text."
   [nrg-key]
-  (let [show-bump-color? (r/atom false)
-        bumped? (r/atom false)]
+  (let [show-bump-color? (r/atom false)]
     (fn [nrg-key]
       (let [{:keys [name color cap-bumped cap]} @(rf/subscribe [:nrg/get nrg-key])
             cap (or cap js/Infinity)]
-        (when (> cap @(rf/subscribe [:nrg-share/get-absolute-share nrg-key]))
-          (reset! bumped? false))
         [:div.eslider.pt-1 {:style {:background-color (if @show-bump-color? "red" color)
                                     :transition "background-color 0.2s"
                                     :width            "100%"}}
@@ -443,11 +440,11 @@
               (/
                @(rf/subscribe [:nrg-share/get-absolute-share nrg-key])
                constants/granularity-factor)) " TWh"
-             (when @bumped? (when (= nrg-key :hydro)
-                              [:span.has-text-weight-bold
-                               {:style {:color "#8B0000"}
-                                :on-click (h/dispatch-on-x [:ui/scroll-to-explanation :hydro])}
-                               (with-tooltip  " ausgeschöpft!")]))]]]]
+             (when cap-bumped (when (= nrg-key :hydro)
+                                [:span.has-text-weight-bold
+                                 {:style {:color "#8B0000"}
+                                  :on-click (h/dispatch-on-x [:ui/scroll-to-explanation :hydro])}
+                                 (with-tooltip  " ausgeschöpft!")]))]]]]
 
          ;; Actual Slider
          [:input {:type      "range" :min 0 :max @(rf/subscribe [:energy-needed/get])
@@ -455,19 +452,15 @@
                   :value     (str @(rf/subscribe [:nrg-share/get-absolute-share nrg-key]))
                   :on-change (fn [e]
                                (let [newval (-> e .-target .-value js/parseInt)
-                                     exceeds-cap? (> newval #p cap)
-                                     newval* (if exceeds-cap? cap newval)]
+                                     exceeds-cap? (> newval cap)]
 
                                  (.preventDefault e)
 
-                                 (if exceeds-cap?
-                                   (do
-                                     (reset! bumped? true)
-                                     (reset! show-bump-color? true)
-                                     (js/setTimeout #(reset! show-bump-color? false) 500))
-                                   (reset! bumped? false))
+                                 (when exceeds-cap?
+                                   (reset! show-bump-color? true)
+                                   (js/setTimeout #(reset! show-bump-color? false) 500))
 
-                                 (rf/dispatch [:nrg/remix-shares nrg-key newval*])))}]]))))
+                                 (rf/dispatch [:nrg/remix-shares nrg-key newval])))}]]))))
 
 (defn energy-mix
   "Panel with Sliders to mix Energies"
