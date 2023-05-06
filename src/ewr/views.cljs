@@ -414,21 +414,23 @@
     (fn [nrg-key]
       (let [{:keys [name color cap-bumped cap]} @(rf/subscribe [:nrg/get nrg-key])
             cap (or cap js/Infinity)]
+        (when (> cap @(rf/subscribe [:nrg-share/get-absolute-share nrg-key]))
+          (reset! bumped? false))
         [:div.eslider.pt-1 {:style {:background-color (if @show-bump-color? "red" color)
                                     :transition "background-color 0.2s"
                                     :width            "100%"}}
 
-        ;; Above Slider 
+         ;; Above Slider 
          [:div.columns.is-vcentered.is-gapless.mb-0.is-mobile
-         ;; Lock-Button
+          ;; Lock-Button
           [:div.column.is-narrow
            [lock-button nrg-key]]
 
-         ;; Icon
+          ;; Icon
           [:div.column.is-narrow.mr-2.ml-1.mt-1
            [:img {:src   (cfg/icon-for-nrg nrg-key)
                   :style {:height "1.5rem"}}]]
-         ;; Text
+          ;; Text
           [:div.column.is-narrow
            [:label
             [:strong name
@@ -441,13 +443,13 @@
               (/
                @(rf/subscribe [:nrg-share/get-absolute-share nrg-key])
                constants/granularity-factor)) " TWh"
-             (when cap-bumped (when (= nrg-key :hydro)
-                                [:span.has-text-weight-bold
-                                 {:style {:color "#8B0000"}
-                                  :on-click (h/dispatch-on-x [:ui/scroll-to-explanation :hydro])}
-                                 (with-tooltip  " ausgeschöpft!")]))]]]]
+             (when @bumped? (when (= nrg-key :hydro)
+                              [:span.has-text-weight-bold
+                               {:style {:color "#8B0000"}
+                                :on-click (h/dispatch-on-x [:ui/scroll-to-explanation :hydro])}
+                               (with-tooltip  " ausgeschöpft!")]))]]]]
 
-        ;; Actual Slider
+         ;; Actual Slider
          [:input {:type      "range" :min 0 :max @(rf/subscribe [:energy-needed/get])
                   :style     {:width "100%"}
                   :value     (str @(rf/subscribe [:nrg-share/get-absolute-share nrg-key]))
@@ -455,11 +457,16 @@
                                (let [newval (-> e .-target .-value js/parseInt)
                                      exceeds-cap? (> newval #p cap)
                                      newval* (if exceeds-cap? cap newval)]
-                                 (when exceeds-cap?
-                                   (reset! bumped? true)
-                                   (reset! show-bump-color? true)
-                                   (js/setTimeout #(reset! show-bump-color? false) 500))
+
                                  (.preventDefault e)
+
+                                 (if exceeds-cap?
+                                   (do
+                                     (reset! bumped? true)
+                                     (reset! show-bump-color? true)
+                                     (js/setTimeout #(reset! show-bump-color? false) 500))
+                                   (reset! bumped? false))
+
                                  (rf/dispatch [:nrg/remix-shares nrg-key newval*])))}]]))))
 
 (defn energy-mix
