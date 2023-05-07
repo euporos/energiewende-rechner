@@ -671,8 +671,11 @@
  (fn [{:keys [url db] :as cofx} []]
    (if-let [url-savestate-string
             (get-in url [:query "s"])]
-     (let [savestate (serialize/string->savestate
-                      url-savestate-string)]
+     (let [savestate (try
+                       (serialize/string->savestate
+                        url-savestate-string)
+                       (catch js/error e
+                         nil))]
        (cond-> {:db         (if savestate
                               (merge db savestate)
                               (assoc-in db [:ui :savestate-load-failed?] true))}
