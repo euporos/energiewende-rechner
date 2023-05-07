@@ -83,7 +83,6 @@
         focused? (r/atom false)]
     (r/create-class
      {:display-name (str "input-" (str/join "-" (str/join "-" subscription)) "-" (first parameter-dfn))
-      :component-did-mount #(reset! entered-value (get-value-from-db))
       :reagent-render
       (fn [{:keys [partial-event subscription parameter-dfn]}]
         (let [db-val (get-value-from-db)]
@@ -94,7 +93,7 @@
               [:input.input
                (merge input-attrs
                       {:value     (if @focused? @entered-value
-                                      (get-value-from-db))
+                                      db-val)
                        :on-focus #(do (reset! focused? true)
                                       (reset! entered-value db-val))
                        :on-blur #(do (reset! focused? false)
