@@ -73,8 +73,8 @@
 
 (reg-event-db
  :param/set
- (fn [db [_ path parsed-newval]]
-   (assoc-in db path parsed-newval)))
+ (fn [db [_ param-key path parsed-newval]]
+   (assoc-in db path (params/granularize param-key parsed-newval))))
 
 (reg-sub :param/get
          (fn [db [_ path]]

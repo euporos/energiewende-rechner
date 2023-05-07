@@ -149,7 +149,8 @@
   [nrg-key]
   [param-input {:parameter-dfn params/arealess-capacity
                 :subscription [:param/get [:energy-sources nrg-key :arealess-capacity]]
-                :partial-event [:param/set [:energy-sources nrg-key :arealess-capacity]]}])
+                :partial-event [:param/set :arealess-capacity
+                                [:energy-sources nrg-key :arealess-capacity]]}])
 
 ;; ########################
 ;; ##### Energy Needed ####
@@ -220,7 +221,7 @@
        [:div.column
         [param-input {:parameter-dfn parameter-dfn
                       :subscription [:param/get [:energy-sources nrg-key param-key]]
-                      :partial-event [:param/set [:energy-sources nrg-key param-key]]}]]
+                      :partial-event [:param/set param-key [:energy-sources nrg-key param-key]]}]]
        [:div.column [param-publication-link nrg-key param-key]]]]
      [:div.mt-1 [param-dropdown nrg-key parameter-dfn]]]))
 
@@ -330,7 +331,7 @@
       [:div.column.is-narrow
        [param-input {:parameter-dfn parameter-dfn
                      :subscription [:param/get [:energy-sources nrg-key param-key]]
-                     :partial-event [:param/set [:energy-sources nrg-key param-key]]}
+                     :partial-event [:param/set param-key [:energy-sources nrg-key param-key]]}
 
         [:energy-sources nrg-key] parameter-dfn]]]]))
 
