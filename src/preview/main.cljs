@@ -62,7 +62,7 @@
              :font-size "3em"
              :fill      font-color}
       [:tspan {:x 220 :y 540}
-       (Math/round co2-intensity) " g" views/co2 "/kWh"]]]))
+       (Math/round co2-intensity) " g" "CO" [:tspan {:dy "5" :font-size "25"} "2"] [:tspan {:dy "-5"}  "/kWh"]]]]))
 
 (defn energy-list
   []
