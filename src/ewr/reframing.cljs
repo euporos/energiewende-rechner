@@ -550,11 +550,6 @@
          .-history
          (.replaceState nil nil new-url)))))
 
-(reg-sub
- :global/url
- (fn [_]
-   (url/url (.. js/window -location -href))))
-
 (defn db->savestate [db]
   (update
    (select-keys db [:energy-sources])
@@ -619,10 +614,9 @@
 (reg-sub
  :save/analysed-url
  (fn []
-   [(rf/subscribe [:global/url])
-    (rf/subscribe [:save/savestate-string])])
- (fn [[analysed-url savestate-string]]
-   (cond-> analysed-url
+   (rf/subscribe [:save/savestate-string]))
+ (fn [savestate-string]
+   (cond-> (url/url (.. js/window -location -href))
      savestate-string (assoc-in [:query "s"] savestate-string))))
 
 (reg-sub
@@ -630,8 +624,7 @@
  (fn []
    (rf/subscribe [:save/analysed-url]))
  (fn [analysed-url]
-   (str
-    analysed-url)))
+   (str analysed-url)))
 
 (reg-sub
  :save/preview-query-string
