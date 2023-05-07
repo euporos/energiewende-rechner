@@ -57,7 +57,7 @@
              :stroke       "black"
              :stroke-width 2
              :fill         bg-color
-             :height       50  :width 250}]
+             :height       50  :width 280}]
      [:text {:zindex    1000
              :font-size "3em"
              :fill      font-color}
