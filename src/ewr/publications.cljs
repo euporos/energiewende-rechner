@@ -1,6 +1,7 @@
 (ns ewr.publications
   (:require [ewr.config :as cfg]
-            [ewr.helpers :as h]))
+            [ewr.helpers :as h]
+            [ewr.parameters :as params]))
 
 (defn transpose-energy-sources
   "The publication file is more comfortably
@@ -64,7 +65,9 @@
   energy-source and parameter, returns
   all publications providing the same value"
   [nrg-key param-key value]
-  (matching-pubs-for-path [:energy-sources nrg-key param-key] value))
+  (matching-pubs-for-path
+   [:energy-sources nrg-key param-key]
+   (params/ungranularize param-key value)))
 
 (defn default-pub
   "Returns the first publication that provides the a value
