@@ -118,7 +118,7 @@
                     false             ; not synchronously
                     edn/read-string   ; parse back into data structure
                     partial-event)}   ; before dispatch
-       [:option {:value "user-defined"}  "Benutzerdefiniert"]
+       [:option {:value "nil"}  "Benutzerdefiniert"]
        (for [pub publications]
          ^{:key (:id pub)}
          [:option {:value (str pub)}   ; only strings can be values ;(

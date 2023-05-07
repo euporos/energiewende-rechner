@@ -220,11 +220,12 @@
    (load-nrg-pub db nrg-key param-key pub)))
 
 (defn load-energy-needed-pub [db {:keys [id energy-needed] :as pub}]
-  (when-not (= pub "user-defined")
+  (if-not pub
+    db
     (-> db
         (set-energy-needed (* constants/granularity-factor energy-needed))
         (assoc-in [:ui :loaded-pubs :energy-needed]
-                  id)) db))
+                  id))))
 
 (reg-event-db
  :pub/load-energy-needed
