@@ -41,7 +41,7 @@
                                           :cy 430}}
                   :hydro        {:name    "Wasser"
                                  :icon    "symbols/hydro.svg"
-                                 :color   "rgb(217, 179, 255)"
+                                 :color   "hsl(225, 100%, 65%)"
                                  :fossil? false
                                  :props   {:cx 200
                                            :cy 775}}}}

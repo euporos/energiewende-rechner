@@ -442,7 +442,7 @@
                constants/granularity-factor)) " TWh"
              (when cap-bumped (when (= nrg-key :hydro)
                                 [:span.has-text-weight-bold
-                                 {:style {:color "#8B0000"}
+                                 {:style {:color "hsl(12, 100%, 65%)"}
                                   :on-click (h/dispatch-on-x [:ui/scroll-to-explanation :hydro])}
                                  (with-tooltip  " ausgeschöpft!")]))]]]]
 
