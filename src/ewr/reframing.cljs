@@ -540,16 +540,6 @@
    (assoc coeffects :url (url (.. js/window -location -href)))))
 
 (rf/reg-fx
- ;; Currently unused, reloads page
- :global/set-url-query-param-and-reload
- (fn [[param value]]
-   (let [current-url
-         (url/url (.. js/window -location -href))
-         new-url (assoc-in current-url
-                           [:query (str param)] (str value))]
-     (set! (.. js/window -location -href) (str new-url)))))
-
-(rf/reg-fx
  :save/remove-savestate-from-url
  (fn []
    (let [current-url
