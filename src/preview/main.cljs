@@ -104,6 +104,8 @@
         savestate-string (get-in request [:queryStringParameters :s])
         svg-string       (savestate-string->svg savestate-string)]
 
+    (rf/dispatch-sync [:save/savestate-into-db cfg/latest-preset])
+
     (when js/goog.DEBUG
       (svg-string->png-buf svg-string
                            #(.writeFileSync fs (str savestate-string ".png") %)))
