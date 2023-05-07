@@ -18,8 +18,14 @@
   (rdom/unmount-component-at-node root-el)
   (rdom/render [views/main-component] root-el))
 
+(defn ^:dev/after-load re-register-tracks []
+  (re-frame/dispatch-sync [:global/dispose-tracks])
+  (re-frame/dispatch-sync [:global/register-tracks]))
+
 (defn init []
   (print "EWR version " version)
   (print "Built with settings: " config/settings)
   (re-frame/dispatch-sync [:global/initialize :load-savestate])
-  (mount-root))
+  (mount-root)
+  (re-frame/dispatch-sync [:global/register-tracks]))
+

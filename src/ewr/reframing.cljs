@@ -18,7 +18,8 @@
    [reagent.ratom :as ratom]
    [thi.ng.color.core :as col]
    [troglotit.re-frame.debounce-fx]
-   [vimsical.re-frame.cofx.inject :as inject]))
+   [vimsical.re-frame.cofx.inject :as inject]
+   [vimsical.re-frame.fx.track :as fx.track]))
 
 ;; ###################
 ;; #### Technical ####
@@ -571,15 +572,13 @@
    (fn [nrgs]
      (into {}
            (map (fn [[key vals]]
-                  [key (dissoc vals :locked?)])
+                  [key (dissoc vals :locked?)]) ;TODO: no more reason to remove the locked key
                 nrgs)))))
 
 (reg-sub
  :save/savestate
  (fn [db _]
-   (let [savestate (db->savestate db)]
-     (rf/dispatch [:savestate/on-change savestate])
-     savestate)))
+   (db->savestate db)))
 
 (rf/reg-fx
  :global/set-url-query-params
@@ -758,3 +757,17 @@
                                                   load-savestate?)
                                          [:save/load-savestate-from-url])]}
               (not load-savestate?) (assoc :save/remove-savestate-from-url true))))
+
+(rf/reg-event-fx
+ :global/register-tracks
+ (fn [_ _]
+   {::fx.track/register
+    {:id :savestate-changed
+     :subscription [:save/savestate]
+     :event-fn (fn [savestate]  [:savestate/on-change savestate])}}))
+
+(rf/reg-event-fx
+ :global/dispose-tracks
+ (fn [_ _]
+   {::fx.track/dispose
+    {:id :savestate-changed}}))
