@@ -173,6 +173,7 @@
   (let [preset cfg/latest-preset
         preset-index (dec (count cfg/presets))
         delta (delta  savestate preset)]
+
     (str preset-index "~" (encode delta))))
 
 (defn string->savestate [encoded]
