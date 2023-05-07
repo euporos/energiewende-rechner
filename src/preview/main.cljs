@@ -87,17 +87,16 @@
               cfg/latest-preset)]
       (rf/dispatch-sync [:save/savestate-into-db savestate])))
 
-  (let [svg (rdom/render-to-string
-             [:svg {:xmlns      "http://www.w3.org/2000/svg"
-                    :viewBox    "0 0 1200 630"
-                    :xmlnsXlink "http://www.w3.org/1999/xlink"}
-              [:rect {:width 1200 :height 630 :fill "white"}]
-              [:svg {:x         "-29%" :y "-10%"
-                     :transform "scale(1.25)"}
-               [views/map-svg {:preview        true
-                               :background-svg (m/slurp-file "resources/public/imgs/deutschland2.svg")}]]
-              [energy-list]])]
-    svg))
+  (rdom/render-to-string
+   [:svg {:xmlns      "http://www.w3.org/2000/svg"
+          :viewBox    "0 0 1200 630"
+          :xmlnsXlink "http://www.w3.org/1999/xlink"}
+    [:rect {:width 1200 :height 630 :fill "white"}]
+    [:svg {:x         "-29%" :y "-10%"
+           :transform "scale(1.25)"}
+     [views/map-svg {:preview        true
+                     :background-svg (m/slurp-file "resources/public/imgs/deutschland2.svg")}]]
+    [energy-list]]))
 
 (defn handler
   [event _context callback]
