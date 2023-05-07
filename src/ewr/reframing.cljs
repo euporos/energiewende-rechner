@@ -269,9 +269,6 @@
       ;; even if there are no correspondig pubs
       #_(merge cfg/latest-preset))) ;; comment this out to create a new default savestate
 
-(comment
-  @(rf/subscribe [:save/savestate]))
-
 (rf/reg-event-db
  :pub/load-defaults
  ;; Used on initialization. Loads all default publications…
@@ -569,7 +566,7 @@
 
 (defn db->savestate [db]
   (update
-   (select-keys db [:energy-sources :energy-needed])
+   (select-keys db [:energy-sources])
    :energy-sources
    (fn [nrgs]
      (into {}
@@ -612,9 +609,11 @@
  (fn [{db :db} [_ savestate]]
    (let [savestate-string
          (serialize/savestate->string savestate)]
-     (cond-> {:db (assoc db :savestate-string savestate-string)}
-       (not (h/map-subset? default-db db))
-       (assoc :global/set-url-query-params {:s savestate-string})))))
+     (if savestate-string
+       {:db (assoc db :savestate-string savestate-string)
+        :global/set-url-query-params {:s savestate-string}}
+       {:db (dissoc db :savestate-string)
+        :save/remove-savestate-from-url true}))))
 
 (rf/reg-event-fx
  :savestate/on-change
@@ -634,10 +633,8 @@
    [(rf/subscribe [:global/url])
     (rf/subscribe [:save/savestate-string])])
  (fn [[analysed-url savestate-string]]
-   (-> analysed-url
-       (assoc-in
-        [:query "s"]
-        savestate-string))))
+   (cond-> analysed-url
+     savestate-string (assoc-in [:query "s"] savestate-string))))
 
 (reg-sub
  :save/url-string
@@ -652,7 +649,7 @@
  (fn []
    (rf/subscribe [:save/savestate-string]))
  (fn [savestate-string]
-   (str "?s=" savestate-string)))
+   (if  savestate-string (str "?s=" savestate-string) "")))
 
 (reg-sub
  :save/querystring

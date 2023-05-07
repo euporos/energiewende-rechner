@@ -173,13 +173,16 @@
   (let [preset cfg/latest-preset
         preset-index (dec (count cfg/presets))
         delta (delta  savestate preset)]
-
-    (str preset-index "~" (encode delta))))
+    (when delta
+      (str preset-index "~" (encode delta)))))
 
 (defn string->savestate [encoded]
-  (let [[preset-index encoded-delta] (str/split encoded "~")
-        preset-index (js/parseInt preset-index)
-        preset (nth cfg/presets preset-index)
-        decoded-delta (decode encoded-delta)]
-    (deep-merge preset decoded-delta)))
+  (if (seq encoded)
+    (let [[preset-index encoded-delta] (str/split encoded "~")
+          preset-index (js/parseInt preset-index)
+          preset (nth cfg/presets preset-index)
+          decoded-delta (decode encoded-delta)]
+      (deep-merge preset decoded-delta))
+    cfg/latest-preset))
+
 
