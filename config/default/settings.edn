@@ -9,39 +9,46 @@
                                 :has-arealess? true
                                 :icon          "symbols/wind2.svg"
                                 :color         "rgba(135, 206, 250)"
+                                :text-color    "black"
                                 :props         {:cx 400
                                                 :cy 250}}
                   :solar       {:name          "Sonne"
                                 :has-arealess? true
                                 :icon          "symbols/solar.svg"
                                 :color         "rgba(255, 255, 0)"
+                                :text-color    "black"
                                 :props         {:cx 380
                                                 :cy 650}}
                   :nuclear     {:name  "Kernenergie"
                                 :icon  "symbols/nuclear.svg"
                                 :color "rgba(250, 147, 38)"
+                                :text-color    "black"
                                 :props {:cx 130
                                         :cy 630}}
                   :bio         {:name  "Biomasse"
                                 :icon  "symbols/bio.svg"
                                 :color "rgba(50, 205, 50)"
+                                :text-color    "black"
                                 :props {:cx 320
                                         :cy 450}}
                   :natural-gas {:name    "Erdgas"
                                 :icon    "symbols/gas.svg"
                                 :fossil? true
                                 :color   "rgb(170, 120, 70)"
+                                :text-color    "white"
                                 :props   {:cx 200
                                           :cy 680}}
                   :coal        {:name    "Kohle"
                                 :icon    "symbols/coal.svg"
                                 :color   "rgb(140, 140, 140)"
+                                :text-color    "white"
                                 :fossil? true
                                 :props   {:cx 130
                                           :cy 430}}
                   :hydro        {:name    "Wasser"
                                  :icon    "symbols/hydro.svg"
                                  :color   "hsl(225, 100%, 65%)"
+                                 :text-color    "white"
                                  :fossil? false
                                  :props   {:cx 200
                                            :cy 775}}}}

@@ -411,7 +411,7 @@
   [nrg-key]
   (let [show-bump-color? (r/atom false)]
     (fn [nrg-key]
-      (let [{:keys [name color cap-bumped cap]} @(rf/subscribe [:nrg/get nrg-key])
+      (let [{:keys [name color text-color cap-bumped cap]} @(rf/subscribe [:nrg/get nrg-key])
             cap (or cap js/Infinity)]
         [:div.eslider.pt-1 {:style {:background-color (if @show-bump-color? "red" color)
                                     :transition "background-color 0.2s"
@@ -430,7 +430,11 @@
           ;; Text
           [:div.column.is-narrow
            [:label
-            [:strong name
+
+            [:strong
+             {:style {:color text-color}}
+             name
+
              " "
              (Math/round
               (*
