@@ -1,6 +1,7 @@
 {
         "name": "Energiewende-Rechner",
         "dependencies": {
+                "bulma": "^0.9.4",
                 "highlight.js": "11.5.1",
                 "huffman-url-compressor": "^1.0.2",
                 "nodejs-base64-converter": "^1.0.5",
