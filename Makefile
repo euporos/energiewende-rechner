@@ -16,6 +16,7 @@ export-main-project:
 	echo "CLEAN SLATE – Export dir emptied"
 	npx shadow-cljs release prerender
 	npx scss  --style compressed --update --force scss:export/main/css
+	npx webpack --mode production --config webpack/config.js
 	npx shadow-cljs release app
 	lein build-site
 	chmod -R 755 export/main
@@ -24,6 +25,7 @@ export-main-project:
 prepare-dev:
 	lein build-site
 	npx scss --update --force scss:export/main/css
+	npx webpack --mode development --config webpack/config.js
 
 .PHONY: prod-export-main-project
 prod-export-main-project:
@@ -44,7 +46,7 @@ build-aws-preview:
 	cp -r resources/preview/* export/preview/
 	npx shadow-cljs release aws-preview
 	cp -r node_modules export/preview/node_modules
-	#Shadow-cljs is unneeded for AWS and removed to keep the zip small
+	#Shadow-cljs is not needed for AWS and removed to keep the zip small
 	rm -r export/preview/node_modules/shadow-cljs-jar
 	cd export/preview/ && zip -r lambda.zip node_modules index.js fonts
 
@@ -65,9 +67,13 @@ dev-watch-cljs:
 dev-watch-scss:
 	npx scss --watch scss:export/main/css
 
+.PHONY: dev-watch-webpack
+dev-watch-webpack:
+	npx webpack watch --mode development --config webpack/config.js
+
 .PHONY: dev-watch-all
 dev-watch-all:
-	 make dev-watch-scss & make dev-watch-site & make dev-watch-cljs
+	 make dev-watch-scss & make dev-watch-site & make dev-watch-cljs & make dev-watch-webpack
 
 .PHONY: dev-run-php
 dev-run-php:
