@@ -9,6 +9,7 @@
                 "number-to-base64": "^1.0.5",
                 "react": "16.14.0",
                 "react-dom": "16.14.0",
+                "safe-email": "^1.1.1",
                 "sharp": "^0.29.2"
         },
         "devDependencies": {
