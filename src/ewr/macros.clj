@@ -164,7 +164,7 @@
 (defmacro def-config [var]
   "Constructs the configuration as it wille be available at runtime"
   (let [merged-config (read-configuration (get-config-dirs))]
-    (println "Merged Settings are: ")
-    (pprint  (:settings merged-config))
+    ;; (println "Merged Settings are: ")
+    ;; (pprint  (:settings merged-config))
     `(def ~var
        ~merged-config)))
