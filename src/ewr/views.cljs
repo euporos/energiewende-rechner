@@ -727,18 +727,19 @@
    [indicator "Jährlicher Ressourcenverbrauch:" :resources]))
 
 (defn share-icon
-  [{:keys [href download icon height event label]}]
-  [:div.column.share-icon
-   [:a {:href     href
-        :download download
-        :on-click (when event (h/dispatch-on-x event))}
-    [:div {:style    {:display     "block"
-                      :height      "5rem"
-                      :padding-top (when height
-                                     (str (/ (- 5 height) 2) "rem"))}}
-     [:img {:src   icon
-            :style {:height (str (or height 5) "rem")}}]]
-    label]])
+  [{:keys [href download icon height event label] :as dfn}]
+  (when dfn
+    [:div.column.share-icon
+     [:a {:href     href
+          :download download
+          :on-click (when event (h/dispatch-on-x event))}
+      [:div {:style    {:display     "block"
+                        :height      "5rem"
+                        :padding-top (when height
+                                       (str (/ (- 5 height) 2) "rem"))}}
+       [:img {:src   icon
+              :style {:height (str (or height 5) "rem")}}]]
+      label]]))
 
 (defn savelinks
   []
@@ -753,10 +754,11 @@
                :height 3.75
                :event  [:save/copy-link-to-clipboard]
                :label  "Strommix teilen"}
-              {:event [:save/copy-preview-link-to-clipboard]
-               :href  @(rf/subscribe [:save/preview-link])
-               :icon  "symbols/camera.svg"
-               :label "Bild teilen"}
+              (when (cfg/feature-active? :dynamic-preview)
+                {:event [:save/copy-preview-link-to-clipboard]
+                 :href  @(rf/subscribe [:save/preview-link])
+                 :icon  "symbols/camera.svg"
+                 :label "Bild teilen"})
               {:href     (js/encodeURI
                           @(rf/subscribe  [:save/csv-string]))
                :icon     "symbols/csv.svg"
