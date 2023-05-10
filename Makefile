@@ -18,7 +18,7 @@ export-main-project:
 	npx scss  --style compressed --update --force scss:export/main/css
 	npx webpack --mode production --config webpack/config.js
 	npx shadow-cljs release app
-	lein build-site
+	clj -X:build-site
 	chmod -R 755 export/main
 
 .PHONY: prepare-dev
@@ -56,8 +56,7 @@ build-aws-preview:
 
 .PHONY: dev-watch-site
 dev-watch-site:
-	lein build-site
-	lein auto build-site
+	clj -X:watch-site
 
 .PHONY: dev-watch-cljs
 dev-watch-cljs:
@@ -71,9 +70,9 @@ dev-watch-scss:
 dev-watch-webpack:
 	npx webpack watch --mode development --config webpack/config.js
 
-.PHONY: dev-watch-all
-dev-watch-all:
-	 make dev-watch-scss & make dev-watch-site & make dev-watch-cljs & make dev-watch-webpack
+.PHONY: dev-watch-non-cljs
+dev-watch-non-cljs:
+	 make dev-watch-scss & make dev-watch-site  & make dev-watch-webpack
 
 .PHONY: dev-run-php
 dev-run-php:
