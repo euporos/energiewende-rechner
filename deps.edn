@@ -24,8 +24,8 @@
  :aliases {:watch-site {:extra-deps {medley/medley {:mvn/version "1.4.0"}
                                      hawk/hawk {:mvn/version "0.2.11"}}
                         :exec-fn site.watch/auto
-                        :exec-args  {:paths ["scss" "config"]
-                                     :file-pattern "\\.(clj|cljs|cljx|cljc|scss|svg|html|php)$"
+                        :exec-args  {:paths ["scss" "config" "resources/public"]
+                                     :file-pattern "\\.(edn|md|svg|html|php)$"
                                      :init-func site.process/export
                                      :init-args [{:from-scratch? true}]
                                      :func site.process/export
