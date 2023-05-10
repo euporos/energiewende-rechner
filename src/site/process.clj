@@ -1,16 +1,14 @@
 (ns site.process
   (:require [clojure.edn :as edn]
-            [clojure.java.io :as io]
             [clojure.java.shell :refer [sh]]
             [ewr.macros :as m]
-            [hiccup.page :refer [html5]]
             [optimus.assets :as assets]
             [optimus.export]
             [optimus.optimizations :as optimizations]
             [optimus.prime :as optimus]
             [optimus.strategies :refer [serve-live-assets]]
-            [selmer.parser]
             [selmer.filters :as sf]
+            [selmer.parser]
             [stasis.core :as stasis]))
 
 (m/def-config config)
@@ -45,7 +43,7 @@
   (hash (slurp path)))
 
 (defn get-html-pages []
-  (let [php-snippets (if inject-php? (get-php))]
+  (let [php-snippets (when inject-php? (get-php))]
     (map-vals
      #(selmer.parser/render % {:php-script (when inject-php? (get php-snippets "/generate_vars.php"))
                                :config          config
@@ -62,22 +60,16 @@
 
 (defn get-assets
   []
-  (assets/load-assets "public" [#".*\.(svg|png|jpg|jpeg|css)$"]))
+  (assets/load-assets "public" [#".*\.(svg|png|jpg|jpeg)$"]))
 
 (defn get-pages []
   (merge (get-html-pages)))
 
-(def live-view (optimus/wrap ;; shouldn't be used
-                (stasis/serve-pages get-pages)
-                get-assets
-                optimizations/all
-                serve-live-assets))
-
 (def export-dir "export/main")
 
-(defn export []
+(defn export [arg]
   (println "exporting")
-  (let [assets (optimizations/all (get-assets) {})
+  (let [assets (get-assets)
         pages  (get-pages)]
     (println "Saving optimized assets")
     (optimus.export/save-assets assets export-dir)
@@ -85,4 +77,6 @@
     (stasis/export-pages pages export-dir {:optimus-assets assets})
     (when inject-php?
       (sh "mv" (str export-dir "/index.html") (str export-dir "/index.php"))))
-  (System/exit 0))
+  (when (:exit? arg) (System/exit 0)))
+
+
