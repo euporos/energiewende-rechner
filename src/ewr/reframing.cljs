@@ -739,8 +739,7 @@
  ;; loads the default publications
  (fn-traced [_ [_ load-savestate?]]
             (cond-> {:db              default-db
-                     :tech/dispatches [(when (and (cfg/feature-active? :bookmark-state)
-                                                  load-savestate?)
+                     :tech/dispatches [(when load-savestate?
                                          [:save/load-savestate-from-url])]}
               (not load-savestate?) (assoc :save/remove-savestate-from-url true))))
 

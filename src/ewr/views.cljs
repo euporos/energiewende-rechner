@@ -797,8 +797,7 @@
      [:div.column
       [energy-mix]
       [energy-needed]
-      (when (cfg/feature-active? :bookmark-state)
-        [savelinks])]]
+      [savelinks]]]
     [indicator [:span "Jährlich anfallendes CO" [:sub "2"] ":"] :co2]
     [indicators]
     [detailed-settings-tabular]
