@@ -1,5 +1,6 @@
 (ns ewr.core
   (:require
+   [clojure.pprint :refer [pprint]]
    [ewr.config :as config]
    [ewr.reframing]
    [ewr.views :as views]
@@ -24,7 +25,7 @@
 
 (defn init []
   (print "EWR version " version)
-  (print "Built with settings: " config/settings)
+  (print "Built with settings: " (pprint config/settings))
   (re-frame/dispatch-sync [:global/initialize :load-savestate])
   (mount-root)
   (re-frame/dispatch-sync [:global/register-tracks]))
