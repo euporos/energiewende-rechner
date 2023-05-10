@@ -58,7 +58,7 @@
 
      (stasis/slurp-directory "resources/public" #".*\.(html|php)$"))))
 
-(defn get-assets
+(defn get-statics
   []
   (assets/load-assets "public" [#".*\.(svg|png|jpg|jpeg)$"]))
 
@@ -69,7 +69,7 @@
 
 (defn export [arg]
   (println "exporting")
-  (let [assets (get-assets)
+  (let [assets (get-statics)
         pages  (get-pages)]
     (println "Saving optimized assets")
     (optimus.export/save-assets assets export-dir)
