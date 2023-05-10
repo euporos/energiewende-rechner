@@ -30,4 +30,5 @@
                                      :init-args [{:from-scratch? true}]
                                      :func site.process/export
                                      :args [{:from-scratch? false}]}}
-           :build-site {}}}
+           :build-site {:exec-fn site.process/export
+                        :exec-args  {}}}}

@@ -76,7 +76,6 @@
     (println "exporting pages")
     (stasis/export-pages pages export-dir {:optimus-assets assets})
     (when inject-php?
-      (sh "mv" (str export-dir "/index.html") (str export-dir "/index.php"))))
-  (when (:exit? arg) (System/exit 0)))
+      (sh "mv" (str export-dir "/index.html") (str export-dir "/index.php")))))
 
 
