@@ -325,9 +325,9 @@
       (:name (second parameter-dfn)) " "
       [param-publication-link nrg-key param-key]]
      [:div.columns.is-mobile
-      [:div.column
-       [param-dropdown nrg-key parameter-dfn]]
       [:div.column.is-narrow
+       [param-dropdown nrg-key parameter-dfn]]
+      [:div.column
        [param-input {:parameter-dfn parameter-dfn
                      :subscription [:param/get [:energy-sources nrg-key param-key]]
                      :partial-event [:param/set param-key [:energy-sources nrg-key param-key]]}
