@@ -71,8 +71,9 @@
   (println "exporting")
   (let [assets (get-statics)
         pages  (get-pages)]
-    (println "touching ewr.config file")
-    (sh "touch" "src/ewr/config.cljs")
+    (when (:dev arg)
+      (println "touching ewr.config file")
+      (sh "touch" "src/ewr/config.cljs"))
     (println "Saving optimized assets")
     (optimus.export/save-assets assets export-dir)
     (println "exporting pages")
