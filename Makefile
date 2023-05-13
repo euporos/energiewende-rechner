@@ -14,10 +14,10 @@ export-main-project:
 	mkdir export
 	rm -rf .shadow-cljs 2> /dev/null || true
 	echo "CLEAN SLATE – Export dir emptied"
+	touch src/ewr/config.cljs # in case shadow-cljs watch is running with stale config
 	npx shadow-cljs release prerender
 	npx scss  --style compressed --update --force scss:export/main/css
 	npx webpack --mode production --config webpack/config.js
-	touch src/ewr/config.cljs # in case shadow-cljs watch is running with stale config
 	npx shadow-cljs release app
 	clj -X:build-site
 	chmod -R 755 export/main
