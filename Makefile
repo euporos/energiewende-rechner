@@ -11,6 +11,7 @@ dev-setup:
 .PHONY: export-main-project
 export-main-project:
 	touch src/ewr/config.cljs # in case shadow-cljs watch is running with stale config
+	sleep 4s # wait for cljs watch to recompile
 	rm -rf export 2> /dev/null || true
 	mkdir export
 	rm -rf .shadow-cljs 2> /dev/null || true
@@ -42,6 +43,8 @@ test-export-main-project:
 
 .PHONY: build-aws-preview
 build-aws-preview:
+	touch src/ewr/config.cljs # in case shadow-cljs watch is running with stale config
+	sleep 4s # wait for cljs watch to recompile
 	rm -r .shadow-cljs 2> /dev/null || true
 	rm -rf export/preview/* 2> /dev/null || true
 	cp -r resources/preview/* export/preview/
